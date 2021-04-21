@@ -1,4 +1,6 @@
+import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/screens/medical_info.dart';
+import 'package:careconnect/screens/userdataforms/patient_add_form.dart';
 import 'package:careconnect/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -36,10 +38,15 @@ class _DoctorHomeState extends State<DoctorHome> {
             ),
           ],
         ),
-        floatingActionButton: IconButton(
-          icon: Icon(Icons.add),
-          onPressed: () async {
-            // patient.getPatientInfo();
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.blue,
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => PatientAddForm()));
           },
         ),
         body: StreamBuilder<QuerySnapshot>(
@@ -50,7 +57,7 @@ class _DoctorHomeState extends State<DoctorHome> {
                 return Text("Something went wrong");
               }
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Text("Loading");
+                return LoadingHeart();
               }
 
               return new ListView(

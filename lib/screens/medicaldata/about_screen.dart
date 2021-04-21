@@ -1,4 +1,4 @@
-import 'package:careconnect/screens/userdataforms/patient_form.dart';
+import 'package:careconnect/screens/userdataforms/patient_update_form.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:careconnect/services/patientdata.dart';
@@ -16,6 +16,7 @@ class AboutScreen extends StatefulWidget {
 class _AboutScreenState extends State<AboutScreen> {
   PatientData _patientData = PatientData();
   final String patientId;
+  static String imageURL;
   static var patientInfo = Map<String, dynamic>();
   _AboutScreenState(this.patientId);
 
@@ -24,6 +25,11 @@ class _AboutScreenState extends State<AboutScreen> {
     _patientData.getPatientInfo(this.patientId).then((value) {
       setState(() {
         patientInfo = value;
+      });
+    });
+    _patientData.getProfileImageURL(patientId).then((value) {
+      setState(() {
+        imageURL = value;
       });
     });
     super.initState();
@@ -41,47 +47,6 @@ class _AboutScreenState extends State<AboutScreen> {
     "Insurance No",
     "Address"
   ];
-
-  _imgfromCamera() async {
-    final pickerfile =
-        await picker.getImage(source: ImageSource.camera, imageQuality: 50);
-    setState(() {
-      _image = pickerfile;
-    });
-  }
-
-  _imgfromgallery() async {
-    final galleryimage =
-        await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
-    setState(() {
-      _image = galleryimage;
-    });
-  }
-
-  void _showpicker(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return SafeArea(
-              child: Container(
-                  child: Wrap(children: <Widget>[
-            ListTile(
-                leading: Icon(Icons.photo_library),
-                title: Text("PhotoGallery"),
-                onTap: () {
-                  _imgfromgallery();
-                  Navigator.of(context).pop();
-                }),
-            ListTile(
-                leading: Icon(Icons.photo_camera),
-                title: Text("Camera"),
-                onTap: () {
-                  _imgfromCamera();
-                  Navigator.of(context).pop();
-                }),
-          ])));
-        });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,10 +92,22 @@ class _AboutScreenState extends State<AboutScreen> {
                                                     BorderRadius.circular(100)),
                                             width: 140,
                                             height: 140,
-                                            child: Icon(
-                                              Icons.camera_alt,
-                                              color: Colors.grey[800],
-                                            ),
+                                            child: imageURL != null
+                                                ? ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            100),
+                                                    child: Image.network(
+                                                      imageURL,
+                                                      width: 140,
+                                                      height: 140,
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  )
+                                                : Icon(
+                                                    Icons.camera_alt,
+                                                    color: Colors.grey[800],
+                                                  ),
                                           ),
                                   ),
                                 )))
@@ -159,7 +136,25 @@ class _AboutScreenState extends State<AboutScreen> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                PatientForm()));
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    FocusScopeNode
+                                                        currentFocus =
+                                                        FocusScope.of(context);
+                                                    if (!currentFocus
+                                                            .hasPrimaryFocus &&
+                                                        currentFocus
+                                                                .focusedChild !=
+                                                            null) {
+                                                      FocusManager
+                                                          .instance.primaryFocus
+                                                          .unfocus();
+                                                    }
+                                                  },
+                                                  child: PatientForm(
+                                                      patientId:
+                                                          this.patientId),
+                                                )));
                                   },
                                 )),
                           ],
@@ -192,7 +187,8 @@ class _AboutScreenState extends State<AboutScreen> {
                                           )),
                                       Flexible(
                                           child: Text(patientInfo[_patientData
-                                              .patientInfoKeys[index]]))
+                                                  .patientInfoKeys[index]]
+                                              .toString()))
                                     ],
                                   ));
                             }))

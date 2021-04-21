@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:careconnect/screens/medicaldata/Appointment.dart';
 import 'package:careconnect/screens/medicaldata/about_screen.dart';
 import 'package:careconnect/screens/medicaldata/allergy_screen.dart';
@@ -15,8 +16,13 @@ import 'package:careconnect/screens/medicaldata/vaccine.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:careconnect/screens/medicaldata/prescription.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_core/firebase_core.dart' as firebase_core;
 
 class PatientData {
+  // keys to map correct data on aboutpage.
+  static String patientId = '1';
+
   final patientInfoKeys = {
     0: 'name',
     1: 'email',
@@ -28,6 +34,7 @@ class PatientData {
     7: 'address'
   };
 
+// widget to decide which page to route on medicaldata screen.
   Widget getDataScreen(int index, String patientId) {
     if (index == 0) {
       return AboutScreen(
@@ -79,15 +86,79 @@ class PatientData {
     return data;
   }
 
-  Future getAllergyData(dynamic patientid) async {
+// update patientinfo
+  Future<void> updatePatientinfo(patientId, data) async {
+    print(data['phoneno']);
+    CollectionReference patient =
+        FirebaseFirestore.instance.collection('Patient');
+    return await patient
+        .doc(patientId)
+        .update({
+          'name': data['name'],
+          'email': data['email'],
+          'dateofbirth': data['dateofbirth'],
+          'gender': data['gender'],
+          'bloodgroup': data['bloodgroup'],
+          'phoneno': data['phoneno'],
+          'insuranceno': data['insuranceno'],
+          'address': data['address']
+        })
+        .then((value) {})
+        .catchError((error) {});
+  }
+
+  Future getAllergyData(String patientid) async {
     var data = Map<String, String>();
     await FirebaseFirestore.instance
         .collection('Patient/$patientid/allergy')
         .get()
         .then((QuerySnapshot snapshot) {
       snapshot.docs.forEach((element) {
-        data['allergyname'] = element['allergyname'];
+        // data['type'] = element['type'];
+        print(data);
       });
     });
+  }
+
+  Future<void> uploadFile(File filePath, String filename) async {
+    try {
+      await firebase_storage.FirebaseStorage.instance
+          .ref('profile_images/$filename.png')
+          .putFile(filePath);
+      print("File Uploaded Successfully");
+    } on firebase_core.FirebaseException catch (e) {
+      print(e);
+    }
+  }
+
+  Future<String> getProfileImageURL(String patientId) async {
+    try {
+      String downloadURL = await firebase_storage.FirebaseStorage.instance
+          .ref('profile_images/$patientId.png')
+          .getDownloadURL();
+      return downloadURL;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future addPatient(patientId, data) async {
+    CollectionReference patient =
+        FirebaseFirestore.instance.collection('Patient');
+    await patient
+        .doc(patientId)
+        .set({
+          'name': data['name'],
+          'email': data['email'],
+          'dateofbirth': data['dateofbirth'],
+          'gender': data['gender'],
+          'bloodgroup': data['bloodgroup'],
+          'phoneno': data['phoneno'],
+          'insuranceno': data['insuranceno'],
+          'address': data['address']
+        })
+        .then((value) {})
+        .catchError((error) {});
+    await patient.doc(patientId).collection('allergy').add({});
   }
 }

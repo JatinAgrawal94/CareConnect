@@ -76,6 +76,7 @@ class _SigninState extends State<Signin> {
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: InputDecoration(
                                     hintText: 'Email',
+                                    labelText: "Enter Name",
                                     enabledBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
                                         color: Colors.blue,
