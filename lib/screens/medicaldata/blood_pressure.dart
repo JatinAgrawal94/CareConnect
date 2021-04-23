@@ -1,4 +1,6 @@
+import 'package:careconnect/components/blood_pressure_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 // import 'package:careconnect/services/patientdata.dart';
 
 class BloodPressureScreen extends StatefulWidget {
@@ -12,6 +14,9 @@ class BloodPressureScreen extends StatefulWidget {
 
 class _BloodPressureScreenState extends State<BloodPressureScreen> {
   final String patientId;
+  String systolic;
+  String diastolic;
+  String pulse;
   _BloodPressureScreenState(this.patientId);
   // PatientData _patientData = PatientData();
 
@@ -36,8 +41,86 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
           ),
           body: TabBarView(
             children: [
-              Center(child: Text("New Reading Page")),
-              Center(child: Text("Previous Reading Page"))
+              Container(
+                padding: EdgeInsets.all(10),
+                child: Column(children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Text(
+                        "Reading",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ],
+                  ),
+                  Form(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Form(
+                          child: Container(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: TextFormField(
+                          onChanged: (value) {
+                            setState(() {
+                              systolic = value;
+                            });
+                          },
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(fontSize: 20),
+                          decoration: InputDecoration(hintText: "systolic"),
+                        ),
+                      )),
+                      Form(
+                          child: Container(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: TextFormField(
+                          onChanged: (value) {
+                            setState(() {
+                              diastolic = value;
+                            });
+                          },
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(fontSize: 20),
+                          decoration: InputDecoration(hintText: "diastolic"),
+                        ),
+                      )),
+                      Form(
+                          child: Container(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: TextFormField(
+                          onChanged: (value) {
+                            setState(() {
+                              pulse = value;
+                            });
+                          },
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(fontSize: 20),
+                          decoration: InputDecoration(hintText: "pulse"),
+                        ),
+                      ))
+                    ],
+                  )),
+                  Container(
+                      margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Icon(Icons.date_range),
+                          Text("12/04/2021", style: TextStyle(fontSize: 20)),
+                          Icon(Icons.timer_rounded),
+                          Text("05:21 PM", style: TextStyle(fontSize: 20))
+                        ],
+                      )),
+                  ElevatedButton(
+                      onPressed: () {},
+                      child: Text("Save", style: TextStyle(fontSize: 20)))
+                ]),
+              ),
+              Container(
+                child: Column(
+                  children: <Widget>[BloodPressureList(), BloodPressureList()],
+                ),
+              )
             ],
           ),
         ));

@@ -146,6 +146,12 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                             Icon(Icons.timer),
                             Text("10:30 AM", style: TextStyle(fontSize: 18)),
                           ],
+                        )),
+                    ElevatedButton(
+                        onPressed: () {},
+                        child: Text(
+                          "Save",
+                          style: TextStyle(fontSize: 20),
                         ))
                   ],
                 ),
