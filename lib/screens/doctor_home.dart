@@ -26,6 +26,7 @@ class _DoctorHomeState extends State<DoctorHome> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          title: Text("Doctor"),
           actions: [
             ElevatedButton(
               onPressed: () async {

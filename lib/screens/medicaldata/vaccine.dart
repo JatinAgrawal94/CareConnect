@@ -11,6 +11,8 @@ class VaccineScreen extends StatefulWidget {
 
 class _VaccineScreenState extends State<VaccineScreen> {
   final String patientId;
+  String vaccine;
+
   _VaccineScreenState(this.patientId);
   // PatientData _patientData = PatientData();
 
@@ -35,8 +37,73 @@ class _VaccineScreenState extends State<VaccineScreen> {
           ),
           body: TabBarView(
             children: [
-              Center(child: Text("New doze")),
-              Center(child: Text("Previous vaccine doze"))
+              Container(
+                  child: Column(
+                children: <Widget>[
+                  Container(
+                      padding: EdgeInsets.all(5),
+                      child: Row(
+                        children: <Widget>[
+                          Text(
+                            "Title",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Container(
+                              margin: EdgeInsets.fromLTRB(15, 0, 5, 0),
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              child: Form(
+                                child: TextFormField(
+                                  onChanged: (value) {
+                                    setState(() {
+                                      vaccine = value;
+                                    });
+                                  },
+                                  keyboardType: TextInputType.text,
+                                  decoration:
+                                      InputDecoration(hintText: "Title"),
+                                ),
+                              )),
+                        ],
+                      )),
+                  Container(
+                    margin: EdgeInsets.all(15),
+                    child: Row(
+                      children: <Widget>[
+                        Icon(Icons.date_range, size: 30),
+                        Text("Date:24/04/2021", style: TextStyle(fontSize: 20)),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: Text(
+                        "Save",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  )
+                ],
+              )),
+              Container(
+                padding: EdgeInsets.all(5),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.all(5),
+                      margin: EdgeInsets.all(5),
+                      decoration: BoxDecoration(border: Border.all(width: 0.5)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Sputnik", style: TextStyle(fontSize: 20)),
+                          Text("24/04/2021", style: TextStyle(fontSize: 16)),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              )
             ],
           ),
         ));

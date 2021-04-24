@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class SurgeryScreen extends StatefulWidget {
   final String patientId;
+
   SurgeryScreen({Key key, @required this.patientId}) : super(key: key);
 
   @override
@@ -11,6 +12,10 @@ class SurgeryScreen extends StatefulWidget {
 
 class _SurgeryScreenState extends State<SurgeryScreen> {
   final String patientId;
+  String title;
+  String result;
+  String doctor;
+  String place;
   _SurgeryScreenState(this.patientId);
   // PatientData _patientData = PatientData();
 
@@ -35,8 +40,130 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
           ),
           body: TabBarView(
             children: [
-              Center(child: Text("New")),
-              Center(child: Text("Previous"))
+              Container(
+                  padding: EdgeInsets.all(5),
+                  margin: EdgeInsets.all(5),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                          padding: EdgeInsets.all(5),
+                          child: Form(
+                            child: TextFormField(
+                              onChanged: (value) {
+                                setState(() {
+                                  title = value;
+                                });
+                              },
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(hintText: "Title"),
+                            ),
+                          )),
+                      Container(
+                          padding: EdgeInsets.all(5),
+                          child: Form(
+                            child: TextFormField(
+                              onChanged: (value) {
+                                setState(() {
+                                  result = value;
+                                });
+                              },
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(hintText: "Result"),
+                            ),
+                          )),
+                      Container(
+                          padding: EdgeInsets.all(5),
+                          child: Form(
+                            child: TextFormField(
+                              onChanged: (value) {
+                                setState(() {
+                                  doctor = value;
+                                });
+                              },
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(hintText: "Doctor"),
+                            ),
+                          )),
+                      Container(
+                          padding: EdgeInsets.all(5),
+                          child: Form(
+                            child: TextFormField(
+                              onChanged: (value) {
+                                setState(() {
+                                  place = value;
+                                });
+                              },
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(hintText: "Place"),
+                            ),
+                          )),
+                      Container(
+                        margin: EdgeInsets.all(15),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.date_range, size: 30),
+                            Text("Date:24/04/2021",
+                                style: TextStyle(fontSize: 20))
+                          ],
+                        ),
+                      ),
+                      Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            Icon(Icons.camera_alt, size: 30),
+                            Icon(Icons.video_call, size: 30),
+                            Icon(Icons.attach_file, size: 30),
+                            ElevatedButton(
+                                onPressed: () {},
+                                child: Text(
+                                  "Save",
+                                  style: TextStyle(fontSize: 20),
+                                ))
+                          ],
+                        ),
+                      )
+                    ],
+                  )),
+              Container(
+                padding: EdgeInsets.all(5),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.all(5),
+                      margin: EdgeInsets.all(5),
+                      decoration: BoxDecoration(border: Border.all(width: 0.5)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Column(
+                            children: <Widget>[
+                              Text(
+                                "Cataract Surgery",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              Text(
+                                "24/04/2021",
+                                style: TextStyle(fontSize: 14),
+                              )
+                            ],
+                          ),
+                          Column(children: <Widget>[
+                            Text(
+                              "Doctor: Tushar Verma",
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            Text(
+                              "Place: Vadodara",
+                              style: TextStyle(fontSize: 14),
+                            )
+                          ])
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              )
             ],
           ),
         ));
