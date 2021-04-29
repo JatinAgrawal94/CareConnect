@@ -1,4 +1,6 @@
 import 'package:careconnect/components/allergyList.dart';
+import 'package:careconnect/components/loading.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -17,11 +19,19 @@ class _AllergyScreenState extends State<AllergyScreen> {
   PatientData _patientData = PatientData();
   DateTime selecteddate = DateTime.now();
   String type = "";
-
+  CollectionReference allergy;
   @override
   void initState() {
-    _patientData.getAllergyData(this.patientId).then((value) {});
     super.initState();
+    setState(() {
+      allergy =
+          FirebaseFirestore.instance.collection('Patient/$patientId/allergy');
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   _setDate(BuildContext context) async {
@@ -117,8 +127,13 @@ class _AllergyScreenState extends State<AllergyScreen> {
                           Container(
                               alignment: Alignment.topLeft,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  return Fluttertoast.showToast(
+                                onPressed: () async {
+                                  await _patientData.addAllergyData(patientId, {
+                                    'type': type,
+                                    'date':
+                                        "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                  });
+                                  Fluttertoast.showToast(
                                       msg: "Data Saved",
                                       toastLength: Toast.LENGTH_LONG,
                                       gravity: ToastGravity.SNACKBAR,
@@ -126,6 +141,7 @@ class _AllergyScreenState extends State<AllergyScreen> {
                                       textColor: Colors.white,
                                       fontSize: 15,
                                       timeInSecForIosWeb: 1);
+                                  Navigator.pop(context);
                                 },
                                 child: Text(
                                   "Add",
@@ -136,14 +152,30 @@ class _AllergyScreenState extends State<AllergyScreen> {
                       ),
                     ),
                   ))),
+// ----------------------------------------------------------------------------------------------------------
               Container(
-                child: Column(
-                  children: <Widget>[
-                    AllergyList(type: "Food Allergy", date: "12-4-21"),
-                    AllergyList(type: "Drug Allergy", date: "9-4-21"),
-                  ],
-                ),
-              )
+                  child: StreamBuilder<QuerySnapshot>(
+                stream: allergy.snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Something went wrong');
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return LoadingHeart();
+                  }
+
+                  return new ListView(
+                    children:
+                        snapshot.data.docs.map((DocumentSnapshot document) {
+                      return AllergyList(
+                          type: document.data()['type'],
+                          date: document.data()['date']);
+                    }).toList(),
+                  );
+                },
+              )),
             ],
           ),
         ));

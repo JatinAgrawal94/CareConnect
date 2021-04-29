@@ -8,10 +8,10 @@ class Appointment extends StatefulWidget {
 }
 
 class _AppointmentState extends State<Appointment> {
-  String notes;
-  String doctor;
-  String place;
-  int visitType;
+  String notes = "";
+  String doctor = "";
+  String place = "";
+  int visitType = 0;
 
   @override
   Widget build(BuildContext context) {

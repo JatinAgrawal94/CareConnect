@@ -108,15 +108,81 @@ class PatientData {
   }
 
   Future getAllergyData(String patientid) async {
-    var data = Map<String, String>();
+    List test = [];
     await FirebaseFirestore.instance
         .collection('Patient/$patientid/allergy')
         .get()
         .then((QuerySnapshot snapshot) {
       snapshot.docs.forEach((element) {
-        // data['type'] = element['type'];
-        print(data);
+        test.add({'type': element['type'], 'date': element['date']});
       });
+    });
+    return test;
+  }
+
+  Future addAllergyData(String patientId, data) async {
+    CollectionReference patient =
+        FirebaseFirestore.instance.collection('Patient/$patientId/allergy');
+    await patient.add({'type': data['type'], 'date': data['date']});
+  }
+
+  Future addFamilyHistory(String patientId, data) async {
+    CollectionReference patient = FirebaseFirestore.instance
+        .collection('Patient/$patientId/familyhistory');
+    await patient
+        .add({'name': data['name'], 'description': data['description']});
+  }
+
+  Future addBloodGlucose(String patientId, data) async {
+    CollectionReference patient = FirebaseFirestore.instance
+        .collection('Patient/$patientId/bloodglucose');
+    await patient.add({
+      'type': data['type'],
+      'result': data['result'],
+      'resultUnit': data['resultUnit'],
+      'date': data['date'],
+      'time': data['time']
+    });
+  }
+
+  Future addLabTest(String patientId, data) async {
+    CollectionReference patient =
+        FirebaseFirestore.instance.collection('Patient/$patientId/labtest');
+    await patient.add({
+      'test': data['test'],
+      'result': data['result'],
+      'normal': data['normal'],
+      'doctor': data['doctor'],
+      'place': data['place'],
+      'date': data['date'],
+    });
+  }
+
+  Future addBloodPressure(String patientId, data) async {
+    CollectionReference patient = FirebaseFirestore.instance
+        .collection('Patient/$patientId/bloodpressure');
+    await patient.add({
+      'systolic': data['systolic'],
+      'diastolic': data['diastolic'],
+      'pulse': data['pulse'],
+      'date': data['date'],
+      'time': data['time']
+    });
+  }
+
+  Future addExamination(String patientId, data) async {
+    CollectionReference patient =
+        FirebaseFirestore.instance.collection('Patient/$patientId/examination');
+    await patient.add({
+      'temperature': data['temperature'],
+      'weight': data['weight'],
+      'height': data['height'],
+      'symptoms': data['symptoms'],
+      'diagnosis': data['diagnosis'],
+      'notes': data['notes'],
+      'doctor': data['doctor'],
+      'place': data['place'],
+      'date': data['date'],
     });
   }
 

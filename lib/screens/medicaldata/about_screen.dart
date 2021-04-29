@@ -22,6 +22,7 @@ class _AboutScreenState extends State<AboutScreen> {
 
   @override
   void initState() {
+    super.initState();
     _patientData.getPatientInfo(this.patientId).then((value) {
       setState(() {
         patientInfo = value;
@@ -32,7 +33,6 @@ class _AboutScreenState extends State<AboutScreen> {
         imageURL = value;
       });
     });
-    super.initState();
   }
 
   final ImagePicker picker = ImagePicker();

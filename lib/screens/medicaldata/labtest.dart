@@ -1,5 +1,9 @@
+import 'package:careconnect/components/labtest_list.dart';
+import 'package:careconnect/components/loading.dart';
 import 'package:flutter/material.dart';
-// import 'package:careconnect/services/patientdata.dart';
+import 'package:careconnect/services/patientdata.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LabTestScreen extends StatefulWidget {
   final String patientId;
@@ -11,18 +15,36 @@ class LabTestScreen extends StatefulWidget {
 
 class _LabTestScreenState extends State<LabTestScreen> {
   final String patientId;
-  String test;
-  String result;
-  String normal;
-  String doctor;
-  String place;
+  String test = '';
+  String result = '';
+  String normal = '';
+  String doctor = '';
+  String place = '';
 
   _LabTestScreenState(this.patientId);
-  // PatientData _patientData = PatientData();
-
+  PatientData _patientData = PatientData();
+  CollectionReference labtest;
+  DateTime selecteddate = DateTime.now();
   @override
   void initState() {
     super.initState();
+    setState(() {
+      labtest =
+          FirebaseFirestore.instance.collection('Patient/$patientId/labtest');
+    });
+  }
+
+  _setDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: selecteddate, // Refer step 1
+      firstDate: DateTime(1950),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null && picked != selecteddate)
+      setState(() {
+        selecteddate = picked;
+      });
   }
 
   @override
@@ -144,7 +166,11 @@ class _LabTestScreenState extends State<LabTestScreen> {
                         margin: EdgeInsets.only(left: 30),
                         child: Row(
                           children: <Widget>[
-                            Icon(Icons.date_range, size: 30),
+                            IconButton(
+                                icon: Icon(Icons.date_range, size: 30),
+                                onPressed: () {
+                                  _setDate(context);
+                                }),
                             Text("23/04/2021", style: TextStyle(fontSize: 20)),
                           ],
                         )),
@@ -156,7 +182,26 @@ class _LabTestScreenState extends State<LabTestScreen> {
                           Icon(Icons.video_call_rounded, size: 30),
                           Icon(Icons.attach_file_outlined, size: 30),
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              await _patientData.addLabTest(patientId, {
+                                'test': test,
+                                'result': result,
+                                'normal': normal,
+                                'doctor': doctor,
+                                'place': place,
+                                'date':
+                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                              });
+                              Fluttertoast.showToast(
+                                  msg: "Data Saved",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.SNACKBAR,
+                                  backgroundColor: Colors.grey,
+                                  textColor: Colors.white,
+                                  fontSize: 15,
+                                  timeInSecForIosWeb: 1);
+                              Navigator.pop(context);
+                            },
                             child: Text("Save"),
                           ),
                         ],
@@ -166,51 +211,31 @@ class _LabTestScreenState extends State<LabTestScreen> {
                 ),
               ),
               Container(
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                        height: MediaQuery.of(context).size.height * 0.2,
-                        decoration:
-                            BoxDecoration(border: Border.all(width: 0.5)),
-                        padding: EdgeInsets.all(5),
-                        margin: EdgeInsets.all(5),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Text("Thyroid Test",
-                                      style: TextStyle(fontSize: 20))
-                                ]),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text("Result:6.5",
-                                    style: TextStyle(fontSize: 20)),
-                                Text("Normal:Less than 7",
-                                    style: TextStyle(fontSize: 20))
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text("Doctor: Dr Tushar Verma",
-                                    style: TextStyle(fontSize: 20)),
-                                Text("Place: Vadodara",
-                                    style: TextStyle(fontSize: 20))
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text("Date: 23/04/2021",
-                                    style: TextStyle(fontSize: 20)),
-                              ],
-                            )
-                          ],
-                        ))
-                  ],
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: labtest.snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Something went wrong');
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return LoadingHeart();
+                    }
+
+                    return new ListView(
+                      children:
+                          snapshot.data.docs.map((DocumentSnapshot document) {
+                        return LabTestList(
+                            test: document.data()['test'],
+                            result: document.data()['result'],
+                            normal: document.data()['normal'],
+                            doctor: document.data()['doctor'],
+                            place: document.data()['place'],
+                            date: document.data()['date']);
+                      }).toList(),
+                    );
+                  },
                 ),
               )
             ],

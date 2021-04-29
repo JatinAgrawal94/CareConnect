@@ -1,13 +1,33 @@
 import 'package:flutter/material.dart';
 
 class BloodPressureList extends StatefulWidget {
-  BloodPressureList({Key key}) : super(key: key);
+  final String systolic;
+  final String diastolic;
+  final String pulse;
+  final String date;
+  final String time;
+  BloodPressureList(
+      {Key key,
+      this.systolic,
+      this.diastolic,
+      this.pulse,
+      this.date,
+      this.time})
+      : super(key: key);
 
   @override
-  _BloodPressureListState createState() => _BloodPressureListState();
+  _BloodPressureListState createState() => _BloodPressureListState(
+      this.systolic, this.diastolic, this.pulse, this.date, this.time);
 }
 
 class _BloodPressureListState extends State<BloodPressureList> {
+  final String systolic;
+  final String diastolic;
+  final String pulse;
+  final String date;
+  final String time;
+  _BloodPressureListState(
+      this.systolic, this.diastolic, this.pulse, this.date, this.time);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,8 +42,8 @@ class _BloodPressureListState extends State<BloodPressureList> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                Text("23/04/2021", style: TextStyle(fontSize: 20)),
-                Text("5:41 PM", style: TextStyle(fontSize: 20))
+                Text("$date", style: TextStyle(fontSize: 20)),
+                Text("$time", style: TextStyle(fontSize: 20))
               ],
             ),
           ),
@@ -36,19 +56,21 @@ class _BloodPressureListState extends State<BloodPressureList> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
-                    Text("120", style: TextStyle(fontSize: 20)),
-                    Text("80", style: TextStyle(fontSize: 20)),
-                    Text("80", style: TextStyle(fontSize: 20)),
+                    Text("$systolic", style: TextStyle(fontSize: 20)),
+                    Text("$diastolic", style: TextStyle(fontSize: 20)),
+                    Text("$pulse", style: TextStyle(fontSize: 20)),
                   ],
                 )
               ],
             ),
           ),
           Container(
-              child: Icon(
-            Icons.delete,
-            size: 35,
-          )),
+              child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.delete,
+                    size: 35,
+                  ))),
         ],
       ),
     );

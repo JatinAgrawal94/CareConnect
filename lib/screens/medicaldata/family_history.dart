@@ -1,7 +1,8 @@
 import 'package:careconnect/components/family_list.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-// import 'package:careconnect/services/patientdata.dart';
+import 'package:careconnect/services/patientdata.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FamilyHistoryScreen extends StatefulWidget {
   final String patientId;
@@ -15,18 +16,21 @@ class FamilyHistoryScreen extends StatefulWidget {
 class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
   final String patientId;
   _FamilyHistoryScreenState(this.patientId);
-  // PatientData _patientData = PatientData();
-
+  PatientData _patientData = PatientData();
+  CollectionReference family;
+  String memberName = '';
+  String description = '';
   @override
   void initState() {
     super.initState();
+    setState(() {
+      family = FirebaseFirestore.instance
+          .collection('Patient/$patientId/familyhistory');
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    String memberName;
-    String description;
-
     return DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -85,19 +89,47 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                           ),
                         )),
                     ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          await _patientData.addFamilyHistory(patientId,
+                              {'name': memberName, 'description': description});
+                          Fluttertoast.showToast(
+                              msg: "Data Saved",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.SNACKBAR,
+                              backgroundColor: Colors.grey,
+                              textColor: Colors.white,
+                              fontSize: 15,
+                              timeInSecForIosWeb: 1);
+                          Navigator.pop(context);
+                        },
                         child: Text("Save", style: TextStyle(fontSize: 20)))
                   ],
                 ),
               ),
               Container(
-                child: Column(children: <Widget>[
-                  FamilyList(
-                      name: "Rakesh Mishra", description: "Heart Diesease"),
-                  FamilyList(
-                      name: "Sharda Mishra", description: "Lungs Infection"),
-                  FamilyList(name: "Rupali Mishra", description: "Cancer"),
-                ]),
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: family.snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Something went wrong');
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Text("Loading");
+                    }
+
+                    return new ListView(
+                      children:
+                          snapshot.data.docs.map((DocumentSnapshot document) {
+                        return FamilyList(
+                          name: document.data()['name'],
+                          description: document.data()['description'],
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
               )
             ],
           ),

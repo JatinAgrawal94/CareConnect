@@ -28,10 +28,10 @@ class _PatientFormState extends State<PatientForm> {
 
   @override
   void initState() {
+    super.initState();
     patientData.getPatientInfo(patientId).then((value) {
       setState(() {
         patientInfo = value;
-        // timearray = patientInfo['dateofbirth'];
       });
     });
     patientData.getProfileImageURL(patientId).then((value) {
@@ -39,7 +39,6 @@ class _PatientFormState extends State<PatientForm> {
         imageURL = value;
       });
     });
-    super.initState();
   }
 
   DateTime selecteddate = DateTime.now();
@@ -122,7 +121,7 @@ class _PatientFormState extends State<PatientForm> {
                   'name': name,
                   'email': email,
                   'dateofbirth':
-                      "${selecteddate.day}-${selecteddate.month}-${selecteddate.year}",
+                      "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
                   'gender': gender == 0
                       ? 'Male'
                       : gender == 1

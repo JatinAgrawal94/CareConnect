@@ -1,5 +1,8 @@
+import 'package:careconnect/components/examinationList.dart';
 import 'package:flutter/material.dart';
-// import 'package:careconnect/services/patientdata.dart';
+import 'package:careconnect/services/patientdata.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ExaminationScreen extends StatefulWidget {
   final String patientId;
@@ -12,19 +15,38 @@ class ExaminationScreen extends StatefulWidget {
 class _ExaminationScreenState extends State<ExaminationScreen> {
   final String patientId;
   _ExaminationScreenState(this.patientId);
-  // PatientData _patientData = PatientData();
-  String temperature;
-  String weight;
-  String height;
-  String symptoms;
-  String diagnosis;
-  String notes;
-  String doctor;
-  String place;
+  PatientData _patientData = PatientData();
+  DateTime selecteddate = DateTime.now();
+  CollectionReference examination;
+  String temperature = "";
+  String weight = "";
+  String height = "";
+  String symptoms = "";
+  String diagnosis = "";
+  String notes = "";
+  String doctor = "";
+  String place = "";
 
   @override
   void initState() {
     super.initState();
+    setState(() {
+      examination = FirebaseFirestore.instance
+          .collection('Patient/$patientId/examination');
+    });
+  }
+
+  _setDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: selecteddate, // Refer step 1
+      firstDate: DateTime(1950),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null && picked != selecteddate)
+      setState(() {
+        selecteddate = picked;
+      });
   }
 
   @override
@@ -238,9 +260,14 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                           Container(
                               margin: EdgeInsets.all(5),
                               child: Row(children: <Widget>[
-                                Icon(Icons.date_range_outlined, size: 30),
+                                IconButton(
+                                    icon: Icon(Icons.date_range_outlined,
+                                        size: 30),
+                                    onPressed: () {
+                                      _setDate(context);
+                                    }),
                                 Text(
-                                  ": 21-04-21",
+                                  "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
                                   style: TextStyle(fontSize: 20),
                                 )
                               ])),
@@ -261,7 +288,29 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                             ],
                           ),
                           ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                _patientData.addExamination(patientId, {
+                                  'temperature': temperature,
+                                  'weight': weight,
+                                  'height': height,
+                                  'symptoms': symptoms,
+                                  'diagnosis': diagnosis,
+                                  'notes': notes,
+                                  'doctor': doctor,
+                                  'place': place,
+                                  'date':
+                                      "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                });
+                                Fluttertoast.showToast(
+                                    msg: "Data Saved",
+                                    toastLength: Toast.LENGTH_LONG,
+                                    gravity: ToastGravity.SNACKBAR,
+                                    backgroundColor: Colors.grey,
+                                    textColor: Colors.white,
+                                    fontSize: 15,
+                                    timeInSecForIosWeb: 1);
+                                Navigator.pop(context);
+                              },
                               style: ElevatedButton.styleFrom(
                                   primary: Colors.blue),
                               child: Text("Save",
@@ -269,135 +318,37 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                       fontSize: 20, color: Colors.white))),
                         ],
                       ))),
-              SingleChildScrollView(
-                child: Container(
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                          margin: EdgeInsets.all(5),
-                          decoration:
-                              BoxDecoration(border: Border.all(width: 0.5)),
-                          padding: EdgeInsets.all(10),
-                          child: Column(
-                            children: <Widget>[
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  IconButton(
-                                      icon: Icon(Icons.file_copy_sharp,
-                                          size: 30, color: Colors.grey[300]),
-                                      onPressed: () {}),
-                                  Column(children: <Widget>[
-                                    Text("Examination",
-                                        style: TextStyle(fontSize: 20)),
-                                    Text("12-04-21",
-                                        style: TextStyle(fontSize: 20))
-                                  ]),
-                                ],
-                              ),
-                              Row(
-                                children: <Widget>[
-                                  Icon(Icons.check_box_outline_blank_outlined),
-                                  Text("Vital Signs",
-                                      style: TextStyle(fontSize: 20))
-                                ],
-                              ),
-                              Container(
-                                  padding: EdgeInsets.all(10),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Column(children: <Widget>[
-                                        Row(
-                                          children: <Widget>[
-                                            Icon(Icons.circle),
-                                            Text(
-                                              "Temperature",
-                                              style: TextStyle(fontSize: 20),
-                                            )
-                                          ],
-                                        ),
-                                        Row(children: <Widget>[
-                                          Icon(Icons.circle),
-                                          Text("Weight: 2Kg",
-                                              style: TextStyle(fontSize: 20))
-                                        ]),
-                                        Row(children: <Widget>[
-                                          Icon(Icons.circle),
-                                          Text("Height: 3cm",
-                                              style: TextStyle(fontSize: 20))
-                                        ])
-                                      ]),
-                                    ],
-                                  )),
-                              Row(
-                                children: <Widget>[
-                                  Icon(Icons.check_box_outline_blank_outlined),
-                                  Text("Symptoms",
-                                      style: TextStyle(fontSize: 20))
-                                ],
-                              ),
-                              Container(
-                                  padding: EdgeInsets.all(10),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Icon(Icons.circle),
-                                      Text("Nausea",
-                                          style: TextStyle(fontSize: 20))
-                                    ],
-                                  )),
-                              Row(
-                                children: <Widget>[
-                                  Icon(Icons.check_box_outline_blank_outlined),
-                                  Text("Diagnosis",
-                                      style: TextStyle(fontSize: 20))
-                                ],
-                              ),
-                              Container(
-                                  padding: EdgeInsets.all(10),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Icon(Icons.circle),
-                                      Text("Viral Infection",
-                                          style: TextStyle(fontSize: 20))
-                                    ],
-                                  )),
-                              Row(
-                                children: <Widget>[
-                                  Icon(Icons.check_box_outline_blank_outlined),
-                                  Text("Doctor", style: TextStyle(fontSize: 20))
-                                ],
-                              ),
-                              Container(
-                                  padding: EdgeInsets.all(10),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Icon(Icons.circle),
-                                      Text("Dr. Rakesh Mishra",
-                                          style: TextStyle(fontSize: 20))
-                                    ],
-                                  )),
-                              Row(
-                                children: <Widget>[
-                                  Icon(Icons.check_box_outline_blank_outlined),
-                                  Text("Place", style: TextStyle(fontSize: 20))
-                                ],
-                              ),
-                              Container(
-                                  padding: EdgeInsets.all(10),
-                                  margin: EdgeInsets.fromLTRB(15, 0, 0, 0),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Icon(Icons.circle),
-                                      Text("Vadodara",
-                                          style: TextStyle(fontSize: 20))
-                                    ],
-                                  )),
-                            ],
-                          ))
-                    ],
-                  ),
+              Container(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: examination.snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Something went wrong');
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Text("Loading");
+                    }
+
+                    return new ListView(
+                      children:
+                          snapshot.data.docs.map((DocumentSnapshot document) {
+                        return ExaminationList(
+                            temperature: document.data()['temperature'],
+                            weight: document.data()['temperature'],
+                            height: document.data()['height'],
+                            symptoms: document.data()['symptoms'],
+                            diagnosis: document.data()['diagnosis'],
+                            notes: document.data()['notes'],
+                            doctor: document.data()['doctor'],
+                            date: document.data()['date'],
+                            place: document.data()['place']);
+                      }).toList(),
+                    );
+                  },
                 ),
-              )
+              ),
             ],
           ),
         ));

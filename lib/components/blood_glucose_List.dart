@@ -5,8 +5,9 @@ class BloodGlucoseList extends StatelessWidget {
   final String date;
   final String time;
   final String result;
+  final String resultUnit;
   const BloodGlucoseList(
-      {Key key, this.type, this.result, this.date, this.time})
+      {Key key, this.type, this.result, this.date, this.time, this.resultUnit})
       : super(key: key);
 
   @override
@@ -28,7 +29,8 @@ class BloodGlucoseList extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text("$result", style: TextStyle(fontSize: 18)),
+                        Text("$result $resultUnit",
+                            style: TextStyle(fontSize: 18)),
                         Text("Type:$type", style: TextStyle(fontSize: 18))
                       ],
                     ),

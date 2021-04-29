@@ -1,6 +1,8 @@
 import 'package:careconnect/components/blood_glucose_List.dart';
 import 'package:flutter/material.dart';
-// import 'package:careconnect/services/patientdata.dart';
+import 'package:careconnect/services/patientdata.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BloodGlucoseScreen extends StatefulWidget {
   final String patientId;
@@ -13,13 +15,44 @@ class BloodGlucoseScreen extends StatefulWidget {
 class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
   final String patientId;
   _BloodGlucoseScreenState(this.patientId);
-  // PatientData _patientData = PatientData();
-  int readingType;
-  String result;
+  PatientData _patientData = PatientData();
+  int readingType = 0;
+  DateTime selecteddate = DateTime.now();
+  TimeOfDay selectedtime = TimeOfDay.now();
+  String result = "";
   String resultUnit = 'mg/dL';
+  List bloodGlucoseList = [];
+  CollectionReference bloodglucose;
   @override
   void initState() {
     super.initState();
+    setState(() {
+      bloodglucose = FirebaseFirestore.instance
+          .collection('Patient/$patientId/bloodglucose');
+    });
+  }
+
+  _setDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: selecteddate, // Refer step 1
+      firstDate: DateTime(1950),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null && picked != selecteddate)
+      setState(() {
+        selecteddate = picked;
+      });
+  }
+
+  _setTime(BuildContext context) async {
+    final TimeOfDay picked =
+        await showTimePicker(context: context, initialTime: selectedtime);
+    if (picked != null) {
+      setState(() {
+        selectedtime = picked;
+      });
+    }
   }
 
   @override
@@ -130,7 +163,7 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                           hint: Text("Unit"),
                           onChanged: (String value) {
                             setState(() {
-                              result = value;
+                              resultUnit = value;
                             });
                           },
                         )
@@ -141,14 +174,52 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Icon(Icons.date_range_outlined),
-                            Text("21-04-21", style: TextStyle(fontSize: 18)),
-                            Icon(Icons.timer),
-                            Text("10:30 AM", style: TextStyle(fontSize: 18)),
+                            IconButton(
+                              icon: Icon(Icons.date_range_outlined),
+                              onPressed: () {
+                                _setDate(context);
+                              },
+                            ),
+                            Text(
+                                "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                    .split(' ')[0],
+                                style: TextStyle(fontSize: 18)),
+                            IconButton(
+                              icon: Icon(Icons.timer),
+                              onPressed: () {
+                                _setTime(context);
+                              },
+                            ),
+                            Text(
+                                "${selectedtime.hour.toString()}:${selectedtime.minute.toString()}",
+                                style: TextStyle(fontSize: 18)),
                           ],
                         )),
                     ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          _patientData.addBloodGlucose(patientId, {
+                            'type': readingType == 0
+                                ? 'Fasting'
+                                : readingType == 1
+                                    ? "Postpradial"
+                                    : "Random",
+                            'result': result,
+                            'resultUnit': resultUnit,
+                            'date':
+                                "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                            'time':
+                                "${selectedtime.hour.toString()}:${selectedtime.minute.toString()}",
+                          });
+                          Fluttertoast.showToast(
+                              msg: "Data Saved",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.SNACKBAR,
+                              backgroundColor: Colors.grey,
+                              textColor: Colors.white,
+                              fontSize: 15,
+                              timeInSecForIosWeb: 1);
+                          Navigator.pop(context);
+                        },
                         child: Text(
                           "Save",
                           style: TextStyle(fontSize: 20),
@@ -157,21 +228,32 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                 ),
               ),
               Container(
-                child: Column(
-                  children: <Widget>[
-                    BloodGlucoseList(
-                        type: "Fasting",
-                        result: "120 mg/dL",
-                        date: "10-04-21",
-                        time: "10:30 PM"),
-                    BloodGlucoseList(
-                        type: "Random",
-                        result: "110 mg/dL",
-                        date: "9-04-21",
-                        time: "11:30 PM"),
-                  ],
-                ),
-              )
+                  child: StreamBuilder<QuerySnapshot>(
+                stream: bloodglucose.snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Something went wrong');
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text("Loading");
+                  }
+
+                  return new ListView(
+                    children:
+                        snapshot.data.docs.map((DocumentSnapshot document) {
+                      return BloodGlucoseList(
+                        type: document.data()['type'],
+                        result: document.data()['result'],
+                        date: document.data()['date'],
+                        time: document.data()['time'],
+                        resultUnit: document.data()['resultUnit'],
+                      );
+                    }).toList(),
+                  );
+                },
+              ))
             ],
           ),
         ));
