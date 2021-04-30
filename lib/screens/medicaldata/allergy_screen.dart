@@ -1,9 +1,9 @@
 import 'package:careconnect/components/allergyList.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class AllergyScreen extends StatefulWidget {
   final String patientId;

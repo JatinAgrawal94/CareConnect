@@ -1,17 +1,61 @@
+import 'package:careconnect/components/appointment_list.dart';
 import 'package:flutter/material.dart';
+import 'package:careconnect/components/loading.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:careconnect/services/patientdata.dart';
 
 class Appointment extends StatefulWidget {
-  Appointment({Key key}) : super(key: key);
+  final String patientId;
+  Appointment({Key key, this.patientId}) : super(key: key);
 
   @override
-  _AppointmentState createState() => _AppointmentState();
+  _AppointmentState createState() => _AppointmentState(this.patientId);
 }
 
 class _AppointmentState extends State<Appointment> {
+  final String patientId;
+  _AppointmentState(this.patientId);
   String notes = "";
   String doctor = "";
   String place = "";
   int visitType = 0;
+  DateTime selecteddate = DateTime.now();
+  TimeOfDay selectedtime = TimeOfDay.now();
+  PatientData _patientData = PatientData();
+  CollectionReference appointment;
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      appointment = FirebaseFirestore.instance
+          .collection('Patient/$patientId/appointment');
+    });
+  }
+
+  _setTime(BuildContext context) async {
+    final TimeOfDay picked =
+        await showTimePicker(context: context, initialTime: selectedtime);
+    if (picked != null) {
+      setState(() {
+        selectedtime = picked;
+      });
+    }
+  }
+
+  _setDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: selecteddate, // Refer step 1
+      firstDate: DateTime(1950),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null && picked != selecteddate)
+      setState(() {
+        selecteddate = picked;
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +69,8 @@ class _AppointmentState extends State<Appointment> {
                 Tab(child: Text('Previous')),
               ])),
           body: TabBarView(children: [
-            Container(
+            SingleChildScrollView(
+                child: Container(
               padding: EdgeInsets.all(5),
               child: Column(
                 children: <Widget>[
@@ -33,9 +78,16 @@ class _AppointmentState extends State<Appointment> {
                     padding: EdgeInsets.all(5),
                     child: Row(
                       children: <Widget>[
-                        Icon(Icons.date_range),
-                        Text("Pick a Date", style: TextStyle(fontSize: 20)),
-                        Text("24/04/2021", style: TextStyle(fontSize: 20))
+                        Text("Date:", style: TextStyle(fontSize: 20)),
+                        IconButton(
+                          icon: Icon(Icons.date_range),
+                          onPressed: () {
+                            _setDate(context);
+                          },
+                        ),
+                        Text(
+                            "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                            style: TextStyle(fontSize: 20))
                       ],
                     ),
                   ),
@@ -44,8 +96,15 @@ class _AppointmentState extends State<Appointment> {
                     padding: EdgeInsets.all(5),
                     child: Row(
                       children: <Widget>[
-                        Icon(Icons.timer_sharp),
-                        Text("1:50 PM", style: TextStyle(fontSize: 20)),
+                        IconButton(
+                          icon: Icon(Icons.timer_sharp),
+                          onPressed: () {
+                            _setTime(context);
+                          },
+                        ),
+                        Text(
+                            "${selectedtime.hour.toString()}:${selectedtime.minute.toString()}",
+                            style: TextStyle(fontSize: 20)),
                       ],
                     ),
                   ),
@@ -152,63 +211,60 @@ class _AppointmentState extends State<Appointment> {
                             )),
                       ])),
                   ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        await _patientData.addAppointment(patientId, {
+                          'notes': notes,
+                          'date':
+                              "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                          'time':
+                              "${selectedtime.hour.toString()}:${selectedtime.minute.toString()}",
+                          'doctor': doctor,
+                          'place': place,
+                          'visitType': visitType == 0 ? "New" : "Follow Up"
+                        });
+                        Fluttertoast.showToast(
+                            msg: "Data Saved",
+                            toastLength: Toast.LENGTH_LONG,
+                            gravity: ToastGravity.SNACKBAR,
+                            backgroundColor: Colors.grey,
+                            textColor: Colors.white,
+                            fontSize: 15,
+                            timeInSecForIosWeb: 1);
+                        Navigator.pop(context);
+                      },
                       child: Text("Save", style: TextStyle(fontSize: 20)))
                 ],
               ),
-            ),
+            )),
             Container(
-              padding: EdgeInsets.all(5),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                      padding: EdgeInsets.all(5),
-                      margin: EdgeInsets.all(5),
-                      decoration: BoxDecoration(border: Border.all(width: 0.5)),
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Column(
-                                children: <Widget>[
-                                  Text(
-                                    "24/04/2021",
-                                    style: TextStyle(fontSize: 20),
-                                  ),
-                                  Text(
-                                    "6:00 PM",
-                                    style: TextStyle(fontSize: 14),
-                                  )
-                                ],
-                              ),
-                              Column(children: <Widget>[
-                                Text(
-                                  "Doctor: Tushar Verma",
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                                Text(
-                                  "Place: Vadodara",
-                                  style: TextStyle(fontSize: 14),
-                                )
-                              ])
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Container(
-                                child: Text(
-                                    "Note:Covid Patient, stay at safe distance",
-                                    style: TextStyle(fontSize: 14)),
-                              )
-                            ],
-                          )
-                        ],
-                      )),
-                ],
-              ),
-            )
+                padding: EdgeInsets.all(5),
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: appointment.snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Something went wrong');
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return LoadingHeart();
+                    }
+
+                    return new ListView(
+                      children:
+                          snapshot.data.docs.map((DocumentSnapshot document) {
+                        return AppointmentList(
+                          notes: document.data()['notes'],
+                          doctor: document.data()['doctor'],
+                          place: document.data()['place'],
+                          date: document.data()['date'],
+                          time: document.data()['time'],
+                          visitType: document.data()['visitType'],
+                        );
+                      }).toList(),
+                    );
+                  },
+                ))
           ]),
         ));
   }

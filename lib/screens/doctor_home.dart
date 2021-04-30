@@ -29,14 +29,10 @@ class _DoctorHomeState extends State<DoctorHome> {
           title: Text("Doctor"),
           actions: [
             ElevatedButton(
-              onPressed: () async {
-                auth.signoutmethod();
-              },
-              child: Text(
-                "Logout",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
+                onPressed: () async {
+                  auth.signoutmethod();
+                },
+                child: Icon(Icons.power_settings_new_outlined)),
           ],
         ),
         floatingActionButton: FloatingActionButton(

@@ -1,5 +1,9 @@
+import 'package:careconnect/components/radiology_list.dart';
 import 'package:flutter/material.dart';
-// import 'package:careconnect/services/patientdata.dart';
+import 'package:careconnect/services/patientdata.dart';
+import 'package:careconnect/components/loading.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class RadiologyScreen extends StatefulWidget {
   final String patientId;
@@ -16,11 +20,30 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
   String doctor;
   String place;
   _RadiologyScreenState(this.patientId);
-  // PatientData _patientData = PatientData();
+  DateTime selecteddate = DateTime.now();
+  PatientData _patientData = PatientData();
+  CollectionReference radiology;
 
   @override
   void initState() {
     super.initState();
+    setState(() {
+      radiology =
+          FirebaseFirestore.instance.collection('Patient/$patientId/radiology');
+    });
+  }
+
+  _setDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: selecteddate, // Refer step 1
+      firstDate: DateTime(1950),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null && picked != selecteddate)
+      setState(() {
+        selecteddate = picked;
+      });
   }
 
   @override
@@ -39,6 +62,7 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
           ),
           body: TabBarView(
             children: [
+              SingleChildScrollView(child:
               Container(
                   padding: EdgeInsets.all(5),
                   margin: EdgeInsets.all(5),
@@ -100,8 +124,14 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                         margin: EdgeInsets.all(15),
                         child: Row(
                           children: <Widget>[
-                            Icon(Icons.date_range, size: 30),
-                            Text("Date:24/04/2021",
+                            IconButton(
+                              icon: Icon(Icons.date_range, size: 30),
+                              onPressed: () {
+                                _setDate(context);
+                              },
+                            ),
+                            Text(
+                                "Date ${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
                                 style: TextStyle(fontSize: 20))
                           ],
                         ),
@@ -114,7 +144,26 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                             Icon(Icons.video_call, size: 30),
                             Icon(Icons.attach_file, size: 30),
                             ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  await _patientData
+                                      .addRadiologyData(patientId, {
+                                    'title': title,
+                                    'result': result,
+                                    'doctor': doctor,
+                                    'place': place,
+                                    'date':
+                                        "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                  });
+                                  Fluttertoast.showToast(
+                                      msg: "Data Saved",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.SNACKBAR,
+                                      backgroundColor: Colors.grey,
+                                      textColor: Colors.white,
+                                      fontSize: 15,
+                                      timeInSecForIosWeb: 1);
+                                  Navigator.pop(context);
+                                },
                                 child: Text(
                                   "Save",
                                   style: TextStyle(fontSize: 20),
@@ -123,46 +172,35 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                         ),
                       )
                     ],
-                  )),
+                  ))),
               Container(
-                padding: EdgeInsets.all(5),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.all(5),
-                      margin: EdgeInsets.all(5),
-                      decoration: BoxDecoration(border: Border.all(width: 0.5)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              Text(
-                                "Endoscopy",
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              Text(
-                                "24/04/2021",
-                                style: TextStyle(fontSize: 14),
-                              )
-                            ],
-                          ),
-                          Column(children: <Widget>[
-                            Text(
-                              "Doctor: Tushar Verma",
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            Text(
-                              "Place: Vadodara",
-                              style: TextStyle(fontSize: 14),
-                            )
-                          ])
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              )
+                  padding: EdgeInsets.all(5),
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: radiology.snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return Text('Something went wrong');
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return LoadingHeart();
+                      }
+
+                      return new ListView(
+                        children:
+                            snapshot.data.docs.map((DocumentSnapshot document) {
+                          return RadiologyList(
+                              title: document.data()['title'],
+                              result: document.data()['result'],
+                              doctor: document.data()['doctor'],
+                              place: document.data()['place'],
+                              date: document.data()['date'],
+                              );
+                        }).toList(),
+                      );
+                    },
+                  )),
             ],
           ),
         ));

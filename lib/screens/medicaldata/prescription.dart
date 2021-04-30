@@ -1,5 +1,9 @@
+import 'package:careconnect/components/prescription_list.dart';
 import 'package:flutter/material.dart';
-// import 'package:careconnect/services/patientdata.dart';
+import 'package:careconnect/services/patientdata.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:careconnect/components/loading.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PrescriptionScreen extends StatefulWidget {
   final String patientId;
@@ -16,11 +20,15 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   String doctor;
   String place;
   _PrescriptionScreenState(this.patientId);
-  // PatientData _patientData = PatientData();
-
+  PatientData _patientData = PatientData();
+  CollectionReference prescription;
   @override
   void initState() {
     super.initState();
+    setState(() {
+      prescription = FirebaseFirestore.instance
+          .collection('Patient/$patientId/prescription');
+    });
   }
 
   @override
@@ -140,7 +148,23 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                             Icon(Icons.video_call_rounded, size: 30),
                             Icon(Icons.attach_file_outlined, size: 30),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                await _patientData.addPrescription(patientId, {
+                                  'drug': drug,
+                                  'dose': dose,
+                                  'doctor': doctor,
+                                  'place': place,
+                                });
+                                Fluttertoast.showToast(
+                                    msg: "Data Saved",
+                                    toastLength: Toast.LENGTH_LONG,
+                                    gravity: ToastGravity.SNACKBAR,
+                                    backgroundColor: Colors.grey,
+                                    textColor: Colors.white,
+                                    fontSize: 15,
+                                    timeInSecForIosWeb: 1);
+                                Navigator.pop(context);
+                              },
                               child: Text(
                                 "Save",
                                 style: TextStyle(fontSize: 20),
@@ -152,44 +176,32 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.all(5),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.all(5),
-                      margin: EdgeInsets.all(5),
-                      decoration: BoxDecoration(border: Border.all(width: 0.5)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              Text(
-                                "Paracetamol",
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              Text(
-                                "1 Tab/Day",
-                                style: TextStyle(fontSize: 14),
-                              )
-                            ],
-                          ),
-                          Column(children: <Widget>[
-                            Text(
-                              "Doctor: Tushar Verma",
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            Text(
-                              "Place: Vadodara",
-                              style: TextStyle(fontSize: 14),
-                            )
-                          ])
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              )
+                  padding: EdgeInsets.all(5),
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: prescription.snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return Text('Something went wrong');
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return LoadingHeart();
+                      }
+
+                      return new ListView(
+                        children:
+                            snapshot.data.docs.map((DocumentSnapshot document) {
+                          return PrescriptionList(
+                            drug: document.data()['drug'],
+                            dose: document.data()['dose'],
+                            doctor: document.data()['doctor'],
+                            place: document.data()['place'],
+                          );
+                        }).toList(),
+                      );
+                    },
+                  )),
             ],
           ),
         ));

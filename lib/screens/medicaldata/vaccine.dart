@@ -1,5 +1,9 @@
+import 'package:careconnect/components/vaccine_list.dart';
 import 'package:flutter/material.dart';
-// import 'package:careconnect/services/patientdata.dart';
+import 'package:careconnect/services/patientdata.dart';
+import 'package:careconnect/components/loading.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class VaccineScreen extends StatefulWidget {
   final String patientId;
@@ -12,13 +16,31 @@ class VaccineScreen extends StatefulWidget {
 class _VaccineScreenState extends State<VaccineScreen> {
   final String patientId;
   String vaccine;
-
+  DateTime selecteddate = DateTime.now();
   _VaccineScreenState(this.patientId);
-  // PatientData _patientData = PatientData();
+  PatientData _patientData = PatientData();
+  CollectionReference vaccineList;
 
   @override
   void initState() {
     super.initState();
+    setState(() {
+      vaccineList =
+          FirebaseFirestore.instance.collection('Patient/$patientId/vaccine');
+    });
+  }
+
+  _setDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: selecteddate, // Refer step 1
+      firstDate: DateTime(1950),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null && picked != selecteddate)
+      setState(() {
+        selecteddate = picked;
+      });
   }
 
   @override
@@ -69,14 +91,36 @@ class _VaccineScreenState extends State<VaccineScreen> {
                     margin: EdgeInsets.all(15),
                     child: Row(
                       children: <Widget>[
-                        Icon(Icons.date_range, size: 30),
-                        Text("Date:24/04/2021", style: TextStyle(fontSize: 20)),
+                        IconButton(
+                          icon: Icon(Icons.date_range, size: 30),
+                          onPressed: () {
+                            _setDate(context);
+                          },
+                        ),
+                        Text(
+                            "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                            style: TextStyle(fontSize: 20)),
                       ],
                     ),
                   ),
                   Container(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        await _patientData.addVaccine(patientId, {
+                          'vaccine': vaccine,
+                          'date':
+                              "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                        });
+                        Fluttertoast.showToast(
+                            msg: "Data Saved",
+                            toastLength: Toast.LENGTH_LONG,
+                            gravity: ToastGravity.SNACKBAR,
+                            backgroundColor: Colors.grey,
+                            textColor: Colors.white,
+                            fontSize: 15,
+                            timeInSecForIosWeb: 1);
+                        Navigator.pop(context);
+                      },
                       child: Text(
                         "Save",
                         style: TextStyle(fontSize: 20),
@@ -86,24 +130,29 @@ class _VaccineScreenState extends State<VaccineScreen> {
                 ],
               )),
               Container(
-                padding: EdgeInsets.all(5),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.all(5),
-                      margin: EdgeInsets.all(5),
-                      decoration: BoxDecoration(border: Border.all(width: 0.5)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text("Sputnik", style: TextStyle(fontSize: 20)),
-                          Text("24/04/2021", style: TextStyle(fontSize: 16)),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              )
+                  padding: EdgeInsets.all(5),
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: vaccineList.snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return Text('Something went wrong');
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return LoadingHeart();
+                      }
+
+                      return new ListView(
+                        children:
+                            snapshot.data.docs.map((DocumentSnapshot document) {
+                          return VaccineList(
+                              vaccine: document.data()['vaccine'],
+                              date: document.data()['date']);
+                        }).toList(),
+                      );
+                    },
+                  ))
             ],
           ),
         ));

@@ -1,5 +1,9 @@
+import 'package:careconnect/components/notes.dart';
 import 'package:flutter/material.dart';
-// import 'package:careconnect/services/patientdata.dart';
+import 'package:careconnect/services/patientdata.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:careconnect/components/loading.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotesScreen extends StatefulWidget {
   final String patientId;
@@ -12,13 +16,17 @@ class NotesScreen extends StatefulWidget {
 class _NotesScreenState extends State<NotesScreen> {
   final String patientId;
   String title;
-  String notes;
+  String description;
   _NotesScreenState(this.patientId);
-  // PatientData _patientData = PatientData();
+  PatientData _patientData = PatientData();
+  CollectionReference notes;
 
   @override
   void initState() {
     super.initState();
+    setState(() {
+      notes = FirebaseFirestore.instance.collection('Patient/$patientId/notes');
+    });
   }
 
   @override
@@ -62,7 +70,7 @@ class _NotesScreenState extends State<NotesScreen> {
                             child: TextFormField(
                               onChanged: (value) {
                                 setState(() {
-                                  notes = value;
+                                  description = value;
                                 });
                               },
                               keyboardType: TextInputType.text,
@@ -78,7 +86,21 @@ class _NotesScreenState extends State<NotesScreen> {
                               Icon(Icons.video_call_outlined, size: 40),
                               Icon(Icons.attach_file_outlined, size: 40),
                               ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    await _patientData.addNotes(patientId, {
+                                      'title': title,
+                                      'description': description
+                                    });
+                                    Fluttertoast.showToast(
+                                        msg: "Data Saved",
+                                        toastLength: Toast.LENGTH_LONG,
+                                        gravity: ToastGravity.SNACKBAR,
+                                        backgroundColor: Colors.grey,
+                                        textColor: Colors.white,
+                                        fontSize: 15,
+                                        timeInSecForIosWeb: 1);
+                                    Navigator.pop(context);
+                                  },
                                   child: Text("Save",
                                       style: TextStyle(fontSize: 20))),
                             ]),
@@ -86,37 +108,29 @@ class _NotesScreenState extends State<NotesScreen> {
                     ],
                   )),
               Container(
-                padding: EdgeInsets.all(5),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(border: Border.all(width: 0.5)),
-                      padding: EdgeInsets.all(5),
-                      margin: EdgeInsets.all(5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Icon(
-                            Icons.note_add_sharp,
-                            size: 50,
-                          ),
-                          Container(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text("Title", style: TextStyle(fontSize: 20)),
-                                Text("24/04/2021",
-                                    style: TextStyle(fontSize: 14)),
-                                Text("Notes", style: TextStyle(fontSize: 20)),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              )
+                  padding: EdgeInsets.all(5),
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: notes.snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return Text('Something went wrong');
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return LoadingHeart();
+                      }
+
+                      return new ListView(
+                        children:
+                            snapshot.data.docs.map((DocumentSnapshot document) {
+                          return NotesList(
+                              title: document.data()['title'],
+                              description: document.data()['description']);
+                        }).toList(),
+                      );
+                    },
+                  )),
             ],
           ),
         ));
