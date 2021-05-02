@@ -21,7 +21,6 @@ import 'package:firebase_core/firebase_core.dart' as firebase_core;
 
 class PatientData {
   // keys to map correct data on aboutpage.
-  static String patientId = '1';
 
   final patientInfoKeys = {
     0: 'name',
@@ -74,6 +73,32 @@ class PatientData {
   }
 
 // Reading Data for About Page,medicaldata/about_screen.dart
+//
+
+  Future getNoOfPatients() async {
+    List data = [];
+    await FirebaseFirestore.instance
+        .collection('stats')
+        .get()
+        .then((QuerySnapshot snapshot) {
+      return snapshot.docs.forEach((element) {
+        data.add({
+          'noofpatients': element['noofpatients'],
+          'noofdoctors': element['noofdoctors'],
+          'documentid': element.id
+        });
+      });
+    });
+    return data;
+  }
+
+  Future increementNoOfPatients(documentid, noofpatients) async {
+    await FirebaseFirestore.instance
+        .collection('stats')
+        .doc(documentid)
+        .update({'noofpatients': noofpatients});
+  }
+
   Future getPatientInfo(dynamic patientid) async {
     var data = Map<String, dynamic>();
     await FirebaseFirestore.instance
@@ -86,9 +111,20 @@ class PatientData {
     return data;
   }
 
+  Future getDoctorInfo(dynamic doctorid) async {
+    var data = Map<String, dynamic>();
+    await FirebaseFirestore.instance
+        .collection('Patient')
+        .doc(doctorid)
+        .get()
+        .then((DocumentSnapshot snapshot) {
+      data = snapshot.data();
+    });
+    return data;
+  }
+
 // update patientinfo
   Future<void> updatePatientinfo(patientId, data) async {
-    print(data['phoneno']);
     CollectionReference patient =
         FirebaseFirestore.instance.collection('Patient');
     return await patient
@@ -273,7 +309,7 @@ class PatientData {
   Future<void> uploadFile(File filePath, String filename) async {
     try {
       await firebase_storage.FirebaseStorage.instance
-          .ref('profile_images/$filename.png')
+          .ref('profile_images/P$filename.png')
           .putFile(filePath);
       print("File Uploaded Successfully");
     } on firebase_core.FirebaseException catch (e) {
@@ -281,10 +317,10 @@ class PatientData {
     }
   }
 
-  Future<String> getProfileImageURL(String patientId) async {
+  Future<String> getProfileImageURL(String userId) async {
     try {
       String downloadURL = await firebase_storage.FirebaseStorage.instance
-          .ref('profile_images/$patientId.png')
+          .ref('profile_images/$userId.png')
           .getDownloadURL();
       return downloadURL;
     } catch (e) {
@@ -292,12 +328,11 @@ class PatientData {
     }
   }
 
-  Future addPatient(patientId, data) async {
+  Future addPatient(data) async {
     CollectionReference patient =
         FirebaseFirestore.instance.collection('Patient');
     await patient
-        .doc(patientId)
-        .set({
+        .add({
           'name': data['name'],
           'email': data['email'],
           'dateofbirth': data['dateofbirth'],
@@ -305,10 +340,13 @@ class PatientData {
           'bloodgroup': data['bloodgroup'],
           'phoneno': data['phoneno'],
           'insuranceno': data['insuranceno'],
-          'address': data['address']
+          'address': data['address'],
+          'userid': data['userid']
         })
         .then((value) {})
         .catchError((error) {});
-    await patient.doc(patientId).collection('allergy').add({});
+
+    FirebaseFirestore.instance.collection('users').add(
+        {'email': data['email'], 'role': 'patient', 'userid': data['userid']});
   }
 }

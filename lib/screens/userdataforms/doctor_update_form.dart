@@ -1,27 +1,27 @@
 import 'package:careconnect/components/loading.dart';
-import 'package:careconnect/services/patientdata.dart';
+import 'package:careconnect/services/doctorData.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class PatientForm extends StatefulWidget {
-  final String patientId;
-  PatientForm({Key key, @required this.patientId}) : super(key: key);
+class DoctorForm extends StatefulWidget {
+  final String doctorId;
+  DoctorForm({Key key, @required this.doctorId}) : super(key: key);
 
   @override
-  _PatientFormState createState() => _PatientFormState(this.patientId);
+  _DoctorFormState createState() => _DoctorFormState(this.doctorId);
 }
 
-class _PatientFormState extends State<PatientForm> {
-  final String patientId;
-  String userId;
-  _PatientFormState(this.patientId);
+class _DoctorFormState extends State<DoctorForm> {
+  final String doctorId;
+  _DoctorFormState(this.doctorId);
   ImagePicker picker = ImagePicker();
   PickedFile _image;
-  PatientData patientData = PatientData();
+  String userId;
+  DoctorData _doctorData = DoctorData();
   static String imageURL;
-  static var patientInfo = Map<String, dynamic>();
+  static var doctorInfo = Map<String, dynamic>();
 
   Future convertDate(String date) async {
     var g = date.split('/').reversed.toList();
@@ -37,9 +37,9 @@ class _PatientFormState extends State<PatientForm> {
 
   DateTime selecteddate = DateTime.now();
   int gender = 0;
-  String bloodgroup;
+  String bloodgroup ;
   String contact = " ";
-  String insuranceno = " ";
+  String designation = " ";
   String address = " ";
   String name = " ";
   String email = " ";
@@ -47,28 +47,29 @@ class _PatientFormState extends State<PatientForm> {
   @override
   void initState() {
     super.initState();
-    patientData.getPatientInfo(patientId).then((value) {
+    _doctorData.getDoctorInfo(doctorId).then((value) {
       setState(() {
-        patientInfo = value;
-        userId = patientInfo['userid'];
-        email = patientInfo['email'];
-        name = patientInfo['name'];
-        address = patientInfo['address'];
-        bloodgroup = patientInfo['bloodgroup'];
-        insuranceno = patientInfo['insuranceno'];
-        contact = patientInfo['phoneno'].toString();
-        gender = patientInfo['gender'] == 'Male'
+        doctorInfo = value;
+        userId = doctorInfo['userid'];
+        name = doctorInfo['name'];
+        email = doctorInfo['email'];
+        designation = doctorInfo['designation'];
+        contact = doctorInfo['contact'].toString();
+        bloodgroup = doctorInfo['bloodgroup'];
+        address = doctorInfo['address'];
+        gender = doctorInfo['gender'] == 'Male'
             ? 0
-            : patientInfo['gender'] == 'Female'
+            : doctorInfo['gender'] == 'Female'
                 ? 1
                 : 2;
+        // selecteddate = DateTime.parse(convertDate(doctorInfo['dateofbirth']));
       });
-      convertDate(patientInfo['dateofbirth']).then((value) {
+      convertDate(doctorInfo['dateofbirth']).then((value) {
         setState(() {
           selecteddate = DateTime.parse(value);
         });
       });
-      patientData.getProfileImageURL(userId).then((value) {
+      _doctorData.getProfileImageURL(userId).then((value) {
         setState(() {
           imageURL = value;
         });
@@ -132,13 +133,12 @@ class _PatientFormState extends State<PatientForm> {
 
   @override
   Widget build(BuildContext context) {
-    return patientInfo.isEmpty
+    return address == ""
         ? LoadingHeart()
         : Scaffold(
             appBar: AppBar(
-              title: Text("Update Patient Data"),
-              backgroundColor: Colors.deepPurple,
-            ),
+                title: Text("Update Doctor Info"),
+                backgroundColor: Colors.deepPurple),
             body: SingleChildScrollView(
                 child: Container(
               padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
@@ -307,8 +307,7 @@ class _PatientFormState extends State<PatientForm> {
                                 ),
                               ),
                               Text(
-                                  "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
-                                      .split(' ')[0]),
+                                  "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"),
                               ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                       primary: Colors.deepPurple),
@@ -455,7 +454,7 @@ class _PatientFormState extends State<PatientForm> {
                                   width:
                                       MediaQuery.of(context).size.width * 0.3,
                                   child: Text(
-                                    "Insurance No",
+                                    "Designation",
                                     textAlign: TextAlign.left,
                                     style: TextStyle(fontSize: 18),
                                   )),
@@ -465,7 +464,7 @@ class _PatientFormState extends State<PatientForm> {
                                   child: TextFormField(
                                     onChanged: (val) {
                                       setState(() {
-                                        insuranceno = val;
+                                        designation = val;
                                       });
                                     },
                                     validator: (value) {
@@ -475,7 +474,7 @@ class _PatientFormState extends State<PatientForm> {
                                       return null;
                                     },
                                     controller: TextEditingController(
-                                        text: insuranceno),
+                                        text: designation),
                                     keyboardType: TextInputType.text,
                                     style: TextStyle(
                                       fontSize: 18,
@@ -537,8 +536,8 @@ class _PatientFormState extends State<PatientForm> {
                             children: <Widget>[
                               ElevatedButton(
                                   onPressed: () async {
-                                    await patientData
-                                        .updatePatientinfo(patientId, {
+                                    await _doctorData
+                                        .updateDoctorinfo(doctorId, {
                                       'name': name,
                                       'email': email,
                                       'dateofbirth':
@@ -549,15 +548,14 @@ class _PatientFormState extends State<PatientForm> {
                                               ? 'Female'
                                               : 'Other',
                                       'bloodgroup': bloodgroup,
-                                      'phoneno': contact,
-                                      'insuranceno': insuranceno,
+                                      'contact': contact,
+                                      'designation': designation,
                                       'address': address
                                     });
                                     if (_image != null) {
-                                      patientData.uploadFile(
-                                          File(_image.path), '$userId');
+                                      _doctorData.uploadFile(
+                                          File(_image.path), 'D$doctorId');
                                     }
-
                                     Navigator.pop(context);
                                     return Fluttertoast.showToast(
                                         msg: "Data Updated",

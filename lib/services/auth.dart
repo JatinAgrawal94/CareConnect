@@ -6,12 +6,16 @@ class AuthService {
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static String role = 'doctor';
+  static String userid;
 
   // get RegisteredUser(model) format for logged in user.
   RegisteredUser _userFromFirebase(User user) {
     if (user != null) {
       return RegisteredUser(
-          email: user.email, uid: user.uid, role: AuthService.role);
+          email: user.email,
+          uid: user.uid,
+          role: AuthService.role,
+          userid: userid);
     } else {
       return null;
     }
@@ -50,6 +54,7 @@ class AuthService {
         .get()
         .then((QuerySnapshot snapshot) {
       role = snapshot.docs[0]['role'];
+      userid = snapshot.docs[0]['userid'];
     });
   }
 

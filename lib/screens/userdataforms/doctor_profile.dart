@@ -1,34 +1,35 @@
-import 'package:careconnect/screens/userdataforms/patient_update_form.dart';
+import 'package:careconnect/screens/userdataforms/doctor_update_form.dart';
+import 'package:careconnect/services/doctorData.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:careconnect/services/patientdata.dart';
 import 'dart:io';
 import 'package:careconnect/components/loading.dart';
 
-class AboutScreen extends StatefulWidget {
-  final String patientId;
-  AboutScreen({Key key, @required this.patientId}) : super(key: key);
+class DoctorProfile extends StatefulWidget {
+  final String doctorId;
+  DoctorProfile({Key key, @required this.doctorId}) : super(key: key);
 
   @override
-  _AboutScreenState createState() => _AboutScreenState(patientId);
+  _DoctorProfileState createState() => _DoctorProfileState(doctorId);
 }
 
-class _AboutScreenState extends State<AboutScreen> {
-  PatientData _patientData = PatientData();
-  final String patientId;
-  static String userId;
+class _DoctorProfileState extends State<DoctorProfile> {
+  DoctorData _doctorData = DoctorData();
+  final String doctorId;
+  String userId;
   static String imageURL;
-  static var patientInfo = Map<String, dynamic>();
-  _AboutScreenState(this.patientId);
+  _DoctorProfileState(this.doctorId);
+  static var doctorInfo = Map<String, dynamic>();
+
   @override
   void initState() {
     super.initState();
-    _patientData.getPatientInfo(this.patientId).then((value) {
+    _doctorData.getDoctorInfo(doctorId).then((value) {
       setState(() {
-        patientInfo = value;
-        userId = patientInfo['userid'];
+        doctorInfo = value;
+        userId = doctorInfo['userid'];
       });
-      _patientData.getProfileImageURL(userId).then((value) {
+      _doctorData.getProfileImageURL(userId).then((value) {
         setState(() {
           imageURL = value;
         });
@@ -44,8 +45,8 @@ class _AboutScreenState extends State<AboutScreen> {
     "Date of Birth",
     "Gender",
     "Blood Group",
+    "Designation",
     "Contact",
-    "Insurance No",
     "Address"
   ];
 
@@ -57,7 +58,7 @@ class _AboutScreenState extends State<AboutScreen> {
           iconTheme: IconThemeData(color: Colors.black),
           shadowColor: Colors.transparent,
         ),
-        body: patientInfo.isEmpty
+        body: doctorInfo.isEmpty
             ? LoadingHeart()
             : Container(
                 child: Column(
@@ -152,9 +153,8 @@ class _AboutScreenState extends State<AboutScreen> {
                                                           .unfocus();
                                                     }
                                                   },
-                                                  child: PatientForm(
-                                                      patientId:
-                                                          this.patientId),
+                                                  child: DoctorForm(
+                                                      doctorId: this.doctorId),
                                                 )));
                                   },
                                 )),
@@ -187,8 +187,8 @@ class _AboutScreenState extends State<AboutScreen> {
                                                 fontWeight: FontWeight.bold),
                                           )),
                                       Flexible(
-                                          child: Text(patientInfo[_patientData
-                                                  .patientInfoKeys[index]]
+                                          child: Text(doctorInfo[_doctorData
+                                                  .doctorInfoKeys[index]]
                                               .toString()))
                                     ],
                                   ));

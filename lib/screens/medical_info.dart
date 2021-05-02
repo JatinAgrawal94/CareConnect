@@ -50,6 +50,7 @@ class _MedicalScreenState extends State<MedicalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.deepPurple,
           title: Text("Medical Data"),
         ),
         body: ListView.builder(

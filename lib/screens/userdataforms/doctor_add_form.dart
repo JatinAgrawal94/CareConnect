@@ -3,23 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:careconnect/services/doctorData.dart';
 
-class PatientAddForm extends StatefulWidget {
-  PatientAddForm({Key key}) : super(key: key);
+class DoctorAddForm extends StatefulWidget {
+  DoctorAddForm({Key key}) : super(key: key);
   @override
-  _PatientAddFormState createState() => _PatientAddFormState();
+  _DoctorAddFormState createState() => _DoctorAddFormState();
 }
 
-class _PatientAddFormState extends State<PatientAddForm> {
+class _DoctorAddFormState extends State<DoctorAddForm> {
   ImagePicker picker = ImagePicker();
   PickedFile _image;
   PatientData patientData = PatientData();
-  String _patientId;
+  DoctorData doctorData = DoctorData();
+  String _doctorUserId;
+  String documentId = '';
   static String imageURL;
   static var patientInfo = Map<String, dynamic>();
 
   DateTime selecteddate = DateTime.now();
-  String documentId = 's';
   int gender = patientInfo['gender'] == 'Male'
       ? 0
       : patientInfo['gender'] == 'Female'
@@ -27,7 +29,7 @@ class _PatientAddFormState extends State<PatientAddForm> {
           : 2;
   String bloodgroup = "A+";
   String contact = "";
-  String insuranceno = "";
+  String designation = "";
   String address = "";
   String name = "";
   String email = "";
@@ -35,10 +37,10 @@ class _PatientAddFormState extends State<PatientAddForm> {
   @override
   void initState() {
     super.initState();
-    patientData.getNoOfPatients().then((value) {
+    doctorData.getNoOfDoctors().then((value) {
       setState(() {
-        _patientId = value[0]['noofpatients'];
-        _patientId = (int.parse(_patientId) + 1).toString();
+        _doctorUserId = value[0]['noofdoctors'];
+        _doctorUserId = (int.parse(_doctorUserId) + 1).toString();
         documentId = value[0]['documentid'];
       });
     });
@@ -102,7 +104,7 @@ class _PatientAddFormState extends State<PatientAddForm> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Add New Patient"),
+          title: Text("Add New Doctor"),
           backgroundColor: Colors.deepPurple,
         ),
         body: SingleChildScrollView(
@@ -167,6 +169,15 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                   ),
                           )),
                         )),
+                    IconButton(
+                      icon: Icon(
+                        Icons.perm_contact_cal,
+                        color: Colors.deepPurple,
+                      ),
+                      onPressed: () {},
+                      iconSize: 50,
+                      color: Colors.yellow[800],
+                    )
                   ],
                 ),
 // --------------------------form begins here---------------------------------------//
@@ -421,7 +432,7 @@ class _PatientAddFormState extends State<PatientAddForm> {
                               margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
                               width: MediaQuery.of(context).size.width * 0.3,
                               child: Text(
-                                "Insurance No",
+                                "Designation",
                                 textAlign: TextAlign.left,
                                 style: TextStyle(fontSize: 18),
                               )),
@@ -430,7 +441,7 @@ class _PatientAddFormState extends State<PatientAddForm> {
                               child: TextFormField(
                                 onChanged: (val) {
                                   setState(() {
-                                    insuranceno = val;
+                                    designation = val;
                                   });
                                 },
                                 validator: (value) {
@@ -506,7 +517,7 @@ class _PatientAddFormState extends State<PatientAddForm> {
                         children: <Widget>[
                           ElevatedButton(
                               onPressed: () async {
-                                await patientData.addPatient({
+                                await doctorData.addDoctor({
                                   'name': name,
                                   'email': email,
                                   'dateofbirth':
@@ -517,22 +528,22 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                           ? 'Female'
                                           : 'Other',
                                   'bloodgroup': bloodgroup,
-                                  'phoneno': contact,
-                                  'insuranceno': insuranceno,
+                                  'contact': contact,
+                                  'designation': designation,
                                   'address': address,
-                                  'userid': 'P$_patientId'
+                                  'userid': 'D$_doctorUserId'
                                 });
-                                patientData.increementNoOfPatients(
-                                    documentId, _patientId);
-
+                                doctorData.increementNoOfDoctors(
+                                    documentId, _doctorUserId);
                                 if (_image != null) {
-                                  patientData.uploadFile(
-                                      File(_image.path), _patientId);
+                                  doctorData.uploadFile(
+                                      File(_image.path), _doctorUserId);
                                 }
+
                                 Navigator.pop(context);
 
                                 return Fluttertoast.showToast(
-                                    msg: "Patient Added",
+                                    msg: "Doctor Added",
                                     toastLength: Toast.LENGTH_LONG,
                                     gravity: ToastGravity.SNACKBAR,
                                     backgroundColor: Colors.grey,

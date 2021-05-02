@@ -1,5 +1,6 @@
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/screens/medical_info.dart';
+// import 'package:careconnect/screens/userdataforms/doctor_profile.dart';
 import 'package:careconnect/screens/userdataforms/patient_add_form.dart';
 import 'package:careconnect/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,7 +19,6 @@ class _DoctorHomeState extends State<DoctorHome> {
   dynamic user = AuthService().user;
   PatientData patient = PatientData();
   static String patientId;
-  // static List patientList;
   CollectionReference patientList =
       FirebaseFirestore.instance.collection('Patient');
 
@@ -27,16 +27,29 @@ class _DoctorHomeState extends State<DoctorHome> {
     return Scaffold(
         appBar: AppBar(
           title: Text("Doctor"),
-          actions: [
-            ElevatedButton(
-                onPressed: () async {
+          backgroundColor: Colors.deepPurple,
+          actions: <Widget>[
+            // IconButton(
+            //     icon: Icon(Icons.person_rounded),
+            //     onPressed: () {
+            //       Navigator.push(
+            //           context,
+            //           MaterialPageRoute(
+            //               builder: (BuildContext context) =>
+            //                   DoctorProfile(doctorId: "")));
+            //     }),
+            IconButton(
+                onPressed: () {
                   auth.signoutmethod();
                 },
-                child: Icon(Icons.power_settings_new_outlined)),
+                icon: Icon(
+                  Icons.power_settings_new_outlined,
+                  color: Colors.white,
+                )),
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.deepPurple,
           child: Icon(
             Icons.add,
             color: Colors.white,
@@ -66,7 +79,8 @@ class _DoctorHomeState extends State<DoctorHome> {
                       document.data()['name'],
                       style: TextStyle(fontSize: 20),
                     ),
-                    subtitle: new Text("Patient Id: " + document.id),
+                    subtitle:
+                        new Text("Patient Id: " + document.data()['userid']),
                     trailing: Icon(Icons.info),
                     onTap: () {
                       patientId = document.id;
