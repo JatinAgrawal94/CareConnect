@@ -40,6 +40,7 @@ class _AboutScreenState extends State<AboutScreen> {
   PickedFile _image;
   List info = [
     "Name",
+    "UserId",
     "Email",
     "Date of Birth",
     "Gender",
@@ -57,7 +58,7 @@ class _AboutScreenState extends State<AboutScreen> {
           iconTheme: IconThemeData(color: Colors.black),
           shadowColor: Colors.transparent,
         ),
-        body: patientInfo.isEmpty
+        body: (patientInfo.isEmpty && imageURL != null)
             ? LoadingHeart()
             : Container(
                 child: Column(

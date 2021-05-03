@@ -554,7 +554,7 @@ class _PatientFormState extends State<PatientForm> {
                                       'address': address
                                     });
                                     if (_image != null) {
-                                      patientData.uploadFile(
+                                      patientData.updateFile(
                                           File(_image.path), '$userId');
                                     }
 

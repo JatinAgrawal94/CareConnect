@@ -1,11 +1,14 @@
 import 'package:careconnect/components/loading.dart';
+import 'package:careconnect/models/registereduser.dart';
 import 'package:careconnect/screens/medical_info.dart';
-// import 'package:careconnect/screens/userdataforms/doctor_profile.dart';
+import 'package:careconnect/screens/userdataforms/doctor_profile.dart';
 import 'package:careconnect/screens/userdataforms/patient_add_form.dart';
 import 'package:careconnect/services/auth.dart';
+import 'package:careconnect/services/doctorData.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
+import 'package:provider/provider.dart';
 
 class DoctorHome extends StatefulWidget {
   DoctorHome({Key key}) : super(key: key);
@@ -16,28 +19,49 @@ class DoctorHome extends StatefulWidget {
 
 class _DoctorHomeState extends State<DoctorHome> {
   AuthService auth = AuthService();
-  dynamic user = AuthService().user;
   PatientData patient = PatientData();
+  DoctorData doctor = DoctorData();
   static String patientId;
   CollectionReference patientList =
       FirebaseFirestore.instance.collection('Patient');
+  var user;
+  var email;
+  var documentId;
+  
+  @override
+  void initState() {
+    super.initState();
+    doctor.getDocsId(email).then((value) {
+      setState(() {
+        documentId = value;
+      });
+    });
+  }
+
+  void getEmail(value) {
+    setState(() {
+      this.email = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    user = Provider.of<RegisteredUser>(context);
+    getEmail(user.emailGet);
     return Scaffold(
         appBar: AppBar(
           title: Text("Doctor"),
           backgroundColor: Colors.deepPurple,
           actions: <Widget>[
-            // IconButton(
-            //     icon: Icon(Icons.person_rounded),
-            //     onPressed: () {
-            //       Navigator.push(
-            //           context,
-            //           MaterialPageRoute(
-            //               builder: (BuildContext context) =>
-            //                   DoctorProfile(doctorId: "")));
-            //     }),
+            IconButton(
+                icon: Icon(Icons.person_rounded),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              DoctorProfile(doctorId: documentId)));
+                }),
             IconButton(
                 onPressed: () {
                   auth.signoutmethod();

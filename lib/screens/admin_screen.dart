@@ -6,6 +6,8 @@ import 'package:careconnect/screens/userdataforms/patient_add_form.dart';
 import 'package:careconnect/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:careconnect/models/registereduser.dart';
 
 class AdminHome extends StatefulWidget {
   AdminHome({Key key}) : super(key: key);
@@ -22,9 +24,13 @@ class _AdminHomeState extends State<AdminHome> {
       FirebaseFirestore.instance.collection('Doctor');
   static String patientDocumentId;
   static String doctorDocumentId;
+  var user;
+  String email;
 
   @override
   Widget build(BuildContext context) {
+    user = Provider.of<RegisteredUser>(context);
+    email = user.emailGet;
     return DefaultTabController(
         length: 2,
         child: Scaffold(

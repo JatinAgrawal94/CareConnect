@@ -1,6 +1,10 @@
+import 'dart:async';
+import 'package:random_password_generator/random_password_generator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:careconnect/models/registereduser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mailgun/mailgun.dart';
 
 class AuthService {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -26,6 +30,8 @@ class AuthService {
     return FirebaseAuth.instance
         .authStateChanges()
         .map((User user) => _userFromFirebase(user));
+
+    // .listen((User user) => _userFromFirebase(user));
   }
 
   void signoutmethod() async {
@@ -69,5 +75,58 @@ class AuthService {
         return e.code;
       }
     }
+  }
+
+  Future registerUserWithEmailAndPassword(String email, String password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      return "user-created";
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        // print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        // print('The account already exists for that email.');
+        return 'email-already-in-use';
+      }
+    } catch (e) {
+      // print(e);
+      return e;
+    }
+  }
+
+  Future randomPasswordGenerator() async {
+    final password = RandomPasswordGenerator();
+    String newPassword = password.randomPassword(true, false, true, false, 7);
+    return newPassword;
+  }
+
+  Future registerUser(String email) async {
+    String password = await randomPasswordGenerator();
+    String result = await registerUserWithEmailAndPassword(email, password);
+    if (result == "user-created") {
+      return {'password': password, 'msg': result};
+    } else if (result == 'email-already-in-use') {
+      print(result);
+      return {'msg': result};
+    } else {
+      print(result);
+      return {'msg': result};
+    }
+  }
+
+  Future sendMails(String email, String password) async {
+    var apiKey = env['API_KEY'];
+    var domain = env['DOMAIN_NAME'];
+
+    var mailgun = MailgunMailer(domain: domain, apiKey: apiKey);
+    var response = await mailgun.send(
+        from: "CareConnect<jatinagrawal0801@gmail.com>",
+        to: [email],
+        subject: "Password for CareConnect Account",
+        text:
+            "Your Password is $password \n Note:This is a machine generated Password.Kindly reset password to ensure security");
+    print(response.status);
+    print(response.message);
   }
 }

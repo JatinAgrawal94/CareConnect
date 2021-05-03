@@ -75,6 +75,17 @@ class DoctorData {
     }
   }
 
+  Future<void> updateFile(File filePath, String filename) async {
+    try {
+      await firebase_storage.FirebaseStorage.instance
+          .ref('profile_images/$filename.png')
+          .putFile(filePath);
+      print("File Uploaded Successfully");
+    } on firebase_core.FirebaseException catch (e) {
+      print(e);
+    }
+  }
+
   Future<void> updateDoctorinfo(patientId, data) async {
     print(data['phoneno']);
     CollectionReference patient =
@@ -130,15 +141,18 @@ class DoctorData {
     }
     return g.join('-').toString();
   }
-  // Future getDocsId(String email) async {
-  //   await FirebaseFirestore.instance
-  //       .collection('users')
-  //       .where('email', isEqualTo: email)
-  //       .get()
-  //       .then((QuerySnapshot snapshot) {
-  //     snapshot.docs.forEach((element) {
-  //       element['userid'];
-  //     });
-  //   });
-  // }
+
+  Future getDocsId(String email) async {
+    var id;
+    await FirebaseFirestore.instance
+        .collection('Doctor')
+        .where('email', isEqualTo: email)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((element) {
+        id = element.id;
+      });
+    });
+    return id;
+  }
 }

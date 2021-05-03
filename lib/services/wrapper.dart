@@ -35,15 +35,14 @@ class Wrapper extends StatelessWidget {
             child: DoctorHome());
       } else if (user.roleGet == 'patient') {
         return GestureDetector(
-          onTap: () {
-            FocusScopeNode currentFocus = FocusScope.of(context);
-            if (!currentFocus.hasPrimaryFocus &&
-                currentFocus.focusedChild != null) {
-              FocusManager.instance.primaryFocus.unfocus();
-            }
-          },
-          child: PatientHome(),
-        );
+            onTap: () {
+              FocusScopeNode currentFocus = FocusScope.of(context);
+              if (!currentFocus.hasPrimaryFocus &&
+                  currentFocus.focusedChild != null) {
+                FocusManager.instance.primaryFocus.unfocus();
+              }
+            },
+            child: PatientHome());
       } else {
         return GestureDetector(
           onTap: () {

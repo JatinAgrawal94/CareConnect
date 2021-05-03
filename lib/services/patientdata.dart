@@ -24,13 +24,14 @@ class PatientData {
 
   final patientInfoKeys = {
     0: 'name',
-    1: 'email',
-    2: 'dateofbirth',
-    3: 'gender',
-    4: 'bloodgroup',
-    5: 'phoneno',
-    6: 'insuranceno',
-    7: 'address'
+    1: 'userid',
+    2: 'email',
+    3: 'dateofbirth',
+    4: 'gender',
+    5: 'bloodgroup',
+    6: 'phoneno',
+    7: 'insuranceno',
+    8: 'address'
   };
 
 // widget to decide which page to route on medicaldata screen.
@@ -317,6 +318,17 @@ class PatientData {
     }
   }
 
+  Future<void> updateFile(File filePath, String filename) async {
+    try {
+      await firebase_storage.FirebaseStorage.instance
+          .ref('profile_images/$filename.png')
+          .putFile(filePath);
+      print("File Uploaded Successfully");
+    } on firebase_core.FirebaseException catch (e) {
+      print(e);
+    }
+  }
+
   Future<String> getProfileImageURL(String userId) async {
     try {
       String downloadURL = await firebase_storage.FirebaseStorage.instance
@@ -346,7 +358,21 @@ class PatientData {
         .then((value) {})
         .catchError((error) {});
 
-    FirebaseFirestore.instance.collection('users').add(
+    await FirebaseFirestore.instance.collection('users').add(
         {'email': data['email'], 'role': 'patient', 'userid': data['userid']});
+  }
+
+  Future getDocsId(String email) async {
+    var id;
+    await FirebaseFirestore.instance
+        .collection('Patient')
+        .where('email', isEqualTo: email)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((element) {
+        id = element.id;
+      });
+    });
+    return id;
   }
 }

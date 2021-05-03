@@ -37,7 +37,7 @@ class _DoctorFormState extends State<DoctorForm> {
 
   DateTime selecteddate = DateTime.now();
   int gender = 0;
-  String bloodgroup ;
+  String bloodgroup;
   String contact = " ";
   String designation = " ";
   String address = " ";
@@ -553,8 +553,8 @@ class _DoctorFormState extends State<DoctorForm> {
                                       'address': address
                                     });
                                     if (_image != null) {
-                                      _doctorData.uploadFile(
-                                          File(_image.path), 'D$doctorId');
+                                      _doctorData.updateFile(
+                                          File(_image.path), '$userId');
                                     }
                                     Navigator.pop(context);
                                     return Fluttertoast.showToast(
