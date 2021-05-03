@@ -1,3 +1,4 @@
+import 'package:careconnect/services/auth.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -13,6 +14,7 @@ class DoctorAddForm extends StatefulWidget {
 
 class _DoctorAddFormState extends State<DoctorAddForm> {
   ImagePicker picker = ImagePicker();
+  AuthService auth = AuthService();
   PickedFile _image;
   PatientData patientData = PatientData();
   DoctorData doctorData = DoctorData();
@@ -517,39 +519,52 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                         children: <Widget>[
                           ElevatedButton(
                               onPressed: () async {
-                                await doctorData.addDoctor({
-                                  'name': name,
-                                  'email': email,
-                                  'dateofbirth':
-                                      "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                  'gender': gender == 0
-                                      ? 'Male'
-                                      : gender == 1
-                                          ? 'Female'
-                                          : 'Other',
-                                  'bloodgroup': bloodgroup,
-                                  'contact': contact,
-                                  'designation': designation,
-                                  'address': address,
-                                  'userid': 'D$_doctorUserId'
-                                });
-                                doctorData.increementNoOfDoctors(
-                                    documentId, _doctorUserId);
-                                if (_image != null) {
-                                  doctorData.uploadFile(
-                                      File(_image.path), _doctorUserId);
+                                final result = await auth.registerUser(email);
+                                if (result['msg'] == 'user-created') {
+                                  await doctorData.addDoctor({
+                                    'name': name,
+                                    'email': email,
+                                    'dateofbirth':
+                                        "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                    'gender': gender == 0
+                                        ? 'Male'
+                                        : gender == 1
+                                            ? 'Female'
+                                            : 'Other',
+                                    'bloodgroup': bloodgroup,
+                                    'contact': contact,
+                                    'designation': designation,
+                                    'address': address,
+                                    'userid': 'D$_doctorUserId'
+                                  });
+                                  doctorData.increementNoOfDoctors(
+                                      documentId, _doctorUserId);
+                                  if (_image != null) {
+                                    doctorData.uploadFile(
+                                        File(_image.path), _doctorUserId);
+                                  }
+                                  await auth.sendMails(
+                                      email, result['password']);
+                                  Navigator.pop(context);
+
+                                  return Fluttertoast.showToast(
+                                      msg: "Doctor Added",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.SNACKBAR,
+                                      backgroundColor: Colors.grey,
+                                      textColor: Colors.white,
+                                      fontSize: 15,
+                                      timeInSecForIosWeb: 1);
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg: result['msg'],
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.SNACKBAR,
+                                      backgroundColor: Colors.grey,
+                                      textColor: Colors.white,
+                                      fontSize: 15,
+                                      timeInSecForIosWeb: 1);
                                 }
-
-                                Navigator.pop(context);
-
-                                return Fluttertoast.showToast(
-                                    msg: "Doctor Added",
-                                    toastLength: Toast.LENGTH_LONG,
-                                    gravity: ToastGravity.SNACKBAR,
-                                    backgroundColor: Colors.grey,
-                                    textColor: Colors.white,
-                                    fontSize: 15,
-                                    timeInSecForIosWeb: 1);
                               },
                               child: Text(
                                 "Save",
