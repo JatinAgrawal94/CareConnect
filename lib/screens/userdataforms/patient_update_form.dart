@@ -14,6 +14,7 @@ class PatientForm extends StatefulWidget {
 }
 
 class _PatientFormState extends State<PatientForm> {
+  final GlobalKey<FormState> patientupdateformkey = GlobalKey<FormState>();
   final String patientId;
   String userId;
   _PatientFormState(this.patientId);
@@ -218,379 +219,390 @@ class _PatientFormState extends State<PatientForm> {
                     ),
 // --------------------------form begins here---------------------------------------//
                     Form(
+                        key: patientupdateformkey,
                         child: Column(
-                      children: <Widget>[
-                        // ------------------------------------name text field begins
-                        Container(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                          child: Row(
-                            children: <Widget>[
-                              Container(
-                                  margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.3,
-                                  child: Text(
-                                    "Name",
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(fontSize: 18),
-                                  )),
-                              SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.5,
-                                  child: TextFormField(
-                                    onChanged: (val) {
-                                      setState(() {
-                                        name = val;
-                                      });
-                                    },
-                                    validator: (value) {
-                                      if (value.isEmpty) {
-                                        return "Field can't be empty";
-                                      }
-                                      return null;
-                                    },
-                                    controller:
-                                        TextEditingController(text: name),
-                                    keyboardType: TextInputType.name,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                    decoration: InputDecoration(
-                                        border: UnderlineInputBorder(
-                                            borderSide: BorderSide(width: 1))),
-                                  ))
-                            ],
-                          ),
-                        ),
-                        // ------------------------------------email text field
-                        Container(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                          child: Row(
-                            children: <Widget>[
-                              Container(
-                                  margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.3,
-                                  child: Text(
-                                    "Email",
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(fontSize: 18),
-                                  )),
-                              SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.5,
-                                  child: TextFormField(
-                                    onChanged: (val) {
-                                      setState(() {
-                                        email = val;
-                                      });
-                                    },
-                                    validator: (value) {
-                                      if (value.isEmpty) {
-                                        return "Field can't be empty";
-                                      }
-                                      return null;
-                                    },
-                                    controller:
-                                        TextEditingController(text: email),
-                                    keyboardType: TextInputType.emailAddress,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                    decoration: InputDecoration(
-                                        border: UnderlineInputBorder(
-                                            borderSide: BorderSide(width: 1))),
-                                  ))
-                            ],
-                          ),
-                        ),
-                        // ------------------date of birth field
-                        Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                                width: MediaQuery.of(context).size.width * 0.3,
-                                child: Text(
-                                  "Date of Birth",
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ),
-                              Text(
-                                  "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
-                                      .split(' ')[0]),
-                              ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      primary: Colors.deepPurple),
-                                  onPressed: () {
-                                    _setDate(context);
-                                  },
-                                  child: Text("Change"))
-                            ],
-                          ),
-                        ),
-                        // ------------------gender selection radio buttons--------
-                        Row(
                           children: <Widget>[
+                            // ------------------------------------name text field begins
                             Container(
-                                margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                child: Text(
-                                  "Gender:",
-                                  style: TextStyle(fontSize: 20),
-                                )),
-                            Text("Male", style: TextStyle(fontSize: 20)),
-                            Radio(
-                                activeColor: Colors.deepPurple,
-                                value: 0,
-                                groupValue: gender,
-                                onChanged: (val) {
-                                  setState(() {
-                                    gender = val;
-                                  });
-                                }),
-                            Text("Female", style: TextStyle(fontSize: 20)),
-                            Radio(
-                              activeColor: Colors.deepPurple,
-                              value: 1,
-                              groupValue: gender,
-                              onChanged: (val) {
-                                setState(() {
-                                  gender = val;
-                                });
-                              },
-                            ),
-                            Text("Other", style: TextStyle(fontSize: 20)),
-                            Radio(
-                                activeColor: Colors.deepPurple,
-                                value: 2,
-                                groupValue: gender,
-                                onChanged: (val) {
-                                  setState(() {
-                                    gender = val;
-                                  });
-                                })
-                          ],
-                        ),
-                        // ----------- blood group selection
-                        Container(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                          child: Row(
-                            children: <Widget>[
-                              Container(
-                                margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                                width: MediaQuery.of(context).size.width * 0.3,
-                                child: Text("Blood Group",
-                                    style: TextStyle(fontSize: 18)),
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                              child: Row(
+                                children: <Widget>[
+                                  Container(
+                                      margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                      width: MediaQuery.of(context).size.width *
+                                          0.3,
+                                      child: Text(
+                                        "Name",
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(fontSize: 18),
+                                      )),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.5,
+                                      child: TextFormField(
+                                        onChanged: (val) {
+                                          setState(() {
+                                            name = val;
+                                          });
+                                        },
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return "Field can't be empty";
+                                          }
+                                          return null;
+                                        },
+                                        controller:
+                                            TextEditingController(text: name),
+                                        keyboardType: TextInputType.name,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                        decoration: InputDecoration(
+                                            border: UnderlineInputBorder(
+                                                borderSide:
+                                                    BorderSide(width: 1))),
+                                      ))
+                                ],
                               ),
-                              Container(
-                                child: DropdownButton<String>(
-                                  value: bloodgroup,
-                                  items: <String>[
-                                    'A+',
-                                    'A-',
-                                    'B+',
-                                    'B-',
-                                    'O+',
-                                    'O-',
-                                    'AB+',
-                                    'AB-'
-                                  ].map<DropdownMenuItem<String>>(
-                                      (String value) {
-                                    return DropdownMenuItem(
-                                      child: Text(value,
-                                          style: TextStyle(fontSize: 18)),
-                                      value: value,
-                                    );
-                                  }).toList(),
-                                  hint: Text("Select Blood Group"),
-                                  onChanged: (String value) {
+                            ),
+                            // ------------------------------------email text field
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                              child: Row(
+                                children: <Widget>[
+                                  Container(
+                                      margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                      width: MediaQuery.of(context).size.width *
+                                          0.3,
+                                      child: Text(
+                                        "Email",
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(fontSize: 18),
+                                      )),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.5,
+                                      child: TextFormField(
+                                        onChanged: (val) {
+                                          setState(() {
+                                            email = val;
+                                          });
+                                        },
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return "Field can't be empty";
+                                          }
+                                          return null;
+                                        },
+                                        controller:
+                                            TextEditingController(text: email),
+                                        keyboardType:
+                                            TextInputType.emailAddress,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                        decoration: InputDecoration(
+                                            border: UnderlineInputBorder(
+                                                borderSide:
+                                                    BorderSide(width: 1))),
+                                      ))
+                                ],
+                              ),
+                            ),
+                            // ------------------date of birth field
+                            Container(
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Container(
+                                    margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    child: Text(
+                                      "Date of Birth",
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                  ),
+                                  Text(
+                                      "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                          .split(' ')[0]),
+                                  ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                          primary: Colors.deepPurple),
+                                      onPressed: () {
+                                        _setDate(context);
+                                      },
+                                      child: Text("Change"))
+                                ],
+                              ),
+                            ),
+                            // ------------------gender selection radio buttons--------
+                            Row(
+                              children: <Widget>[
+                                Container(
+                                    margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                    child: Text(
+                                      "Gender:",
+                                      style: TextStyle(fontSize: 20),
+                                    )),
+                                Text("Male", style: TextStyle(fontSize: 20)),
+                                Radio(
+                                    activeColor: Colors.deepPurple,
+                                    value: 0,
+                                    groupValue: gender,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        gender = val;
+                                      });
+                                    }),
+                                Text("Female", style: TextStyle(fontSize: 20)),
+                                Radio(
+                                  activeColor: Colors.deepPurple,
+                                  value: 1,
+                                  groupValue: gender,
+                                  onChanged: (val) {
                                     setState(() {
-                                      bloodgroup = value;
+                                      gender = val;
                                     });
                                   },
                                 ),
-                              )
-                            ],
-                          ),
-                        ),
-                        // -----------------------------contact field begins here-----------
-                        Container(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                          child: Row(
-                            children: <Widget>[
-                              Container(
-                                  margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.3,
-                                  child: Text(
-                                    "Contact",
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(fontSize: 18),
-                                  )),
-                              SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.5,
-                                  child: TextFormField(
+                                Text("Other", style: TextStyle(fontSize: 20)),
+                                Radio(
+                                    activeColor: Colors.deepPurple,
+                                    value: 2,
+                                    groupValue: gender,
                                     onChanged: (val) {
                                       setState(() {
-                                        contact = val;
+                                        gender = val;
                                       });
-                                    },
-                                    validator: (value) {
-                                      if (value.isEmpty) {
-                                        return "Field can't be empty";
-                                      }
-                                      return null;
-                                    },
-                                    controller:
-                                        TextEditingController(text: contact),
-                                    keyboardType: TextInputType.phone,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                    decoration: InputDecoration(
-                                        border: UnderlineInputBorder(
-                                            borderSide: BorderSide(width: 1))),
-                                  ))
-                            ],
-                          ),
-                        ),
-                        // ---------------------insurance no field begins here.
-                        Container(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                          child: Row(
-                            children: <Widget>[
-                              Container(
-                                  margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.3,
-                                  child: Text(
-                                    "Insurance No",
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(fontSize: 18),
-                                  )),
-                              SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.5,
-                                  child: TextFormField(
-                                    onChanged: (val) {
-                                      setState(() {
-                                        insuranceno = val;
-                                      });
-                                    },
-                                    validator: (value) {
-                                      if (value.isEmpty) {
-                                        return "Field can't be empty";
-                                      }
-                                      return null;
-                                    },
-                                    controller: TextEditingController(
-                                        text: insuranceno),
-                                    keyboardType: TextInputType.text,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                    decoration: InputDecoration(
-                                        border: UnderlineInputBorder(
-                                            borderSide: BorderSide(width: 1))),
-                                  ))
-                            ],
-                          ),
-                        ),
-                        // -------------------address field begins here
-                        Container(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                          child: Row(
-                            children: <Widget>[
-                              Container(
-                                  margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.3,
-                                  child: Text(
-                                    "Address",
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(fontSize: 18),
-                                  )),
-                              SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.5,
-                                  child: TextFormField(
-                                    onChanged: (val) {
-                                      setState(() {
-                                        address = val;
-                                      });
-                                    },
-                                    validator: (value) {
-                                      if (value.isEmpty) {
-                                        return "Field can't be empty";
-                                      }
-                                      return null;
-                                    },
-                                    controller:
-                                        TextEditingController(text: address),
-                                    maxLines: 3,
-                                    keyboardType: TextInputType.name,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                    decoration: InputDecoration(
-                                        border: UnderlineInputBorder(
-                                            borderSide: BorderSide(width: 1))),
-                                  ))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 30, 0, 30),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              ElevatedButton(
-                                  onPressed: () async {
-                                    await patientData
-                                        .updatePatientinfo(patientId, {
-                                      'name': name,
-                                      'email': email,
-                                      'dateofbirth':
-                                          "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                      'gender': gender == 0
-                                          ? 'Male'
-                                          : gender == 1
-                                              ? 'Female'
-                                              : 'Other',
-                                      'bloodgroup': bloodgroup,
-                                      'phoneno': contact,
-                                      'insuranceno': insuranceno,
-                                      'address': address
-                                    });
-                                    if (_image != null) {
-                                      patientData.updateFile(
-                                          File(_image.path), '$userId');
-                                    }
-
-                                    Navigator.pop(context);
-                                    return Fluttertoast.showToast(
-                                        msg: "Data Updated",
-                                        toastLength: Toast.LENGTH_LONG,
-                                        gravity: ToastGravity.SNACKBAR,
-                                        backgroundColor: Colors.grey,
-                                        textColor: Colors.white,
-                                        fontSize: 15,
-                                        timeInSecForIosWeb: 1);
-                                  },
-                                  child: Text(
-                                    "Save",
-                                    style: TextStyle(fontSize: 18),
+                                    })
+                              ],
+                            ),
+                            // ----------- blood group selection
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                              child: Row(
+                                children: <Widget>[
+                                  Container(
+                                    margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    child: Text("Blood Group",
+                                        style: TextStyle(fontSize: 18)),
                                   ),
-                                  style: ElevatedButton.styleFrom(
-                                      primary: Colors.deepPurple))
-                            ],
-                          ),
-                        )
-                      ],
-                    ))
+                                  Container(
+                                    child: DropdownButton<String>(
+                                      value: bloodgroup,
+                                      items: <String>[
+                                        'A+',
+                                        'A-',
+                                        'B+',
+                                        'B-',
+                                        'O+',
+                                        'O-',
+                                        'AB+',
+                                        'AB-'
+                                      ].map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                        return DropdownMenuItem(
+                                          child: Text(value,
+                                              style: TextStyle(fontSize: 18)),
+                                          value: value,
+                                        );
+                                      }).toList(),
+                                      hint: Text("Select Blood Group"),
+                                      onChanged: (String value) {
+                                        setState(() {
+                                          bloodgroup = value;
+                                        });
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            // -----------------------------contact field begins here-----------
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                              child: Row(
+                                children: <Widget>[
+                                  Container(
+                                      margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                      width: MediaQuery.of(context).size.width *
+                                          0.3,
+                                      child: Text(
+                                        "Contact",
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(fontSize: 18),
+                                      )),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.5,
+                                      child: TextFormField(
+                                        onChanged: (val) {
+                                          setState(() {
+                                            contact = val;
+                                          });
+                                        },
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return "Field can't be empty";
+                                          }
+                                          return null;
+                                        },
+                                        controller: TextEditingController(
+                                            text: contact),
+                                        keyboardType: TextInputType.phone,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                        decoration: InputDecoration(
+                                            border: UnderlineInputBorder(
+                                                borderSide:
+                                                    BorderSide(width: 1))),
+                                      ))
+                                ],
+                              ),
+                            ),
+                            // ---------------------insurance no field begins here.
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                              child: Row(
+                                children: <Widget>[
+                                  Container(
+                                      margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                      width: MediaQuery.of(context).size.width *
+                                          0.3,
+                                      child: Text(
+                                        "Insurance No",
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(fontSize: 18),
+                                      )),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.5,
+                                      child: TextFormField(
+                                        onChanged: (val) {
+                                          setState(() {
+                                            insuranceno = val;
+                                          });
+                                        },
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return "Field can't be empty";
+                                          }
+                                          return null;
+                                        },
+                                        controller: TextEditingController(
+                                            text: insuranceno),
+                                        keyboardType: TextInputType.text,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                        decoration: InputDecoration(
+                                            border: UnderlineInputBorder(
+                                                borderSide:
+                                                    BorderSide(width: 1))),
+                                      ))
+                                ],
+                              ),
+                            ),
+                            // -------------------address field begins here
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                              child: Row(
+                                children: <Widget>[
+                                  Container(
+                                      margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                      width: MediaQuery.of(context).size.width *
+                                          0.3,
+                                      child: Text(
+                                        "Address",
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(fontSize: 18),
+                                      )),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.5,
+                                      child: TextFormField(
+                                        onChanged: (val) {
+                                          setState(() {
+                                            address = val;
+                                          });
+                                        },
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return "Field can't be empty";
+                                          }
+                                          return null;
+                                        },
+                                        controller: TextEditingController(
+                                            text: address),
+                                        maxLines: 3,
+                                        keyboardType: TextInputType.name,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                        decoration: InputDecoration(
+                                            border: UnderlineInputBorder(
+                                                borderSide:
+                                                    BorderSide(width: 1))),
+                                      ))
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.fromLTRB(0, 30, 0, 30),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: <Widget>[
+                                  ElevatedButton(
+                                      onPressed: () async {
+                                        await patientData
+                                            .updatePatientinfo(patientId, {
+                                          'name': name,
+                                          'email': email,
+                                          'dateofbirth':
+                                              "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                          'gender': gender == 0
+                                              ? 'Male'
+                                              : gender == 1
+                                                  ? 'Female'
+                                                  : 'Other',
+                                          'bloodgroup': bloodgroup,
+                                          'phoneno': contact,
+                                          'insuranceno': insuranceno,
+                                          'address': address
+                                        });
+                                        if (_image != null) {
+                                          patientData.updateFile(
+                                              File(_image.path), '$userId');
+                                        }
+
+                                        Navigator.pop(context);
+                                        return Fluttertoast.showToast(
+                                            msg: "Data Updated",
+                                            toastLength: Toast.LENGTH_LONG,
+                                            gravity: ToastGravity.SNACKBAR,
+                                            backgroundColor: Colors.grey,
+                                            textColor: Colors.white,
+                                            fontSize: 15,
+                                            timeInSecForIosWeb: 1);
+                                      },
+                                      child: Text(
+                                        "Save",
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                          primary: Colors.deepPurple))
+                                ],
+                              ),
+                            )
+                          ],
+                        ))
                   ],
                 ),
               ),
