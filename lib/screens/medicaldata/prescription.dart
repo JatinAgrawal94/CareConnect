@@ -38,6 +38,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('Prescription'),
+            backgroundColor: Colors.deepPurple,
             bottom: TabBar(
               tabs: [
                 Tab(child: Text('New')),

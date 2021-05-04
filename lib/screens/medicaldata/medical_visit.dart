@@ -53,6 +53,7 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('Medical Visit'),
+            backgroundColor: Colors.deepPurple,
             bottom: TabBar(
               tabs: [
                 Tab(child: Text('New Appointment')),

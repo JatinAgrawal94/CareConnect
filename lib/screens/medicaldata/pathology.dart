@@ -54,6 +54,7 @@ class _PathologyScreenState extends State<PathologyScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('Pathology'),
+            backgroundColor: Colors.deepPurple,
             bottom: TabBar(
               tabs: [
                 Tab(child: Text('New')),

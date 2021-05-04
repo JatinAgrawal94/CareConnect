@@ -36,6 +36,7 @@ class _NotesScreenState extends State<NotesScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('Notes'),
+            backgroundColor: Colors.deepPurple,
             bottom: TabBar(
               tabs: [
                 Tab(child: Text('New')),

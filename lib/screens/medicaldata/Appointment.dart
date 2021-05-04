@@ -64,6 +64,7 @@ class _AppointmentState extends State<Appointment> {
         child: Scaffold(
           appBar: AppBar(
               title: Text("Appointment"),
+              backgroundColor: Colors.deepPurple,
               bottom: TabBar(tabs: [
                 Tab(child: Text('New')),
                 Tab(child: Text('Previous')),

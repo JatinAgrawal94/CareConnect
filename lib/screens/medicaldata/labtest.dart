@@ -54,6 +54,7 @@ class _LabTestScreenState extends State<LabTestScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('LabTest'),
+            backgroundColor: Colors.deepPurple,
             bottom: TabBar(
               tabs: [
                 Tab(child: Text('New Tests')),

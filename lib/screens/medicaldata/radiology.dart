@@ -53,6 +53,7 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('Radiology'),
+            backgroundColor: Colors.deepPurple,
             bottom: TabBar(
               tabs: [
                 Tab(child: Text('New')),
@@ -62,117 +63,121 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
           ),
           body: TabBarView(
             children: [
-              SingleChildScrollView(child:
-              Container(
-                  padding: EdgeInsets.all(5),
-                  margin: EdgeInsets.all(5),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                          padding: EdgeInsets.all(5),
-                          child: Form(
-                            child: TextFormField(
-                              onChanged: (value) {
-                                setState(() {
-                                  title = value;
-                                });
-                              },
-                              keyboardType: TextInputType.text,
-                              decoration: InputDecoration(hintText: "Title"),
+              SingleChildScrollView(
+                  child: Container(
+                      padding: EdgeInsets.all(5),
+                      margin: EdgeInsets.all(5),
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                              padding: EdgeInsets.all(5),
+                              child: Form(
+                                child: TextFormField(
+                                  onChanged: (value) {
+                                    setState(() {
+                                      title = value;
+                                    });
+                                  },
+                                  keyboardType: TextInputType.text,
+                                  decoration:
+                                      InputDecoration(hintText: "Title"),
+                                ),
+                              )),
+                          Container(
+                              padding: EdgeInsets.all(5),
+                              child: Form(
+                                child: TextFormField(
+                                  onChanged: (value) {
+                                    setState(() {
+                                      result = value;
+                                    });
+                                  },
+                                  keyboardType: TextInputType.text,
+                                  decoration:
+                                      InputDecoration(hintText: "Result"),
+                                ),
+                              )),
+                          Container(
+                              padding: EdgeInsets.all(5),
+                              child: Form(
+                                child: TextFormField(
+                                  onChanged: (value) {
+                                    setState(() {
+                                      doctor = value;
+                                    });
+                                  },
+                                  keyboardType: TextInputType.text,
+                                  decoration:
+                                      InputDecoration(hintText: "Doctor"),
+                                ),
+                              )),
+                          Container(
+                              padding: EdgeInsets.all(5),
+                              child: Form(
+                                child: TextFormField(
+                                  onChanged: (value) {
+                                    setState(() {
+                                      place = value;
+                                    });
+                                  },
+                                  keyboardType: TextInputType.text,
+                                  decoration:
+                                      InputDecoration(hintText: "Place"),
+                                ),
+                              )),
+                          Container(
+                            margin: EdgeInsets.all(15),
+                            child: Row(
+                              children: <Widget>[
+                                IconButton(
+                                  icon: Icon(Icons.date_range, size: 30),
+                                  onPressed: () {
+                                    _setDate(context);
+                                  },
+                                ),
+                                Text(
+                                    "Date ${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                    style: TextStyle(fontSize: 20))
+                              ],
                             ),
-                          )),
-                      Container(
-                          padding: EdgeInsets.all(5),
-                          child: Form(
-                            child: TextFormField(
-                              onChanged: (value) {
-                                setState(() {
-                                  result = value;
-                                });
-                              },
-                              keyboardType: TextInputType.text,
-                              decoration: InputDecoration(hintText: "Result"),
+                          ),
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                Icon(Icons.camera_alt, size: 30),
+                                Icon(Icons.video_call, size: 30),
+                                Icon(Icons.attach_file, size: 30),
+                                ElevatedButton(
+                                    onPressed: () async {
+                                      await _patientData
+                                          .addRadiologyData(patientId, {
+                                        'title': title,
+                                        'result': result,
+                                        'doctor': doctor,
+                                        'place': place,
+                                        'date':
+                                            "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                      });
+                                      Fluttertoast.showToast(
+                                          msg: "Data Saved",
+                                          toastLength: Toast.LENGTH_LONG,
+                                          gravity: ToastGravity.SNACKBAR,
+                                          backgroundColor: Colors.grey,
+                                          textColor: Colors.white,
+                                          fontSize: 15,
+                                          timeInSecForIosWeb: 1);
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      "Save",
+                                      style: TextStyle(fontSize: 20),
+                                    ))
+                              ],
                             ),
-                          )),
-                      Container(
-                          padding: EdgeInsets.all(5),
-                          child: Form(
-                            child: TextFormField(
-                              onChanged: (value) {
-                                setState(() {
-                                  doctor = value;
-                                });
-                              },
-                              keyboardType: TextInputType.text,
-                              decoration: InputDecoration(hintText: "Doctor"),
-                            ),
-                          )),
-                      Container(
-                          padding: EdgeInsets.all(5),
-                          child: Form(
-                            child: TextFormField(
-                              onChanged: (value) {
-                                setState(() {
-                                  place = value;
-                                });
-                              },
-                              keyboardType: TextInputType.text,
-                              decoration: InputDecoration(hintText: "Place"),
-                            ),
-                          )),
-                      Container(
-                        margin: EdgeInsets.all(15),
-                        child: Row(
-                          children: <Widget>[
-                            IconButton(
-                              icon: Icon(Icons.date_range, size: 30),
-                              onPressed: () {
-                                _setDate(context);
-                              },
-                            ),
-                            Text(
-                                "Date ${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                style: TextStyle(fontSize: 20))
-                          ],
-                        ),
-                      ),
-                      Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Icon(Icons.camera_alt, size: 30),
-                            Icon(Icons.video_call, size: 30),
-                            Icon(Icons.attach_file, size: 30),
-                            ElevatedButton(
-                                onPressed: () async {
-                                  await _patientData
-                                      .addRadiologyData(patientId, {
-                                    'title': title,
-                                    'result': result,
-                                    'doctor': doctor,
-                                    'place': place,
-                                    'date':
-                                        "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
-                                  });
-                                  Fluttertoast.showToast(
-                                      msg: "Data Saved",
-                                      toastLength: Toast.LENGTH_LONG,
-                                      gravity: ToastGravity.SNACKBAR,
-                                      backgroundColor: Colors.grey,
-                                      textColor: Colors.white,
-                                      fontSize: 15,
-                                      timeInSecForIosWeb: 1);
-                                  Navigator.pop(context);
-                                },
-                                child: Text(
-                                  "Save",
-                                  style: TextStyle(fontSize: 20),
-                                ))
-                          ],
-                        ),
-                      )
-                    ],
-                  ))),
+                          )
+                        ],
+                      ))),
               Container(
                   padding: EdgeInsets.all(5),
                   child: StreamBuilder<QuerySnapshot>(
@@ -191,12 +196,12 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                         children:
                             snapshot.data.docs.map((DocumentSnapshot document) {
                           return RadiologyList(
-                              title: document.data()['title'],
-                              result: document.data()['result'],
-                              doctor: document.data()['doctor'],
-                              place: document.data()['place'],
-                              date: document.data()['date'],
-                              );
+                            title: document.data()['title'],
+                            result: document.data()['result'],
+                            doctor: document.data()['doctor'],
+                            place: document.data()['place'],
+                            date: document.data()['date'],
+                          );
                         }).toList(),
                       );
                     },

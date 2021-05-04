@@ -54,6 +54,7 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('Surgery'),
+            backgroundColor: Colors.deepPurple,
             bottom: TabBar(
               tabs: [
                 Tab(child: Text('New')),

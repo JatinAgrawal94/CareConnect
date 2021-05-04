@@ -36,6 +36,7 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('Family History'),
+            backgroundColor: Colors.deepPurple,
             bottom: TabBar(
               tabs: [
                 Tab(child: Text('New')),

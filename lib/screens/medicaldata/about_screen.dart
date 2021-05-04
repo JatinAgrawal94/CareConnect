@@ -159,6 +159,21 @@ class _AboutScreenState extends State<AboutScreen> {
                                                 )));
                                   },
                                 )),
+                            SafeArea(
+                                right: true,
+                                child: ElevatedButton.icon(
+                                  icon: Icon(Icons.edit),
+                                  label: Text(
+                                    'Delete',
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Colors.deepPurple,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50)))),
+                                  onPressed: () {},
+                                )),
                           ],
                         )),
                     Expanded(

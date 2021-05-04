@@ -54,6 +54,7 @@ class _AllergyScreenState extends State<AllergyScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('Allergy'),
+            backgroundColor: Colors.deepPurple,
             bottom: TabBar(
               tabs: [
                 Tab(child: Text('New')),

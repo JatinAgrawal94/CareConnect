@@ -56,6 +56,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('Examination'),
+            backgroundColor: Colors.deepPurple,
             bottom: TabBar(
               tabs: [
                 Tab(child: Text('New')),
@@ -312,7 +313,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                 Navigator.pop(context);
                               },
                               style: ElevatedButton.styleFrom(
-                                  primary: Colors.blue),
+                                  primary: Colors.deepPurple),
                               child: Text("Save",
                                   style: TextStyle(
                                       fontSize: 20, color: Colors.white))),

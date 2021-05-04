@@ -62,6 +62,7 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('Blood Glucose'),
+            backgroundColor: Colors.deepPurple,
             bottom: TabBar(
               tabs: [
                 Tab(child: Text('New Reading')),

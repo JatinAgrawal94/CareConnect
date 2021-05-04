@@ -63,6 +63,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('Blood Pressure'),
+            backgroundColor: Colors.deepPurple,
             bottom: TabBar(
               tabs: [
                 Tab(child: Text('New Reading')),

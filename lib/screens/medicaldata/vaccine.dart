@@ -50,6 +50,7 @@ class _VaccineScreenState extends State<VaccineScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('Vaccine'),
+            backgroundColor: Colors.deepPurple,
             bottom: TabBar(
               tabs: [
                 Tab(child: Text('New')),
