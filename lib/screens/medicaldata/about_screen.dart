@@ -118,7 +118,7 @@ class _AboutScreenState extends State<AboutScreen> {
                     Container(
                         color: Colors.white,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
                             SafeArea(
                                 right: true,
@@ -162,7 +162,7 @@ class _AboutScreenState extends State<AboutScreen> {
                             SafeArea(
                                 right: true,
                                 child: ElevatedButton.icon(
-                                  icon: Icon(Icons.edit),
+                                  icon: Icon(Icons.delete),
                                   label: Text(
                                     'Delete',
                                     style: TextStyle(fontSize: 15),

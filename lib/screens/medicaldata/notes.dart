@@ -87,6 +87,8 @@ class _NotesScreenState extends State<NotesScreen> {
                               Icon(Icons.video_call_outlined, size: 40),
                               Icon(Icons.attach_file_outlined, size: 40),
                               ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Colors.deepPurple),
                                   onPressed: () async {
                                     await _patientData.addNotes(patientId, {
                                       'title': title,

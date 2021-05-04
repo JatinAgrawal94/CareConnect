@@ -35,11 +35,23 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
 
   _setDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: selecteddate, // Refer step 1
-      firstDate: DateTime(1950),
-      lastDate: DateTime(2030),
-    );
+        context: context,
+        initialDate: selecteddate, // Refer step 1
+        firstDate: DateTime(1950),
+        lastDate: DateTime(2030),
+        builder: (BuildContext context, child) {
+          return Theme(
+              data: ThemeData.dark().copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: Colors.deepPurple,
+                  onPrimary: Colors.white,
+                  surface: Colors.deepPurple,
+                  onSurface: Colors.deepPurple,
+                ),
+                dialogBackgroundColor: Colors.white,
+              ),
+              child: child);
+        });
     if (picked != null && picked != selecteddate)
       setState(() {
         selecteddate = picked;
@@ -98,6 +110,7 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                   child: Row(
                                     children: <Widget>[
                                       Radio(
+                                          activeColor: Colors.deepPurple,
                                           value: 0,
                                           groupValue: visitType,
                                           onChanged: (value) {
@@ -108,6 +121,7 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                       Text("New",
                                           style: TextStyle(fontSize: 20)),
                                       Radio(
+                                          activeColor: Colors.deepPurple,
                                           value: 1,
                                           groupValue: visitType,
                                           onChanged: (value) {
@@ -161,6 +175,8 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                             hintText: "Enter Place")))),
                           ])),
                       ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.deepPurple),
                           onPressed: () async {
                             await _patientData.addMedicalVisit(patientId, {
                               'date':

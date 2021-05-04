@@ -1,4 +1,5 @@
 import 'package:careconnect/components/blood_glucose_List.dart';
+import 'package:careconnect/components/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -34,11 +35,23 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
 
   _setDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: selecteddate, // Refer step 1
-      firstDate: DateTime(1950),
-      lastDate: DateTime(2030),
-    );
+        context: context,
+        initialDate: selecteddate, // Refer step 1
+        firstDate: DateTime(1950),
+        lastDate: DateTime(2030),
+        builder: (BuildContext context, child) {
+          return Theme(
+              data: ThemeData.dark().copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: Colors.deepPurple,
+                  onPrimary: Colors.white,
+                  surface: Colors.deepPurple,
+                  onSurface: Colors.deepPurple,
+                ),
+                dialogBackgroundColor: Colors.white,
+              ),
+              child: child);
+        });
     if (picked != null && picked != selecteddate)
       setState(() {
         selecteddate = picked;
@@ -46,8 +59,22 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
   }
 
   _setTime(BuildContext context) async {
-    final TimeOfDay picked =
-        await showTimePicker(context: context, initialTime: selectedtime);
+    final TimeOfDay picked = await showTimePicker(
+        context: context,
+        initialTime: selectedtime,
+        builder: (BuildContext context, child) {
+          return Theme(
+              data: ThemeData.dark().copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: Colors.deepPurple,
+                  onPrimary: Colors.white,
+                  surface: Colors.deepPurple,
+                  onSurface: Colors.deepPurple,
+                ),
+                dialogBackgroundColor: Colors.white,
+              ),
+              child: child);
+        });
     if (picked != null) {
       setState(() {
         selectedtime = picked;
@@ -85,6 +112,7 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                     Row(
                       children: <Widget>[
                         Radio(
+                            activeColor: Colors.deepPurple,
                             value: 0,
                             groupValue: readingType,
                             onChanged: (val) {
@@ -98,6 +126,7 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                     Row(
                       children: <Widget>[
                         Radio(
+                            activeColor: Colors.deepPurple,
                             value: 1,
                             groupValue: readingType,
                             onChanged: (val) {
@@ -111,6 +140,7 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                     Row(
                       children: <Widget>[
                         Radio(
+                            activeColor: Colors.deepPurple,
                             value: 2,
                             groupValue: readingType,
                             onChanged: (val) {
@@ -197,6 +227,8 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                           ],
                         )),
                     ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            primary: Colors.deepPurple),
                         onPressed: () async {
                           _patientData.addBloodGlucose(patientId, {
                             'type': readingType == 0
@@ -238,7 +270,7 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                   }
 
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text("Loading");
+                    return LoadingHeart();
                   }
 
                   return new ListView(

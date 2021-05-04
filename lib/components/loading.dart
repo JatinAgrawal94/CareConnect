@@ -12,7 +12,7 @@ class LoadingHeart extends StatelessWidget {
       color: Colors.white,
       child: Center(
         child: SpinKitWave(
-          color: Colors.blue[400],
+          color: Colors.deepPurple,
           size: 50,
         ),
       ),

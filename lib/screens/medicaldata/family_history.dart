@@ -1,4 +1,5 @@
 import 'package:careconnect/components/family_list.dart';
+import 'package:careconnect/components/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -90,6 +91,8 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                           ),
                         )),
                     ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            primary: Colors.deepPurple),
                         onPressed: () async {
                           await _patientData.addFamilyHistory(patientId,
                               {'name': memberName, 'description': description});
@@ -117,7 +120,7 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                     }
 
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text("Loading");
+                      return LoadingHeart();
                     }
 
                     return new ListView(

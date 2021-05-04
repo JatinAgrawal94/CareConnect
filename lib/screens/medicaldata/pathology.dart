@@ -36,11 +36,23 @@ class _PathologyScreenState extends State<PathologyScreen> {
 
   _setDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: selecteddate, // Refer step 1
-      firstDate: DateTime(1950),
-      lastDate: DateTime(2030),
-    );
+        context: context,
+        initialDate: selecteddate, // Refer step 1
+        firstDate: DateTime(1950),
+        lastDate: DateTime(2030),
+        builder: (BuildContext context, child) {
+          return Theme(
+              data: ThemeData.dark().copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: Colors.deepPurple,
+                  onPrimary: Colors.white,
+                  surface: Colors.deepPurple,
+                  onSurface: Colors.deepPurple,
+                ),
+                dialogBackgroundColor: Colors.white,
+              ),
+              child: child);
+        });
     if (picked != null && picked != selecteddate)
       setState(() {
         selecteddate = picked;
@@ -193,6 +205,8 @@ class _PathologyScreenState extends State<PathologyScreen> {
                           Icon(Icons.video_call, size: 30),
                           Icon(Icons.attach_file, size: 30),
                           ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.deepPurple),
                               onPressed: () async {
                                 await _patientData.addPathologyData(patientId, {
                                   'title': title,

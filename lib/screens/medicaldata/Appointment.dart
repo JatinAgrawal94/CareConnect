@@ -35,8 +35,22 @@ class _AppointmentState extends State<Appointment> {
   }
 
   _setTime(BuildContext context) async {
-    final TimeOfDay picked =
-        await showTimePicker(context: context, initialTime: selectedtime);
+    final TimeOfDay picked = await showTimePicker(
+        context: context,
+        initialTime: selectedtime,
+        builder: (BuildContext context, child) {
+          return Theme(
+              data: ThemeData.dark().copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: Colors.deepPurple,
+                  onPrimary: Colors.white,
+                  surface: Colors.deepPurple,
+                  onSurface: Colors.deepPurple,
+                ),
+                dialogBackgroundColor: Colors.white,
+              ),
+              child: child);
+        });
     if (picked != null) {
       setState(() {
         selectedtime = picked;
@@ -46,11 +60,23 @@ class _AppointmentState extends State<Appointment> {
 
   _setDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: selecteddate, // Refer step 1
-      firstDate: DateTime(1950),
-      lastDate: DateTime(2030),
-    );
+        context: context,
+        initialDate: selecteddate, // Refer step 1
+        firstDate: DateTime(1950),
+        lastDate: DateTime(2030),
+        builder: (BuildContext context, child) {
+          return Theme(
+              data: ThemeData.dark().copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: Colors.deepPurple,
+                  onPrimary: Colors.white,
+                  surface: Colors.deepPurple,
+                  onSurface: Colors.deepPurple,
+                ),
+                dialogBackgroundColor: Colors.white,
+              ),
+              child: child);
+        });
     if (picked != null && picked != selecteddate)
       setState(() {
         selecteddate = picked;
@@ -122,6 +148,7 @@ class _AppointmentState extends State<Appointment> {
                             child: Row(
                               children: <Widget>[
                                 Radio(
+                                    activeColor: Colors.deepPurple,
                                     value: 0,
                                     groupValue: visitType,
                                     onChanged: (value) {
@@ -131,6 +158,7 @@ class _AppointmentState extends State<Appointment> {
                                     }),
                                 Text("New", style: TextStyle(fontSize: 20)),
                                 Radio(
+                                    activeColor: Colors.deepPurple,
                                     value: 1,
                                     groupValue: visitType,
                                     onChanged: (value) {
@@ -212,6 +240,8 @@ class _AppointmentState extends State<Appointment> {
                             )),
                       ])),
                   ElevatedButton(
+                      style:
+                          ElevatedButton.styleFrom(primary: Colors.deepPurple),
                       onPressed: () async {
                         await _patientData.addAppointment(patientId, {
                           'notes': notes,

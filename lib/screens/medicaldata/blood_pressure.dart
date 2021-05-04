@@ -1,4 +1,5 @@
 import 'package:careconnect/components/blood_pressure_list.dart';
+import 'package:careconnect/components/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:careconnect/services/patientdata.dart';
@@ -35,11 +36,23 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
 
   _setDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: selecteddate, // Refer step 1
-      firstDate: DateTime(1950),
-      lastDate: DateTime(2030),
-    );
+        context: context,
+        initialDate: selecteddate, // Refer step 1
+        firstDate: DateTime(1950),
+        lastDate: DateTime(2030),
+        builder: (BuildContext context, child) {
+          return Theme(
+              data: ThemeData.dark().copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: Colors.deepPurple,
+                  onPrimary: Colors.white,
+                  surface: Colors.deepPurple,
+                  onSurface: Colors.deepPurple,
+                ),
+                dialogBackgroundColor: Colors.white,
+              ),
+              child: child);
+        });
     if (picked != null && picked != selecteddate)
       setState(() {
         selecteddate = picked;
@@ -47,8 +60,22 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
   }
 
   _setTime(BuildContext context) async {
-    final TimeOfDay picked =
-        await showTimePicker(context: context, initialTime: selectedtime);
+    final TimeOfDay picked = await showTimePicker(
+        context: context,
+        initialTime: selectedtime,
+        builder: (BuildContext context, child) {
+          return Theme(
+              data: ThemeData.dark().copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: Colors.deepPurple,
+                  onPrimary: Colors.white,
+                  surface: Colors.deepPurple,
+                  onSurface: Colors.deepPurple,
+                ),
+                dialogBackgroundColor: Colors.white,
+              ),
+              child: child);
+        });
     if (picked != null) {
       setState(() {
         selectedtime = picked;
@@ -153,6 +180,8 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                         ],
                       )),
                   ElevatedButton(
+                      style:
+                          ElevatedButton.styleFrom(primary: Colors.deepPurple),
                       onPressed: () async {
                         _patientData.addBloodPressure(patientId, {
                           'systolic': systolic,
@@ -186,7 +215,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                   }
 
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text("Loading");
+                    return LoadingHeart();
                   }
 
                   return new ListView(

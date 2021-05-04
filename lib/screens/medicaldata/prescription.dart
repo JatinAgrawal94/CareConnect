@@ -149,6 +149,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                             Icon(Icons.video_call_rounded, size: 30),
                             Icon(Icons.attach_file_outlined, size: 30),
                             ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.deepPurple),
                               onPressed: () async {
                                 await _patientData.addPrescription(patientId, {
                                   'drug': drug,
