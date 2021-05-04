@@ -17,7 +17,7 @@ class _SigninState extends State<Signin> {
   String password = "";
   bool loading = false;
   String error = "";
-  bool _hidetext = false;
+  bool _hidetext = true;
 
   @override
   Widget build(BuildContext context) {
@@ -79,13 +79,14 @@ class _SigninState extends State<Signin> {
                                     labelText: "Enter Name",
                                     enabledBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
-                                        color: Colors.blue,
+                                        color: Colors.deepPurple,
                                         width: 2.0,
                                       ),
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: Colors.blue, width: 2.0))),
+                                            color: Colors.deepPurple,
+                                            width: 2.0))),
                               ),
                               SizedBox(
                                 height: 25.0,
@@ -108,13 +109,14 @@ class _SigninState extends State<Signin> {
                                     hintText: 'Password',
                                     enabledBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
-                                        color: Colors.blue,
+                                        color: Colors.deepPurple,
                                         width: 2.0,
                                       ),
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: Colors.blue, width: 2.0)),
+                                            color: Colors.deepPurple,
+                                            width: 2.0)),
                                     suffixIcon: IconButton(
                                         icon: Icon(_hidetext
                                             ? Icons.visibility_off
@@ -134,7 +136,7 @@ class _SigninState extends State<Signin> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                      primary: Colors.green[400],
+                                      primary: Colors.green,
                                       onPrimary: Colors.white,
                                       minimumSize: Size.fromHeight(45)),
                                   onPressed: () async {

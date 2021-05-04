@@ -155,4 +155,18 @@ class DoctorData {
     });
     return id;
   }
+
+// yet to be configured not ready to be used
+  Future deleteDoctor(String doctorId) {
+    CollectionReference doctor =
+        FirebaseFirestore.instance.collection('Doctor');
+    doctor
+        .doc(doctorId)
+        .delete()
+        .then((value) => print("User Deleted"))
+        .catchError((error) => print("Failed to delete user: $error"));
+  }
+
+  Future deleteDoctorSubField(
+      String doctorId, String fieldname, String fieldDocsId) {}
 }

@@ -375,4 +375,15 @@ class PatientData {
     });
     return id;
   }
+
+// yet to be configured not ready to be used
+  Future deletePatieint(String patientId, String userId) {
+    CollectionReference patient =
+        FirebaseFirestore.instance.collection('Patient');
+    patient
+        .doc(patientId)
+        .delete()
+        .then((value) => print("User Deleted"))
+        .catchError((error) => print("Failed to delete user: $error"));
+  }
 }

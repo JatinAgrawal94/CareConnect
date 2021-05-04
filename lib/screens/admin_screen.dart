@@ -38,13 +38,14 @@ class _AdminHomeState extends State<AdminHome> {
               backgroundColor: Colors.deepPurple,
               title: Text("Admin"),
               actions: [
+                IconButton(icon: Icon(Icons.person_rounded), onPressed: () {}),
                 IconButton(
                     icon: Icon(Icons.power_settings_new_rounded),
                     onPressed: () {
                       auth.signoutmethod();
                     }),
               ],
-              bottom: TabBar(tabs: [
+              bottom: TabBar(indicatorColor: Colors.white, tabs: [
                 Tab(child: Text("Patient")),
                 Tab(child: Text("Doctor"))
               ]),
