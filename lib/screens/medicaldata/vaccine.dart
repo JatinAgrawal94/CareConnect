@@ -64,6 +64,7 @@ class _VaccineScreenState extends State<VaccineScreen> {
             title: Text('Vaccine'),
             backgroundColor: Colors.deepPurple,
             bottom: TabBar(
+              indicatorColor: Colors.white,
               tabs: [
                 Tab(child: Text('New')),
                 Tab(child: Text('Previous')),

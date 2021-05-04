@@ -67,6 +67,7 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
             title: Text('Medical Visit'),
             backgroundColor: Colors.deepPurple,
             bottom: TabBar(
+              indicatorColor: Colors.white,
               tabs: [
                 Tab(child: Text('New Appointment')),
                 Tab(child: Text('Previous Appointments')),

@@ -91,6 +91,7 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
             title: Text('Blood Glucose'),
             backgroundColor: Colors.deepPurple,
             bottom: TabBar(
+              indicatorColor: Colors.white,
               tabs: [
                 Tab(child: Text('New Reading')),
                 Tab(child: Text('Previous Reading')),

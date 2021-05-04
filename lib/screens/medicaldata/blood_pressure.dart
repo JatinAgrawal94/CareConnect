@@ -92,6 +92,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
             title: Text('Blood Pressure'),
             backgroundColor: Colors.deepPurple,
             bottom: TabBar(
+              indicatorColor: Colors.white,
               tabs: [
                 Tab(child: Text('New Reading')),
                 Tab(child: Text('Previous Reading')),

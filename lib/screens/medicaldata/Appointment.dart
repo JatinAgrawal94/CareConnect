@@ -91,7 +91,7 @@ class _AppointmentState extends State<Appointment> {
           appBar: AppBar(
               title: Text("Appointment"),
               backgroundColor: Colors.deepPurple,
-              bottom: TabBar(tabs: [
+              bottom: TabBar(indicatorColor: Colors.white, tabs: [
                 Tab(child: Text('New')),
                 Tab(child: Text('Previous')),
               ])),

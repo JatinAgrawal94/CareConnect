@@ -67,6 +67,7 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
             title: Text('Radiology'),
             backgroundColor: Colors.deepPurple,
             bottom: TabBar(
+              indicatorColor: Colors.white,
               tabs: [
                 Tab(child: Text('New')),
                 Tab(child: Text('Previous')),

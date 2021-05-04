@@ -68,6 +68,7 @@ class _AllergyScreenState extends State<AllergyScreen> {
             title: Text('Allergy'),
             backgroundColor: Colors.deepPurple,
             bottom: TabBar(
+              indicatorColor: Colors.white,
               tabs: [
                 Tab(child: Text('New')),
                 Tab(child: Text('Previous')),

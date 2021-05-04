@@ -68,6 +68,7 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
             title: Text('Surgery'),
             backgroundColor: Colors.deepPurple,
             bottom: TabBar(
+              indicatorColor: Colors.white,
               tabs: [
                 Tab(child: Text('New')),
                 Tab(child: Text('Previous')),

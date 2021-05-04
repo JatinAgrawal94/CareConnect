@@ -39,6 +39,7 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
             title: Text('Family History'),
             backgroundColor: Colors.deepPurple,
             bottom: TabBar(
+              indicatorColor: Colors.white,
               tabs: [
                 Tab(child: Text('New')),
                 Tab(child: Text('Previous')),

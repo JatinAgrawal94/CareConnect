@@ -40,6 +40,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
             title: Text('Prescription'),
             backgroundColor: Colors.deepPurple,
             bottom: TabBar(
+              indicatorColor: Colors.white,
               tabs: [
                 Tab(child: Text('New')),
                 Tab(child: Text('Previous')),

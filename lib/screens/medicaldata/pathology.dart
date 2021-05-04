@@ -68,6 +68,7 @@ class _PathologyScreenState extends State<PathologyScreen> {
             title: Text('Pathology'),
             backgroundColor: Colors.deepPurple,
             bottom: TabBar(
+              indicatorColor: Colors.white,
               tabs: [
                 Tab(child: Text('New')),
                 Tab(child: Text('Previous')),

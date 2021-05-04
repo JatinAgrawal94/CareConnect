@@ -71,6 +71,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
             title: Text('Examination'),
             backgroundColor: Colors.deepPurple,
             bottom: TabBar(
+              indicatorColor: Colors.white,
               tabs: [
                 Tab(child: Text('New')),
                 Tab(child: Text('Previous')),
@@ -106,8 +107,8 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                   ))),
                               Text(
                                 'C/F',
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.grey[300]),
+                                style:
+                                    TextStyle(fontSize: 20, color: Colors.grey),
                               )
                             ],
                           ),
@@ -155,9 +156,9 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                     keyboardType: TextInputType.number,
                                   ))),
                               Text(
-                                'cm',
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.grey[300]),
+                                'CM',
+                                style:
+                                    TextStyle(fontSize: 20, color: Colors.grey),
                               )
                             ],
                           ),

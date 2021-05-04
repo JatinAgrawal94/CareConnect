@@ -68,6 +68,7 @@ class _LabTestScreenState extends State<LabTestScreen> {
             title: Text('LabTest'),
             backgroundColor: Colors.deepPurple,
             bottom: TabBar(
+              indicatorColor: Colors.white,
               tabs: [
                 Tab(child: Text('New Tests')),
                 Tab(child: Text('Previous Tests')),
