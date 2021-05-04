@@ -120,11 +120,23 @@ class _DoctorFormState extends State<DoctorForm> {
 
   _setDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: selecteddate, // Refer step 1
-      firstDate: DateTime(1950),
-      lastDate: DateTime(2030),
-    );
+        context: context,
+        initialDate: selecteddate, // Refer step 1
+        firstDate: DateTime(1950),
+        lastDate: DateTime(2030),
+        builder: (BuildContext context, child) {
+          return Theme(
+              data: ThemeData.dark().copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: Colors.deepPurple,
+                  onPrimary: Colors.white,
+                  surface: Colors.deepPurple,
+                  onSurface: Colors.deepPurple,
+                ),
+                dialogBackgroundColor: Colors.white,
+              ),
+              child: child);
+        });
     if (picked != null && picked != selecteddate)
       setState(() {
         selecteddate = picked;
