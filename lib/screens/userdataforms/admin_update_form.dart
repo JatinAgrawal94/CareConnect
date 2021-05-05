@@ -1,29 +1,30 @@
 import 'package:careconnect/components/loading.dart';
-import 'package:careconnect/services/doctorData.dart';
+import 'package:careconnect/services/admin_data.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class DoctorForm extends StatefulWidget {
-  final String doctorId;
-  DoctorForm({Key key, @required this.doctorId}) : super(key: key);
+class AdminForm extends StatefulWidget {
+  final String adminId;
+  AdminForm({Key key, @required this.adminId}) : super(key: key);
 
   @override
-  _DoctorFormState createState() => _DoctorFormState(this.doctorId);
+  _AdminFormState createState() => _AdminFormState(this.adminId);
 }
 
-class _DoctorFormState extends State<DoctorForm> {
-  final GlobalKey<FormState> doctorupdateformkey = GlobalKey<FormState>();
+class _AdminFormState extends State<AdminForm> {
+  final GlobalKey<FormState> adminupdateformkey = GlobalKey<FormState>();
 
-  final String doctorId;
-  _DoctorFormState(this.doctorId);
+  final String adminId;
+  _AdminFormState(this.adminId);
+  AdminData _adminData = AdminData();
   ImagePicker picker = ImagePicker();
   PickedFile _image;
   String userId;
-  DoctorData _doctorData = DoctorData();
+
   static String imageURL;
-  static var doctorInfo = Map<String, dynamic>();
+  static var adminInfo = Map<String, dynamic>();
 
   Future convertDate(String date) async {
     var g = date.split('/').reversed.toList();
@@ -41,7 +42,6 @@ class _DoctorFormState extends State<DoctorForm> {
   int gender = 0;
   String bloodgroup;
   String contact = " ";
-  String designation = " ";
   String address = " ";
   String name = " ";
   String email = " ";
@@ -49,29 +49,27 @@ class _DoctorFormState extends State<DoctorForm> {
   @override
   void initState() {
     super.initState();
-    _doctorData.getDoctorInfo(doctorId).then((value) {
+    _adminData.getAdminInfo(adminId).then((value) {
       setState(() {
-        doctorInfo = value;
-        userId = doctorInfo['userid'];
-        name = doctorInfo['name'];
-        email = doctorInfo['email'];
-        designation = doctorInfo['designation'];
-        contact = doctorInfo['contact'].toString();
-        bloodgroup = doctorInfo['bloodgroup'];
-        address = doctorInfo['address'];
-        gender = doctorInfo['gender'] == 'Male'
+        adminInfo = value;
+        userId = adminInfo['userid'];
+        name = adminInfo['name'];
+        email = adminInfo['email'];
+        contact = adminInfo['contact'].toString();
+        bloodgroup = adminInfo['bloodgroup'];
+        address = adminInfo['address'];
+        gender = adminInfo['gender'] == 'Male'
             ? 0
-            : doctorInfo['gender'] == 'Female'
+            : adminInfo['gender'] == 'Female'
                 ? 1
                 : 2;
-        // selecteddate = DateTime.parse(convertDate(doctorInfo['dateofbirth']));
       });
-      convertDate(doctorInfo['dateofbirth']).then((value) {
+      convertDate(adminInfo['dateofbirth']).then((value) {
         setState(() {
           selecteddate = DateTime.parse(value);
         });
       });
-      _doctorData.getProfileImageURL(userId).then((value) {
+      _adminData.getProfileImageURL(userId).then((value) {
         setState(() {
           imageURL = value;
         });
@@ -151,7 +149,7 @@ class _DoctorFormState extends State<DoctorForm> {
         ? LoadingHeart()
         : Scaffold(
             appBar: AppBar(
-                title: Text("Update Doctor Info"),
+                title: Text("Update Admin Info"),
                 backgroundColor: Colors.deepPurple),
             body: SingleChildScrollView(
                 child: Container(
@@ -220,7 +218,7 @@ class _DoctorFormState extends State<DoctorForm> {
                     ),
 // --------------------------form begins here---------------------------------------//
                     Form(
-                        key: doctorupdateformkey,
+                        key: adminupdateformkey,
                         child: Column(
                           children: <Widget>[
                             // ------------------------------------name text field begins
@@ -491,57 +489,6 @@ class _DoctorFormState extends State<DoctorForm> {
                                 ],
                               ),
                             ),
-                            // ---------------------insurance no field begins here.
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                              child: Row(
-                                children: <Widget>[
-                                  Container(
-                                      margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                                      width: MediaQuery.of(context).size.width *
-                                          0.3,
-                                      child: Text(
-                                        "Designation",
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(fontSize: 18),
-                                      )),
-                                  SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.5,
-                                      child: TextFormField(
-                                        cursorColor: Colors.deepPurple,
-                                        onChanged: (val) {
-                                          setState(() {
-                                            designation = val;
-                                          });
-                                        },
-                                        validator: (value) {
-                                          if (value.isEmpty) {
-                                            return "Field can't be empty";
-                                          }
-                                          return null;
-                                        },
-                                        controller:
-                                            TextEditingController.fromValue(
-                                                TextEditingValue(
-                                                    text: designation,
-                                                    selection:
-                                                        TextSelection.collapsed(
-                                                            offset: designation
-                                                                .length))),
-                                        keyboardType: TextInputType.text,
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                        ),
-                                        decoration: InputDecoration(
-                                            focusedBorder: UnderlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1,
-                                                    color: Colors.deepPurple))),
-                                      ))
-                                ],
-                              ),
-                            ),
                             // -------------------address field begins here
                             Container(
                               padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
@@ -603,10 +550,10 @@ class _DoctorFormState extends State<DoctorForm> {
                                 children: <Widget>[
                                   ElevatedButton(
                                       onPressed: () async {
-                                        if (doctorupdateformkey.currentState
+                                        if (adminupdateformkey.currentState
                                             .validate()) {
-                                          await _doctorData
-                                              .updateDoctorinfo(doctorId, {
+                                          await _adminData
+                                              .updateAdmininfo(adminId, {
                                             'name': name,
                                             'email': email,
                                             'dateofbirth':
@@ -618,11 +565,10 @@ class _DoctorFormState extends State<DoctorForm> {
                                                     : 'Other',
                                             'bloodgroup': bloodgroup,
                                             'contact': contact,
-                                            'designation': designation,
                                             'address': address
                                           });
                                           if (_image != null) {
-                                            _doctorData.updateFile(
+                                            _adminData.updateFile(
                                                 File(_image.path), '$userId');
                                           }
                                           Navigator.pop(context);

@@ -7,13 +7,14 @@ class DoctorData {
   static String doctorId;
   final doctorInfoKeys = {
     0: 'name',
-    1: 'email',
-    2: 'dateofbirth',
-    3: 'gender',
-    4: 'bloodgroup',
-    5: 'designation',
-    6: 'contact',
-    7: 'address'
+    1: 'userid',
+    2: 'email',
+    3: 'dateofbirth',
+    4: 'gender',
+    5: 'bloodgroup',
+    6: 'designation',
+    7: 'contact',
+    8: 'address'
   };
 
   Future getDoctorInfo(String doctorid) async {
@@ -24,7 +25,6 @@ class DoctorData {
         .get()
         .then((DocumentSnapshot snapshot) {
       data = snapshot.data();
-      // print(data);
     });
     return data;
   }
@@ -86,12 +86,11 @@ class DoctorData {
     }
   }
 
-  Future<void> updateDoctorinfo(patientId, data) async {
-    print(data['phoneno']);
-    CollectionReference patient =
-        FirebaseFirestore.instance.collection('Patient');
-    return await patient
-        .doc(patientId)
+  Future<void> updateDoctorinfo(doctorId, data) async {
+    CollectionReference doctor =
+        FirebaseFirestore.instance.collection('Doctor');
+    return await doctor
+        .doc(doctorId)
         .update({
           'name': data['name'],
           'email': data['email'],
@@ -155,18 +154,4 @@ class DoctorData {
     });
     return id;
   }
-
-// yet to be configured not ready to be used
-  Future deleteDoctor(String doctorId) {
-    CollectionReference doctor =
-        FirebaseFirestore.instance.collection('Doctor');
-    doctor
-        .doc(doctorId)
-        .delete()
-        .then((value) => print("User Deleted"))
-        .catchError((error) => print("Failed to delete user: $error"));
-  }
-
-  Future deleteDoctorSubField(
-      String doctorId, String fieldname, String fieldDocsId) {}
 }

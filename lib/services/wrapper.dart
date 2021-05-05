@@ -55,7 +55,7 @@ class Wrapper extends StatelessWidget {
               FocusManager.instance.primaryFocus.unfocus();
             }
           },
-          child: AdminHome(),
+          child: AdminHome(email: user.emailGet),
         );
       }
     }

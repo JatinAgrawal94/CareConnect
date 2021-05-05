@@ -1,30 +1,33 @@
 import 'package:careconnect/models/registereduser.dart';
+import 'package:careconnect/screens/userdataforms/admin_update_form.dart';
 import 'package:careconnect/screens/userdataforms/doctor_update_form.dart';
+import 'package:careconnect/services/admin_data.dart';
 import 'package:careconnect/services/auth.dart';
 import 'package:careconnect/services/doctorData.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import 'package:careconnect/components/loading.dart';
 import 'package:provider/provider.dart';
 
-class DoctorProfile extends StatefulWidget {
-  final String doctorId;
-  DoctorProfile({Key key, @required this.doctorId}) : super(key: key);
+class AdminProfile extends StatefulWidget {
+  final String adminId;
+  AdminProfile({Key key, @required this.adminId}) : super(key: key);
 
   @override
-  _DoctorProfileState createState() => _DoctorProfileState(doctorId);
+  _AdminProfileState createState() => _AdminProfileState(adminId);
 }
 
-class _DoctorProfileState extends State<DoctorProfile> {
-  DoctorData _doctorData = DoctorData();
+class _AdminProfileState extends State<AdminProfile> {
+  AdminData _adminData = AdminData();
   AuthService auth = AuthService();
-  final String doctorId;
+  final String adminId;
   String userId;
   var user;
   var role;
   static String imageURL;
-  _DoctorProfileState(this.doctorId);
-  static var doctorInfo = Map<String, dynamic>();
+  _AdminProfileState(this.adminId);
+  static var adminInfo = Map<String, dynamic>();
 
   void getRole(value) {
     setState(() {
@@ -35,12 +38,12 @@ class _DoctorProfileState extends State<DoctorProfile> {
   @override
   void initState() {
     super.initState();
-    _doctorData.getDoctorInfo(doctorId).then((value) {
+    _adminData.getAdminInfo(adminId).then((value) {
       setState(() {
-        doctorInfo = value;
-        userId = doctorInfo['userid'];
+        adminInfo = value;
+        userId = adminInfo['userid'];
       });
-      _doctorData.getProfileImageURL(userId).then((value) {
+      _adminData.getProfileImageURL(userId).then((value) {
         setState(() {
           imageURL = value;
         });
@@ -51,12 +54,10 @@ class _DoctorProfileState extends State<DoctorProfile> {
   final ImagePicker picker = ImagePicker();
   List info = [
     "Name",
-    "UserId",
     "Email",
     "Date of Birth",
     "Gender",
     "Blood Group",
-    "Designation",
     "Contact",
     "Address"
   ];
@@ -71,7 +72,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
           iconTheme: IconThemeData(color: Colors.black),
           shadowColor: Colors.transparent,
         ),
-        body: doctorInfo.isEmpty
+        body: adminInfo.isEmpty
             ? LoadingHeart()
             : Container(
                 child: Column(
@@ -118,7 +119,9 @@ class _DoctorProfileState extends State<DoctorProfile> {
                     Container(
                         color: Colors.deepPurple[300],
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: role == "admin"
+                              ? MainAxisAlignment.spaceAround
+                              : MainAxisAlignment.center,
                           children: <Widget>[
                             SafeArea(
                                 right: true,
@@ -153,8 +156,8 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                                           .unfocus();
                                                     }
                                                   },
-                                                  child: DoctorForm(
-                                                      doctorId: this.doctorId),
+                                                  child: AdminForm(
+                                                      adminId: this.adminId),
                                                 )));
                                   },
                                 )),
@@ -187,8 +190,8 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                                 fontWeight: FontWeight.bold),
                                           )),
                                       Flexible(
-                                          child: Text(doctorInfo[_doctorData
-                                                  .doctorInfoKeys[index]]
+                                          child: Text(adminInfo[_adminData
+                                                  .adminInfoKeys[index]]
                                               .toString()))
                                     ],
                                   ));

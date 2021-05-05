@@ -176,23 +176,6 @@ class _AboutScreenState extends State<AboutScreen> {
                                                 )));
                                   },
                                 )),
-                            role == "admin"
-                                ? SafeArea(
-                                    right: true,
-                                    child: ElevatedButton.icon(
-                                      icon: Icon(Icons.delete),
-                                      label: Text(
-                                        'Delete',
-                                        style: TextStyle(fontSize: 15),
-                                      ),
-                                      style: ElevatedButton.styleFrom(
-                                          primary: Colors.deepPurple,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(50)))),
-                                      onPressed: () async {},
-                                    ))
-                                : Container(),
                           ],
                         )),
                     Expanded(

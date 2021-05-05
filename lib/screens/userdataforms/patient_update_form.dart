@@ -292,6 +292,7 @@ class _PatientFormState extends State<PatientForm> {
                                       width: MediaQuery.of(context).size.width *
                                           0.5,
                                       child: TextFormField(
+                                        readOnly: true,
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
                                           setState(() {
@@ -624,7 +625,7 @@ class _PatientFormState extends State<PatientForm> {
                                             patientData.updateFile(
                                                 File(_image.path), '$userId');
                                           }
-
+                                          Navigator.pop(context);
                                           Navigator.pop(context);
                                           return Fluttertoast.showToast(
                                               msg: "Data Updated",

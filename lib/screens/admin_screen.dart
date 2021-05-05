@@ -1,36 +1,47 @@
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/screens/medical_info.dart';
+import 'package:careconnect/screens/userdataforms/admin_profile.dart';
 import 'package:careconnect/screens/userdataforms/doctor_add_form.dart';
 import 'package:careconnect/screens/userdataforms/doctor_profile.dart';
 import 'package:careconnect/screens/userdataforms/patient_add_form.dart';
 import 'package:careconnect/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
-import 'package:careconnect/models/registereduser.dart';
+import 'package:careconnect/services/admin_data.dart';
 
 class AdminHome extends StatefulWidget {
-  AdminHome({Key key}) : super(key: key);
+  final String email;
+  AdminHome({Key key, this.email}) : super(key: key);
 
   @override
-  _AdminHomeState createState() => _AdminHomeState();
+  _AdminHomeState createState() => _AdminHomeState(this.email);
 }
 
 class _AdminHomeState extends State<AdminHome> {
+  String email;
+  _AdminHomeState(this.email);
   AuthService auth = AuthService();
+  AdminData _adminData = AdminData();
   CollectionReference patientList =
       FirebaseFirestore.instance.collection('Patient');
   CollectionReference doctorList =
       FirebaseFirestore.instance.collection('Doctor');
   static String patientDocumentId;
   static String doctorDocumentId;
-  var user;
-  String email;
+  static String adminDocumentId;
+
+  @override
+  void initState() {
+    super.initState();
+    _adminData.getDocsId(email).then((value) {
+      setState(() {
+        adminDocumentId = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    user = Provider.of<RegisteredUser>(context);
-    email = user.emailGet;
     return DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -38,7 +49,15 @@ class _AdminHomeState extends State<AdminHome> {
               backgroundColor: Colors.deepPurple,
               title: Text("Admin"),
               actions: [
-                IconButton(icon: Icon(Icons.person_rounded), onPressed: () {}),
+                IconButton(
+                    icon: Icon(Icons.person_rounded),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  AdminProfile(adminId: adminDocumentId)));
+                    }),
                 IconButton(
                     icon: Icon(Icons.power_settings_new_rounded),
                     onPressed: () {
