@@ -98,12 +98,18 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: Form(
                                       child: TextFormField(
+                                    cursorColor: Colors.deepPurple,
                                     onChanged: (value) {
                                       setState(() {
                                         temperature = value;
                                       });
                                     },
                                     keyboardType: TextInputType.number,
+                                    decoration: InputDecoration(
+                                        focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.deepPurple))),
                                   ))),
                               Text(
                                 'C/F',
@@ -122,12 +128,18 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                 width: MediaQuery.of(context).size.width * 0.5,
                                 child: Form(
                                     child: TextFormField(
+                                  cursorColor: Colors.deepPurple,
                                   onChanged: (value) {
                                     setState(() {
                                       weight = value;
                                     });
                                   },
                                   keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                      focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1,
+                                              color: Colors.deepPurple))),
                                 ))),
                             Text(
                               'Kg',
@@ -148,12 +160,18 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: Form(
                                       child: TextFormField(
+                                    cursorColor: Colors.deepPurple,
                                     onChanged: (value) {
                                       setState(() {
                                         height = value;
                                       });
                                     },
                                     keyboardType: TextInputType.number,
+                                    decoration: InputDecoration(
+                                        focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.deepPurple))),
                                   ))),
                               Text(
                                 'CM',
@@ -175,12 +193,18 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: Form(
                                       child: TextFormField(
+                                    cursorColor: Colors.deepPurple,
                                     onChanged: (value) {
                                       setState(() {
                                         symptoms = value;
                                       });
                                     },
                                     keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                        focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.deepPurple))),
                                   ))),
                             ],
                           ),
@@ -197,12 +221,18 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: Form(
                                       child: TextFormField(
+                                    cursorColor: Colors.deepPurple,
                                     onChanged: (value) {
                                       setState(() {
                                         diagnosis = value;
                                       });
                                     },
                                     keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                        focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.deepPurple))),
                                   ))),
                             ],
                           ),
@@ -219,12 +249,18 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: Form(
                                       child: TextFormField(
+                                    cursorColor: Colors.deepPurple,
                                     onChanged: (value) {
                                       setState(() {
                                         notes = value;
                                       });
                                     },
                                     keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                        focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.deepPurple))),
                                   ))),
                             ],
                           ),
@@ -241,12 +277,18 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: Form(
                                       child: TextFormField(
+                                    cursorColor: Colors.deepPurple,
                                     onChanged: (value) {
                                       setState(() {
                                         doctor = value;
                                       });
                                     },
                                     keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                        focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.deepPurple))),
                                   ))),
                             ],
                           ),
@@ -263,12 +305,18 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: Form(
                                       child: TextFormField(
+                                    cursorColor: Colors.deepPurple,
                                     onChanged: (value) {
                                       setState(() {
                                         place = value;
                                       });
                                     },
                                     keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                        focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.deepPurple))),
                                   ))),
                             ],
                           ),

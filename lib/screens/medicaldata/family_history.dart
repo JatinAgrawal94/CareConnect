@@ -64,6 +64,7 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                         width: MediaQuery.of(context).size.width * 0.7,
                         child: Form(
                           child: TextFormField(
+                            cursorColor: Colors.deepPurple,
                             onChanged: (value) {
                               setState(() {
                                 memberName = value;
@@ -71,8 +72,9 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                             },
                             decoration: InputDecoration(
                                 hintText: "Family Member Name",
-                                enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(width: 1))),
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 1, color: Colors.deepPurple))),
                           ),
                         )),
                     Container(
@@ -80,16 +82,18 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                         width: MediaQuery.of(context).size.width * 0.7,
                         child: Form(
                           child: TextFormField(
-                            onChanged: (value) {
-                              setState(() {
-                                description = value;
-                              });
-                            },
-                            decoration: InputDecoration(
-                                hintText: "Description",
-                                enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(width: 1))),
-                          ),
+                              cursorColor: Colors.deepPurple,
+                              onChanged: (value) {
+                                setState(() {
+                                  description = value;
+                                });
+                              },
+                              decoration: InputDecoration(
+                                  hintText: "Description",
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 1,
+                                          color: Colors.deepPurple)))),
                         )),
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(

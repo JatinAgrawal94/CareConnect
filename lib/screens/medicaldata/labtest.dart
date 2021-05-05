@@ -88,6 +88,7 @@ class _LabTestScreenState extends State<LabTestScreen> {
                             child: Container(
                           width: MediaQuery.of(context).size.width * 0.3,
                           child: TextFormField(
+                            cursorColor: Colors.deepPurple,
                             onChanged: (value) {
                               setState(() {
                                 test = value;
@@ -95,13 +96,18 @@ class _LabTestScreenState extends State<LabTestScreen> {
                             },
                             keyboardType: TextInputType.text,
                             style: TextStyle(fontSize: 20),
-                            decoration: InputDecoration(hintText: "Test"),
+                            decoration: InputDecoration(
+                                hintText: "Test",
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 1, color: Colors.deepPurple))),
                           ),
                         )),
                         Form(
                             child: Container(
                           width: MediaQuery.of(context).size.width * 0.3,
                           child: TextFormField(
+                            cursorColor: Colors.deepPurple,
                             onChanged: (value) {
                               setState(() {
                                 result = value;
@@ -109,13 +115,18 @@ class _LabTestScreenState extends State<LabTestScreen> {
                             },
                             keyboardType: TextInputType.text,
                             style: TextStyle(fontSize: 20),
-                            decoration: InputDecoration(hintText: "Result"),
+                            decoration: InputDecoration(
+                                hintText: "Result",
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 1, color: Colors.deepPurple))),
                           ),
                         )),
                         Form(
                             child: Container(
                           width: MediaQuery.of(context).size.width * 0.3,
                           child: TextFormField(
+                            cursorColor: Colors.deepPurple,
                             onChanged: (value) {
                               setState(() {
                                 normal = value;
@@ -123,7 +134,11 @@ class _LabTestScreenState extends State<LabTestScreen> {
                             },
                             keyboardType: TextInputType.text,
                             style: TextStyle(fontSize: 20),
-                            decoration: InputDecoration(hintText: "Normal"),
+                            decoration: InputDecoration(
+                                hintText: "Normal",
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 1, color: Colors.deepPurple))),
                           ),
                         ))
                       ],
@@ -140,13 +155,18 @@ class _LabTestScreenState extends State<LabTestScreen> {
                             width: MediaQuery.of(context).size.width * 0.3,
                             child: Form(
                                 child: TextFormField(
+                              cursorColor: Colors.deepPurple,
                               onChanged: (value) {
                                 setState(() {
                                   doctor = value;
                                 });
                               },
                               keyboardType: TextInputType.text,
-                              decoration: InputDecoration(hintText: "Doctor"),
+                              decoration: InputDecoration(
+                                  hintText: "Doctor",
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 1, color: Colors.deepPurple))),
                             )),
                           )
                         ],
@@ -164,13 +184,18 @@ class _LabTestScreenState extends State<LabTestScreen> {
                             width: MediaQuery.of(context).size.width * 0.3,
                             child: Form(
                                 child: TextFormField(
+                              cursorColor: Colors.deepPurple,
                               onChanged: (value) {
                                 setState(() {
                                   place = value;
                                 });
                               },
                               keyboardType: TextInputType.text,
-                              decoration: InputDecoration(hintText: "Place"),
+                              decoration: InputDecoration(
+                                  hintText: "Place",
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 1, color: Colors.deepPurple))),
                             )),
                           )
                         ],

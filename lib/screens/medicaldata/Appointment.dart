@@ -42,10 +42,10 @@ class _AppointmentState extends State<Appointment> {
           return Theme(
               data: ThemeData.dark().copyWith(
                 colorScheme: ColorScheme.light(
-                  primary: Colors.deepPurple,
-                  onPrimary: Colors.white,
+                  primary: Colors.white,
+                  onPrimary: Colors.deepPurple[300],
                   surface: Colors.deepPurple,
-                  onSurface: Colors.deepPurple,
+                  onSurface: Colors.black,
                 ),
                 dialogBackgroundColor: Colors.white,
               ),
@@ -185,13 +185,19 @@ class _AppointmentState extends State<Appointment> {
                             width: MediaQuery.of(context).size.width * 0.7,
                             child: Form(
                               child: TextFormField(
+                                cursorColor: Colors.deepPurple,
                                 onChanged: (value) {
                                   setState(() {
                                     notes = value;
                                   });
                                 },
                                 keyboardType: TextInputType.text,
-                                decoration: InputDecoration(hintText: "Notes"),
+                                decoration: InputDecoration(
+                                    hintText: "Notes",
+                                    focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1,
+                                            color: Colors.deepPurple))),
                               ),
                             )),
                       ])),
@@ -207,13 +213,19 @@ class _AppointmentState extends State<Appointment> {
                             width: MediaQuery.of(context).size.width * 0.7,
                             child: Form(
                               child: TextFormField(
+                                cursorColor: Colors.deepPurple,
                                 onChanged: (value) {
                                   setState(() {
                                     doctor = value;
                                   });
                                 },
+                                decoration: InputDecoration(
+                                    hintText: "Doctor",
+                                    focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1,
+                                            color: Colors.deepPurple))),
                                 keyboardType: TextInputType.text,
-                                decoration: InputDecoration(hintText: "Doctor"),
                               ),
                             )),
                       ])),
@@ -229,13 +241,19 @@ class _AppointmentState extends State<Appointment> {
                             width: MediaQuery.of(context).size.width * 0.7,
                             child: Form(
                               child: TextFormField(
+                                cursorColor: Colors.deepPurple,
                                 onChanged: (value) {
                                   setState(() {
                                     place = value;
                                   });
                                 },
                                 keyboardType: TextInputType.text,
-                                decoration: InputDecoration(hintText: "Place"),
+                                decoration: InputDecoration(
+                                    hintText: "Place",
+                                    focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1,
+                                            color: Colors.deepPurple))),
                               ),
                             )),
                       ])),

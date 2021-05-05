@@ -56,13 +56,18 @@ class _NotesScreenState extends State<NotesScreen> {
                           padding: EdgeInsets.all(5),
                           child: Form(
                             child: TextFormField(
+                              cursorColor: Colors.deepPurple,
                               onChanged: (value) {
                                 setState(() {
                                   title = value;
                                 });
                               },
                               keyboardType: TextInputType.text,
-                              decoration: InputDecoration(hintText: "Title"),
+                              decoration: InputDecoration(
+                                  hintText: "Title",
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 1, color: Colors.deepPurple))),
                             ),
                           )),
                       Container(
@@ -70,13 +75,18 @@ class _NotesScreenState extends State<NotesScreen> {
                           margin: EdgeInsets.all(5),
                           child: Form(
                             child: TextFormField(
+                              cursorColor: Colors.deepPurple,
                               onChanged: (value) {
                                 setState(() {
                                   description = value;
                                 });
                               },
                               keyboardType: TextInputType.text,
-                              decoration: InputDecoration(hintText: "Notes"),
+                              decoration: InputDecoration(
+                                  hintText: "Notes",
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 1, color: Colors.deepPurple))),
                             ),
                           )),
                       Container(

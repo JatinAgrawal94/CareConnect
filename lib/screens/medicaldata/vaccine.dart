@@ -89,14 +89,19 @@ class _VaccineScreenState extends State<VaccineScreen> {
                               width: MediaQuery.of(context).size.width * 0.7,
                               child: Form(
                                 child: TextFormField(
+                                  cursorColor: Colors.deepPurple,
                                   onChanged: (value) {
                                     setState(() {
                                       vaccine = value;
                                     });
                                   },
                                   keyboardType: TextInputType.text,
-                                  decoration:
-                                      InputDecoration(hintText: "Title"),
+                                  decoration: InputDecoration(
+                                      hintText: "Title",
+                                      focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1,
+                                              color: Colors.deepPurple))),
                                 ),
                               )),
                         ],

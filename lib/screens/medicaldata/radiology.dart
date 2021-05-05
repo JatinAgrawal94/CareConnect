@@ -86,56 +86,76 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                               padding: EdgeInsets.all(5),
                               child: Form(
                                 child: TextFormField(
+                                  cursorColor: Colors.deepPurple,
                                   onChanged: (value) {
                                     setState(() {
                                       title = value;
                                     });
                                   },
                                   keyboardType: TextInputType.text,
-                                  decoration:
-                                      InputDecoration(hintText: "Title"),
+                                  decoration: InputDecoration(
+                                      hintText: "Title",
+                                      focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1,
+                                              color: Colors.deepPurple))),
                                 ),
                               )),
                           Container(
                               padding: EdgeInsets.all(5),
                               child: Form(
                                 child: TextFormField(
+                                  cursorColor: Colors.deepPurple,
                                   onChanged: (value) {
                                     setState(() {
                                       result = value;
                                     });
                                   },
                                   keyboardType: TextInputType.text,
-                                  decoration:
-                                      InputDecoration(hintText: "Result"),
+                                  decoration: InputDecoration(
+                                      hintText: "Result",
+                                      focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1,
+                                              color: Colors.deepPurple))),
                                 ),
                               )),
                           Container(
                               padding: EdgeInsets.all(5),
                               child: Form(
                                 child: TextFormField(
+                                  cursorColor: Colors.deepPurple,
                                   onChanged: (value) {
                                     setState(() {
                                       doctor = value;
                                     });
                                   },
                                   keyboardType: TextInputType.text,
-                                  decoration:
-                                      InputDecoration(hintText: "Doctor"),
+                                  decoration: InputDecoration(
+                                      hintText: "Doctor",
+                                      focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1,
+                                              color: Colors.deepPurple))),
                                 ),
                               )),
                           Container(
                               padding: EdgeInsets.all(5),
                               child: Form(
                                 child: TextFormField(
+                                  cursorColor: Colors.deepPurple,
                                   onChanged: (value) {
                                     setState(() {
                                       place = value;
                                     });
                                   },
                                   keyboardType: TextInputType.text,
-                                  decoration:
-                                      InputDecoration(hintText: "Place"),
+                                  decoration: InputDecoration(
+                                      hintText: "Place",
+                                      focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1,
+                                              color: Colors.deepPurple))),
                                 ),
                               )),
                           Container(

@@ -66,10 +66,10 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
           return Theme(
               data: ThemeData.dark().copyWith(
                 colorScheme: ColorScheme.light(
-                  primary: Colors.deepPurple,
-                  onPrimary: Colors.white,
+                  primary: Colors.white,
+                  onPrimary: Colors.deepPurple[300],
                   surface: Colors.deepPurple,
-                  onSurface: Colors.deepPurple,
+                  onSurface: Colors.black,
                 ),
                 dialogBackgroundColor: Colors.white,
               ),
@@ -100,7 +100,8 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
           ),
           body: TabBarView(
             children: [
-              Container(
+              SingleChildScrollView(
+                  child: Container(
                 padding: EdgeInsets.all(15),
                 child: Column(
                   children: <Widget>[
@@ -163,6 +164,7 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                             child: SizedBox(
                           width: MediaQuery.of(context).size.width * 0.3,
                           child: TextFormField(
+                              cursorColor: Colors.deepPurple,
                               validator: (value) {
                                 if (value.isEmpty) {
                                   return "Field can't be empty";
@@ -179,8 +181,10 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                                 fontSize: 18,
                               ),
                               decoration: InputDecoration(
-                                  border: UnderlineInputBorder(
-                                      borderSide: BorderSide(width: 1)))),
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 1,
+                                          color: Colors.deepPurple)))),
                         )),
                         DropdownButton<String>(
                           value: resultUnit,
@@ -260,7 +264,7 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                         ))
                   ],
                 ),
-              ),
+              )),
               Container(
                   child: StreamBuilder<QuerySnapshot>(
                 stream: bloodglucose.snapshots(),

@@ -62,6 +62,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                             margin: EdgeInsets.all(5),
                             width: MediaQuery.of(context).size.width * 0.4,
                             child: TextFormField(
+                              cursorColor: Colors.deepPurple,
                               onChanged: (value) {
                                 setState(() {
                                   drug = value;
@@ -69,7 +70,11 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                               },
                               keyboardType: TextInputType.text,
                               style: TextStyle(fontSize: 20),
-                              decoration: InputDecoration(hintText: "Drug"),
+                              decoration: InputDecoration(
+                                  hintText: "Drug",
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 1, color: Colors.deepPurple))),
                             ),
                           )),
                           Form(
@@ -77,6 +82,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                             margin: EdgeInsets.all(5),
                             width: MediaQuery.of(context).size.width * 0.4,
                             child: TextFormField(
+                              cursorColor: Colors.deepPurple,
                               onChanged: (value) {
                                 setState(() {
                                   dose = value;
@@ -84,7 +90,11 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                               },
                               keyboardType: TextInputType.text,
                               style: TextStyle(fontSize: 20),
-                              decoration: InputDecoration(hintText: "Dose"),
+                              decoration: InputDecoration(
+                                  hintText: "Dose",
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 1, color: Colors.deepPurple))),
                             ),
                           )),
                         ],
@@ -104,12 +114,18 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                             width: MediaQuery.of(context).size.width * 0.7,
                             child: Form(
                               child: TextFormField(
+                                cursorColor: Colors.deepPurple,
                                 onChanged: (value) {
                                   setState(() {
                                     doctor = value;
                                   });
                                 },
-                                decoration: InputDecoration(hintText: "Doctor"),
+                                decoration: InputDecoration(
+                                    hintText: "Doctor",
+                                    focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1,
+                                            color: Colors.deepPurple))),
                               ),
                             ),
                           )
@@ -130,12 +146,18 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                             width: MediaQuery.of(context).size.width * 0.7,
                             child: Form(
                               child: TextFormField(
+                                cursorColor: Colors.deepPurple,
                                 onChanged: (value) {
                                   setState(() {
                                     place = value;
                                   });
                                 },
-                                decoration: InputDecoration(hintText: "Place"),
+                                decoration: InputDecoration(
+                                    hintText: "Place",
+                                    focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1,
+                                            color: Colors.deepPurple))),
                               ),
                             ),
                           )

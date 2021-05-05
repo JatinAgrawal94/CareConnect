@@ -67,10 +67,10 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
           return Theme(
               data: ThemeData.dark().copyWith(
                 colorScheme: ColorScheme.light(
-                  primary: Colors.deepPurple,
-                  onPrimary: Colors.white,
+                  primary: Colors.white,
+                  onPrimary: Colors.deepPurple[300],
                   surface: Colors.deepPurple,
-                  onSurface: Colors.deepPurple,
+                  onSurface: Colors.black,
                 ),
                 dialogBackgroundColor: Colors.white,
               ),
@@ -120,6 +120,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                           child: Container(
                         width: MediaQuery.of(context).size.width * 0.3,
                         child: TextFormField(
+                          cursorColor: Colors.deepPurple,
                           onChanged: (value) {
                             setState(() {
                               systolic = value;
@@ -127,13 +128,18 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                           },
                           keyboardType: TextInputType.number,
                           style: TextStyle(fontSize: 20),
-                          decoration: InputDecoration(hintText: "systolic"),
+                          decoration: InputDecoration(
+                              hintText: "systolic",
+                              focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 1, color: Colors.deepPurple))),
                         ),
                       )),
                       Form(
                           child: Container(
                         width: MediaQuery.of(context).size.width * 0.3,
                         child: TextFormField(
+                          cursorColor: Colors.deepPurple,
                           onChanged: (value) {
                             setState(() {
                               diastolic = value;
@@ -141,13 +147,18 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                           },
                           keyboardType: TextInputType.number,
                           style: TextStyle(fontSize: 20),
-                          decoration: InputDecoration(hintText: "diastolic"),
+                          decoration: InputDecoration(
+                              hintText: "diastolic",
+                              focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 1, color: Colors.deepPurple))),
                         ),
                       )),
                       Form(
                           child: Container(
                         width: MediaQuery.of(context).size.width * 0.3,
                         child: TextFormField(
+                          cursorColor: Colors.deepPurple,
                           onChanged: (value) {
                             setState(() {
                               pulse = value;
@@ -155,7 +166,11 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                           },
                           keyboardType: TextInputType.number,
                           style: TextStyle(fontSize: 20),
-                          decoration: InputDecoration(hintText: "pulse"),
+                          decoration: InputDecoration(
+                              hintText: "pulse",
+                              focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 1, color: Colors.deepPurple))),
                         ),
                       ))
                     ],

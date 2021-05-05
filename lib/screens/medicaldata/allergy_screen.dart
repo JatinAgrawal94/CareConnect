@@ -94,6 +94,7 @@ class _AllergyScreenState extends State<AllergyScreen> {
                                 textAlign: TextAlign.left,
                               )),
                           TextFormField(
+                            cursorColor: Colors.deepPurple,
                             onChanged: (value) {
                               setState(() {
                                 type = value;
@@ -109,8 +110,9 @@ class _AllergyScreenState extends State<AllergyScreen> {
                               fontSize: 18,
                             ),
                             decoration: InputDecoration(
-                                border: UnderlineInputBorder(
-                                    borderSide: BorderSide(width: 1))),
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 1, color: Colors.deepPurple))),
                             keyboardType: TextInputType.text,
                           ),
                           Container(

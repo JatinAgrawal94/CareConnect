@@ -146,6 +146,7 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                 width: MediaQuery.of(context).size.width * 0.5,
                                 child: Form(
                                     child: TextFormField(
+                                        cursorColor: Colors.deepPurple,
                                         onChanged: (value) {
                                           setState(() {
                                             doctor = value;
@@ -153,7 +154,12 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                         },
                                         keyboardType: TextInputType.text,
                                         decoration: InputDecoration(
-                                            hintText: "Enter Doctor"))))
+                                            hintText: "Enter Doctor",
+                                            focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color:
+                                                        Colors.deepPurple))))))
                           ],
                         ),
                       ),
@@ -166,6 +172,7 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                 width: MediaQuery.of(context).size.width * 0.5,
                                 child: Form(
                                     child: TextFormField(
+                                        cursorColor: Colors.deepPurple,
                                         onChanged: (value) {
                                           setState(() {
                                             place = value;
@@ -173,7 +180,12 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                         },
                                         keyboardType: TextInputType.text,
                                         decoration: InputDecoration(
-                                            hintText: "Enter Place")))),
+                                            hintText: "Enter Place",
+                                            focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color:
+                                                        Colors.deepPurple)))))),
                           ])),
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
