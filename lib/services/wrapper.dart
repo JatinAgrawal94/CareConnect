@@ -23,6 +23,7 @@ class Wrapper extends StatelessWidget {
         child: Signin(),
       );
     } else {
+      // Navigator.pop(context);
       if (user.roleGet == 'doctor') {
         return GestureDetector(
             onTap: () {
@@ -32,7 +33,7 @@ class Wrapper extends StatelessWidget {
                 FocusManager.instance.primaryFocus.unfocus();
               }
             },
-            child: DoctorHome());
+            child: DoctorHome(email: user.emailGet));
       } else if (user.roleGet == 'patient') {
         return GestureDetector(
             onTap: () {
@@ -42,7 +43,9 @@ class Wrapper extends StatelessWidget {
                 FocusManager.instance.primaryFocus.unfocus();
               }
             },
-            child: PatientHome());
+            child: PatientHome(
+              email: user.emailGet,
+            ));
       } else {
         return GestureDetector(
           onTap: () {

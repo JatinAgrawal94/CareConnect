@@ -190,7 +190,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                           shape: RoundedRectangleBorder(
                                               borderRadius: BorderRadius.all(
                                                   Radius.circular(50)))),
-                                      onPressed: () {},
+                                      onPressed: () async {},
                                     ))
                                 : Container(),
                           ],

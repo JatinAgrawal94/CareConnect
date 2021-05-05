@@ -53,6 +53,11 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+          textSelectionTheme: TextSelectionThemeData(
+              selectionHandleColor: Colors.deepPurple,
+              cursorColor: Colors.deepPurple,
+              selectionColor: Colors.deepPurple)),
       home: SplashScreen(
         seconds: 4,
         navigateAfterSeconds: MyApp(),

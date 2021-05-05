@@ -1,5 +1,4 @@
 import 'package:careconnect/components/loading.dart';
-import 'package:careconnect/models/registereduser.dart';
 import 'package:careconnect/screens/medical_info.dart';
 import 'package:careconnect/screens/userdataforms/doctor_profile.dart';
 import 'package:careconnect/screens/userdataforms/patient_add_form.dart';
@@ -8,26 +7,27 @@ import 'package:careconnect/services/doctorData.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
-import 'package:provider/provider.dart';
 
 class DoctorHome extends StatefulWidget {
-  DoctorHome({Key key}) : super(key: key);
+  final String email;
+  DoctorHome({Key key, this.email}) : super(key: key);
 
   @override
-  _DoctorHomeState createState() => _DoctorHomeState();
+  _DoctorHomeState createState() => _DoctorHomeState(this.email);
 }
 
 class _DoctorHomeState extends State<DoctorHome> {
+  String email;
+  _DoctorHomeState(this.email);
   AuthService auth = AuthService();
   PatientData patient = PatientData();
   DoctorData doctor = DoctorData();
   static String patientId;
   CollectionReference patientList =
       FirebaseFirestore.instance.collection('Patient');
-  var user;
-  var email;
-  var documentId;
-  
+
+  String documentId;
+
   @override
   void initState() {
     super.initState();
@@ -38,16 +38,8 @@ class _DoctorHomeState extends State<DoctorHome> {
     });
   }
 
-  void getEmail(value) {
-    setState(() {
-      this.email = value;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    user = Provider.of<RegisteredUser>(context);
-    getEmail(user.emailGet);
     return Scaffold(
         appBar: AppBar(
           title: Text("Doctor"),

@@ -82,7 +82,7 @@ class PatientData {
         .collection('stats')
         .get()
         .then((QuerySnapshot snapshot) {
-      return snapshot.docs.forEach((element) {
+      snapshot.docs.forEach((element) {
         data.add({
           'noofpatients': element['noofpatients'],
           'noofdoctors': element['noofdoctors'],
@@ -364,6 +364,7 @@ class PatientData {
 
   Future getDocsId(String email) async {
     var id;
+    print("$email in getDocsId");
     await FirebaseFirestore.instance
         .collection('Patient')
         .where('email', isEqualTo: email)
@@ -377,7 +378,8 @@ class PatientData {
   }
 
 // yet to be configured not ready to be used
-  Future deletePatieint(String patientId, String userId) {
+  Future deletePatient(String patientId, String userId) {
+    var id;
     CollectionReference patient =
         FirebaseFirestore.instance.collection('Patient');
     patient
@@ -385,5 +387,20 @@ class PatientData {
         .delete()
         .then((value) => print("User Deleted"))
         .catchError((error) => print("Failed to delete user: $error"));
+
+    CollectionReference user = FirebaseFirestore.instance.collection('user');
+
+    user
+        .where('userid', isEqualTo: userId)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((element) {
+        id = element.id;
+      });
+    });
+
+    user.doc(id).delete().then((value) {
+      print("Patient Deleted");
+    }).catchError((error) => print(error));
   }
 }

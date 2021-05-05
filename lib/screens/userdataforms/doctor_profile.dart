@@ -90,40 +90,28 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               padding: EdgeInsets.all(15),
                               child: CircleAvatar(
                                 backgroundColor: Colors.grey,
-                                child: _image != null
-                                    ? ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                        child: Image.file(
-                                          File(_image.path),
-                                          width: 140,
-                                          height: 140,
-                                          fit: BoxFit.fill,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      borderRadius: BorderRadius.circular(100)),
+                                  width: 140,
+                                  height: 140,
+                                  child: imageURL != null
+                                      ? ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(100),
+                                          child: Image.network(
+                                            imageURL,
+                                            width: 140,
+                                            height: 140,
+                                            fit: BoxFit.fill,
+                                          ),
+                                        )
+                                      : Icon(
+                                          Icons.camera_alt,
+                                          color: Colors.grey[800],
                                         ),
-                                      )
-                                    : Container(
-                                        decoration: BoxDecoration(
-                                            color: Colors.deepPurple[300],
-                                            borderRadius:
-                                                BorderRadius.circular(100)),
-                                        width: 140,
-                                        height: 140,
-                                        child: imageURL != null
-                                            ? ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(100),
-                                                child: Image.network(
-                                                  imageURL,
-                                                  width: 140,
-                                                  height: 140,
-                                                  fit: BoxFit.fill,
-                                                ),
-                                              )
-                                            : Icon(
-                                                Icons.camera_alt,
-                                                color: Colors.grey[800],
-                                              ),
-                                      ),
+                                ),
                               ),
                             ))
                           ],

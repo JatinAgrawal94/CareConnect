@@ -14,12 +14,21 @@ class AuthService {
 
   // get RegisteredUser(model) format for logged in user.
   RegisteredUser _userFromFirebase(User user) {
+    String roleLocal;
+    String useridLocal;
     if (user != null) {
+      if (AuthService.userid == null) {
+        print("I was here");
+        _authorize(user.email).then((value) {
+          roleLocal = value['role'];
+          useridLocal = value['userid'];
+        });
+      }
       return RegisteredUser(
           email: user.email,
           uid: user.uid,
-          role: AuthService.role,
-          userid: userid);
+          role: roleLocal != null ? roleLocal : AuthService.role,
+          userid: useridLocal != null ? useridLocal : AuthService.userid);
     } else {
       return null;
     }
@@ -30,8 +39,6 @@ class AuthService {
     return FirebaseAuth.instance
         .authStateChanges()
         .map((User user) => _userFromFirebase(user));
-
-    // .listen((User user) => _userFromFirebase(user));
   }
 
   void signoutmethod() async {
@@ -53,15 +60,22 @@ class AuthService {
     }
   }
 
-  _authorize(String email) async {
-    _firestore
+  Future _authorize(String email) async {
+    List data = [];
+    print("I was in authorize");
+    await _firestore
         .collection('users')
         .where('email', isEqualTo: email)
         .get()
         .then((QuerySnapshot snapshot) {
       role = snapshot.docs[0]['role'];
       userid = snapshot.docs[0]['userid'];
+      data.add({
+        'role': snapshot.docs[0]['role'],
+        'userid': snapshot.docs[0]['userid']
+      });
     });
+    return data;
   }
 
   Future resetPasswordmethod(String email) async {
@@ -84,13 +98,10 @@ class AuthService {
       return "user-created";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        // print('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
-        // print('The account already exists for that email.');
         return 'email-already-in-use';
       }
     } catch (e) {
-      // print(e);
       return e;
     }
   }

@@ -533,53 +533,56 @@ class _PatientAddFormState extends State<PatientAddForm> {
                             children: <Widget>[
                               ElevatedButton(
                                   onPressed: () async {
-                                    final result =
-                                        await auth.registerUser(email);
-                                    if (result['msg'] == 'user-created') {
-                                      await patientData.addPatient({
-                                        'name': name,
-                                        'email': email,
-                                        'dateofbirth':
-                                            "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                        'gender': gender == 0
-                                            ? 'Male'
-                                            : gender == 1
-                                                ? 'Female'
-                                                : 'Other',
-                                        'bloodgroup': bloodgroup,
-                                        'phoneno': contact,
-                                        'insuranceno': insuranceno,
-                                        'address': address,
-                                        'userid': 'P$_patientId'
-                                      });
-                                      patientData.increementNoOfPatients(
-                                          documentId, _patientId);
+                                    if (patientaddformkey.currentState
+                                        .validate()) {
+                                      final result =
+                                          await auth.registerUser(email);
+                                      if (result['msg'] == 'user-created') {
+                                        await patientData.addPatient({
+                                          'name': name,
+                                          'email': email,
+                                          'dateofbirth':
+                                              "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                          'gender': gender == 0
+                                              ? 'Male'
+                                              : gender == 1
+                                                  ? 'Female'
+                                                  : 'Other',
+                                          'bloodgroup': bloodgroup,
+                                          'phoneno': contact,
+                                          'insuranceno': insuranceno,
+                                          'address': address,
+                                          'userid': 'P$_patientId'
+                                        });
+                                        patientData.increementNoOfPatients(
+                                            documentId, _patientId);
 
-                                      if (_image != null) {
-                                        patientData.uploadFile(
-                                            File(_image.path), _patientId);
+                                        if (_image != null) {
+                                          patientData.uploadFile(
+                                              File(_image.path), _patientId);
+                                        }
+                                        await auth.sendMails(
+                                            email, result['password']);
+                                        Navigator.pop(context);
+
+                                        return Fluttertoast.showToast(
+                                            msg: "Patient Added",
+                                            toastLength: Toast.LENGTH_LONG,
+                                            gravity: ToastGravity.SNACKBAR,
+                                            backgroundColor: Colors.grey,
+                                            textColor: Colors.white,
+                                            fontSize: 15,
+                                            timeInSecForIosWeb: 1);
+                                      } else {
+                                        Fluttertoast.showToast(
+                                            msg: result['msg'],
+                                            toastLength: Toast.LENGTH_LONG,
+                                            gravity: ToastGravity.SNACKBAR,
+                                            backgroundColor: Colors.grey,
+                                            textColor: Colors.white,
+                                            fontSize: 15,
+                                            timeInSecForIosWeb: 1);
                                       }
-                                      await auth.sendMails(
-                                          email, result['password']);
-                                      Navigator.pop(context);
-
-                                      return Fluttertoast.showToast(
-                                          msg: "Patient Added",
-                                          toastLength: Toast.LENGTH_LONG,
-                                          gravity: ToastGravity.SNACKBAR,
-                                          backgroundColor: Colors.grey,
-                                          textColor: Colors.white,
-                                          fontSize: 15,
-                                          timeInSecForIosWeb: 1);
-                                    } else {
-                                      Fluttertoast.showToast(
-                                          msg: result['msg'],
-                                          toastLength: Toast.LENGTH_LONG,
-                                          gravity: ToastGravity.SNACKBAR,
-                                          backgroundColor: Colors.grey,
-                                          textColor: Colors.white,
-                                          fontSize: 15,
-                                          timeInSecForIosWeb: 1);
                                     }
                                   },
                                   child: Text(

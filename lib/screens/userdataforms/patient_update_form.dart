@@ -1,5 +1,6 @@
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/services/patientdata.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -240,6 +241,7 @@ class _PatientFormState extends State<PatientForm> {
                                       width: MediaQuery.of(context).size.width *
                                           0.5,
                                       child: TextFormField(
+                                        cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
                                           setState(() {
                                             name = val;
@@ -252,15 +254,22 @@ class _PatientFormState extends State<PatientForm> {
                                           return null;
                                         },
                                         controller:
-                                            TextEditingController(text: name),
+                                            TextEditingController.fromValue(
+                                                TextEditingValue(
+                                                    text: name,
+                                                    selection:
+                                                        TextSelection.collapsed(
+                                                            offset:
+                                                                name.length))),
                                         keyboardType: TextInputType.name,
                                         style: TextStyle(
                                           fontSize: 18,
                                         ),
                                         decoration: InputDecoration(
-                                            border: UnderlineInputBorder(
-                                                borderSide:
-                                                    BorderSide(width: 1))),
+                                            focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Colors.deepPurple))),
                                       ))
                                 ],
                               ),
@@ -283,6 +292,7 @@ class _PatientFormState extends State<PatientForm> {
                                       width: MediaQuery.of(context).size.width *
                                           0.5,
                                       child: TextFormField(
+                                        cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
                                           setState(() {
                                             email = val;
@@ -295,16 +305,23 @@ class _PatientFormState extends State<PatientForm> {
                                           return null;
                                         },
                                         controller:
-                                            TextEditingController(text: email),
+                                            TextEditingController.fromValue(
+                                                TextEditingValue(
+                                                    text: email,
+                                                    selection:
+                                                        TextSelection.collapsed(
+                                                            offset:
+                                                                email.length))),
                                         keyboardType:
                                             TextInputType.emailAddress,
                                         style: TextStyle(
                                           fontSize: 18,
                                         ),
                                         decoration: InputDecoration(
-                                            border: UnderlineInputBorder(
-                                                borderSide:
-                                                    BorderSide(width: 1))),
+                                            focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Colors.deepPurple))),
                                       ))
                                 ],
                               ),
@@ -441,6 +458,7 @@ class _PatientFormState extends State<PatientForm> {
                                       width: MediaQuery.of(context).size.width *
                                           0.5,
                                       child: TextFormField(
+                                        cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
                                           setState(() {
                                             contact = val;
@@ -452,16 +470,23 @@ class _PatientFormState extends State<PatientForm> {
                                           }
                                           return null;
                                         },
-                                        controller: TextEditingController(
-                                            text: contact),
+                                        controller:
+                                            TextEditingController.fromValue(
+                                                TextEditingValue(
+                                                    text: contact,
+                                                    selection:
+                                                        TextSelection.collapsed(
+                                                            offset: contact
+                                                                .length))),
                                         keyboardType: TextInputType.phone,
                                         style: TextStyle(
                                           fontSize: 18,
                                         ),
                                         decoration: InputDecoration(
-                                            border: UnderlineInputBorder(
-                                                borderSide:
-                                                    BorderSide(width: 1))),
+                                            focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Colors.deepPurple))),
                                       ))
                                 ],
                               ),
@@ -484,6 +509,7 @@ class _PatientFormState extends State<PatientForm> {
                                       width: MediaQuery.of(context).size.width *
                                           0.5,
                                       child: TextFormField(
+                                        cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
                                           setState(() {
                                             insuranceno = val;
@@ -495,16 +521,23 @@ class _PatientFormState extends State<PatientForm> {
                                           }
                                           return null;
                                         },
-                                        controller: TextEditingController(
-                                            text: insuranceno),
+                                        controller:
+                                            TextEditingController.fromValue(
+                                                TextEditingValue(
+                                                    text: insuranceno,
+                                                    selection:
+                                                        TextSelection.collapsed(
+                                                            offset: insuranceno
+                                                                .length))),
                                         keyboardType: TextInputType.text,
                                         style: TextStyle(
                                           fontSize: 18,
                                         ),
                                         decoration: InputDecoration(
-                                            border: UnderlineInputBorder(
-                                                borderSide:
-                                                    BorderSide(width: 1))),
+                                            focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Colors.deepPurple))),
                                       ))
                                 ],
                               ),
@@ -527,6 +560,7 @@ class _PatientFormState extends State<PatientForm> {
                                       width: MediaQuery.of(context).size.width *
                                           0.5,
                                       child: TextFormField(
+                                        cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
                                           setState(() {
                                             address = val;
@@ -538,17 +572,24 @@ class _PatientFormState extends State<PatientForm> {
                                           }
                                           return null;
                                         },
-                                        controller: TextEditingController(
-                                            text: address),
+                                        controller:
+                                            TextEditingController.fromValue(
+                                                TextEditingValue(
+                                                    text: address,
+                                                    selection:
+                                                        TextSelection.collapsed(
+                                                            offset: address
+                                                                .length))),
                                         maxLines: 3,
                                         keyboardType: TextInputType.name,
                                         style: TextStyle(
                                           fontSize: 18,
                                         ),
                                         decoration: InputDecoration(
-                                            border: UnderlineInputBorder(
-                                                borderSide:
-                                                    BorderSide(width: 1))),
+                                            focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Colors.deepPurple))),
                                       ))
                                 ],
                               ),
@@ -561,36 +602,39 @@ class _PatientFormState extends State<PatientForm> {
                                 children: <Widget>[
                                   ElevatedButton(
                                       onPressed: () async {
-                                        await patientData
-                                            .updatePatientinfo(patientId, {
-                                          'name': name,
-                                          'email': email,
-                                          'dateofbirth':
-                                              "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                          'gender': gender == 0
-                                              ? 'Male'
-                                              : gender == 1
-                                                  ? 'Female'
-                                                  : 'Other',
-                                          'bloodgroup': bloodgroup,
-                                          'phoneno': contact,
-                                          'insuranceno': insuranceno,
-                                          'address': address
-                                        });
-                                        if (_image != null) {
-                                          patientData.updateFile(
-                                              File(_image.path), '$userId');
-                                        }
+                                        if (patientupdateformkey.currentState
+                                            .validate()) {
+                                          await patientData
+                                              .updatePatientinfo(patientId, {
+                                            'name': name,
+                                            'email': email,
+                                            'dateofbirth':
+                                                "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                            'gender': gender == 0
+                                                ? 'Male'
+                                                : gender == 1
+                                                    ? 'Female'
+                                                    : 'Other',
+                                            'bloodgroup': bloodgroup,
+                                            'phoneno': contact,
+                                            'insuranceno': insuranceno,
+                                            'address': address
+                                          });
+                                          if (_image != null) {
+                                            patientData.updateFile(
+                                                File(_image.path), '$userId');
+                                          }
 
-                                        Navigator.pop(context);
-                                        return Fluttertoast.showToast(
-                                            msg: "Data Updated",
-                                            toastLength: Toast.LENGTH_LONG,
-                                            gravity: ToastGravity.SNACKBAR,
-                                            backgroundColor: Colors.grey,
-                                            textColor: Colors.white,
-                                            fontSize: 15,
-                                            timeInSecForIosWeb: 1);
+                                          Navigator.pop(context);
+                                          return Fluttertoast.showToast(
+                                              msg: "Data Updated",
+                                              toastLength: Toast.LENGTH_LONG,
+                                              gravity: ToastGravity.SNACKBAR,
+                                              backgroundColor: Colors.grey,
+                                              textColor: Colors.white,
+                                              fontSize: 15,
+                                              timeInSecForIosWeb: 1);
+                                        }
                                       },
                                       child: Text(
                                         "Save",

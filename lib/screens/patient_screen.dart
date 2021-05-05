@@ -1,24 +1,23 @@
 import 'package:careconnect/components/loading.dart';
-import 'package:careconnect/models/registereduser.dart';
 import 'package:careconnect/screens/medical_info.dart';
 import 'package:careconnect/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
-import 'package:provider/provider.dart';
 
 class PatientHome extends StatefulWidget {
-  PatientHome({Key key}) : super(key: key);
+  final String email;
+  PatientHome({Key key, this.email}) : super(key: key);
 
   @override
-  _PatientHomeState createState() => _PatientHomeState();
+  _PatientHomeState createState() => _PatientHomeState(this.email);
 }
 
 class _PatientHomeState extends State<PatientHome> {
+  String email;
+  _PatientHomeState(this.email);
   AuthService auth = AuthService();
   PatientData patient = PatientData();
-  var user;
-  var email;
-  var documentId;
+  String documentId;
 
   @override
   void initState() {
@@ -30,16 +29,8 @@ class _PatientHomeState extends State<PatientHome> {
     });
   }
 
-  void getEmail(value) {
-    setState(() {
-      this.email = value;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    user = Provider.of<RegisteredUser>(context);
-    getEmail(user.emailGet);
     return documentId != null
         ? MedicalScreen(
             patientId: documentId,

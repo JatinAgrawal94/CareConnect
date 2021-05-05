@@ -241,6 +241,7 @@ class _DoctorFormState extends State<DoctorForm> {
                                       width: MediaQuery.of(context).size.width *
                                           0.5,
                                       child: TextFormField(
+                                        cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
                                           setState(() {
                                             name = val;
@@ -253,15 +254,22 @@ class _DoctorFormState extends State<DoctorForm> {
                                           return null;
                                         },
                                         controller:
-                                            TextEditingController(text: name),
+                                            TextEditingController.fromValue(
+                                                TextEditingValue(
+                                                    text: name,
+                                                    selection:
+                                                        TextSelection.collapsed(
+                                                            offset:
+                                                                name.length))),
                                         keyboardType: TextInputType.name,
                                         style: TextStyle(
                                           fontSize: 18,
                                         ),
                                         decoration: InputDecoration(
-                                            border: UnderlineInputBorder(
-                                                borderSide:
-                                                    BorderSide(width: 1))),
+                                            focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Colors.deepPurple))),
                                       ))
                                 ],
                               ),
@@ -284,6 +292,7 @@ class _DoctorFormState extends State<DoctorForm> {
                                       width: MediaQuery.of(context).size.width *
                                           0.5,
                                       child: TextFormField(
+                                        cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
                                           setState(() {
                                             email = val;
@@ -296,16 +305,23 @@ class _DoctorFormState extends State<DoctorForm> {
                                           return null;
                                         },
                                         controller:
-                                            TextEditingController(text: email),
+                                            TextEditingController.fromValue(
+                                                TextEditingValue(
+                                                    text: email,
+                                                    selection:
+                                                        TextSelection.collapsed(
+                                                            offset:
+                                                                email.length))),
                                         keyboardType:
                                             TextInputType.emailAddress,
                                         style: TextStyle(
                                           fontSize: 18,
                                         ),
                                         decoration: InputDecoration(
-                                            border: UnderlineInputBorder(
-                                                borderSide:
-                                                    BorderSide(width: 1))),
+                                            focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Colors.deepPurple))),
                                       ))
                                 ],
                               ),
@@ -441,6 +457,7 @@ class _DoctorFormState extends State<DoctorForm> {
                                       width: MediaQuery.of(context).size.width *
                                           0.5,
                                       child: TextFormField(
+                                        cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
                                           setState(() {
                                             contact = val;
@@ -452,16 +469,23 @@ class _DoctorFormState extends State<DoctorForm> {
                                           }
                                           return null;
                                         },
-                                        controller: TextEditingController(
-                                            text: contact),
+                                        controller:
+                                            TextEditingController.fromValue(
+                                                TextEditingValue(
+                                                    text: contact,
+                                                    selection:
+                                                        TextSelection.collapsed(
+                                                            offset: contact
+                                                                .length))),
                                         keyboardType: TextInputType.phone,
                                         style: TextStyle(
                                           fontSize: 18,
                                         ),
                                         decoration: InputDecoration(
-                                            border: UnderlineInputBorder(
-                                                borderSide:
-                                                    BorderSide(width: 1))),
+                                            focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Colors.deepPurple))),
                                       ))
                                 ],
                               ),
@@ -484,6 +508,7 @@ class _DoctorFormState extends State<DoctorForm> {
                                       width: MediaQuery.of(context).size.width *
                                           0.5,
                                       child: TextFormField(
+                                        cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
                                           setState(() {
                                             designation = val;
@@ -495,16 +520,23 @@ class _DoctorFormState extends State<DoctorForm> {
                                           }
                                           return null;
                                         },
-                                        controller: TextEditingController(
-                                            text: designation),
+                                        controller:
+                                            TextEditingController.fromValue(
+                                                TextEditingValue(
+                                                    text: designation,
+                                                    selection:
+                                                        TextSelection.collapsed(
+                                                            offset: designation
+                                                                .length))),
                                         keyboardType: TextInputType.text,
                                         style: TextStyle(
                                           fontSize: 18,
                                         ),
                                         decoration: InputDecoration(
-                                            border: UnderlineInputBorder(
-                                                borderSide:
-                                                    BorderSide(width: 1))),
+                                            focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Colors.deepPurple))),
                                       ))
                                 ],
                               ),
@@ -527,6 +559,7 @@ class _DoctorFormState extends State<DoctorForm> {
                                       width: MediaQuery.of(context).size.width *
                                           0.5,
                                       child: TextFormField(
+                                        cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
                                           setState(() {
                                             address = val;
@@ -538,17 +571,25 @@ class _DoctorFormState extends State<DoctorForm> {
                                           }
                                           return null;
                                         },
-                                        controller: TextEditingController(
-                                            text: address),
+                                        controller:
+                                            TextEditingController.fromValue(
+                                                TextEditingValue(
+                                                    text: address,
+                                                    selection:
+                                                        TextSelection.collapsed(
+                                                            offset: address
+                                                                .length))),
                                         maxLines: 3,
                                         keyboardType: TextInputType.name,
                                         style: TextStyle(
                                           fontSize: 18,
                                         ),
                                         decoration: InputDecoration(
-                                            border: UnderlineInputBorder(
-                                                borderSide:
-                                                    BorderSide(width: 1))),
+                                          focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.deepPurple,
+                                                  width: 1.0)),
+                                        ),
                                       ))
                                 ],
                               ),
@@ -561,35 +602,38 @@ class _DoctorFormState extends State<DoctorForm> {
                                 children: <Widget>[
                                   ElevatedButton(
                                       onPressed: () async {
-                                        await _doctorData
-                                            .updateDoctorinfo(doctorId, {
-                                          'name': name,
-                                          'email': email,
-                                          'dateofbirth':
-                                              "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                          'gender': gender == 0
-                                              ? 'Male'
-                                              : gender == 1
-                                                  ? 'Female'
-                                                  : 'Other',
-                                          'bloodgroup': bloodgroup,
-                                          'contact': contact,
-                                          'designation': designation,
-                                          'address': address
-                                        });
-                                        if (_image != null) {
-                                          _doctorData.updateFile(
-                                              File(_image.path), '$userId');
+                                        if (doctorupdateformkey.currentState
+                                            .validate()) {
+                                          await _doctorData
+                                              .updateDoctorinfo(doctorId, {
+                                            'name': name,
+                                            'email': email,
+                                            'dateofbirth':
+                                                "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                            'gender': gender == 0
+                                                ? 'Male'
+                                                : gender == 1
+                                                    ? 'Female'
+                                                    : 'Other',
+                                            'bloodgroup': bloodgroup,
+                                            'contact': contact,
+                                            'designation': designation,
+                                            'address': address
+                                          });
+                                          if (_image != null) {
+                                            _doctorData.updateFile(
+                                                File(_image.path), '$userId');
+                                          }
+                                          Navigator.pop(context);
+                                          return Fluttertoast.showToast(
+                                              msg: "Data Updated",
+                                              toastLength: Toast.LENGTH_LONG,
+                                              gravity: ToastGravity.SNACKBAR,
+                                              backgroundColor: Colors.grey,
+                                              textColor: Colors.white,
+                                              fontSize: 15,
+                                              timeInSecForIosWeb: 1);
                                         }
-                                        Navigator.pop(context);
-                                        return Fluttertoast.showToast(
-                                            msg: "Data Updated",
-                                            toastLength: Toast.LENGTH_LONG,
-                                            gravity: ToastGravity.SNACKBAR,
-                                            backgroundColor: Colors.grey,
-                                            textColor: Colors.white,
-                                            fontSize: 15,
-                                            timeInSecForIosWeb: 1);
                                       },
                                       child: Text(
                                         "Save",
