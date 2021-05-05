@@ -22,13 +22,6 @@ class AllergyList extends StatelessWidget {
                   "Type: $type",
                   style: TextStyle(fontSize: 18),
                 ),
-                IconButton(
-                    icon: Icon(
-                      Icons.delete,
-                      size: 40,
-                      color: Colors.grey[300],
-                    ),
-                    onPressed: () {})
               ]),
           Text(
             "Date:$date",

@@ -76,7 +76,7 @@ class AdminData {
 
   Future<void> updateAdmininfo(adminId, data) async {
     CollectionReference admin = FirebaseFirestore.instance.collection('Admin');
-    return await admin
+    await admin
         .doc(adminId)
         .update({
           'name': data['name'],

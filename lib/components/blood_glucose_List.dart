@@ -45,9 +45,6 @@ class BloodGlucoseList extends StatelessWidget {
                     ),
                   ],
                 )),
-            IconButton(
-                icon: Icon(Icons.delete, size: 40, color: Colors.grey[300]),
-                onPressed: () {})
           ],
         ));
   }

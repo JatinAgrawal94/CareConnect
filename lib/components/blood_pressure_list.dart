@@ -64,13 +64,6 @@ class _BloodPressureListState extends State<BloodPressureList> {
               ],
             ),
           ),
-          Container(
-              child: IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.delete,
-                    size: 35,
-                  ))),
         ],
       ),
     );

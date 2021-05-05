@@ -17,6 +17,7 @@ class AuthService {
     String roleLocal;
     String useridLocal;
     if (user != null) {
+      print(user.email);
       if (AuthService.userid == null) {
         print("I was here");
         _authorize(user.email).then((value) {

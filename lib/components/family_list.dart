@@ -30,13 +30,6 @@ class _FamilyListState extends State<FamilyList> {
               Text("Description: $description", style: TextStyle(fontSize: 20)),
             ],
           ),
-          IconButton(
-              icon: Icon(
-                Icons.delete,
-                size: 35,
-                color: Colors.grey[200],
-              ),
-              onPressed: () {})
         ],
       ),
     );

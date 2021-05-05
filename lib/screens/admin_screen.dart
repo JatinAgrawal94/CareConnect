@@ -124,6 +124,7 @@ class _AdminHomeState extends State<AdminHome> {
                 Container(
                   child: StreamBuilder<QuerySnapshot>(
                       stream: patientList.snapshots(),
+                      
                       builder: (BuildContext context,
                           AsyncSnapshot<QuerySnapshot> snapshot) {
                         if (snapshot.hasError) {

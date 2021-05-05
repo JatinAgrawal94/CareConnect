@@ -51,13 +51,6 @@ class _MedicalVisitListState extends State<MedicalVisitList> {
               ],
             ),
           ),
-          Container(
-              child: IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.delete,
-                    size: 35,
-                  ))),
         ],
       ),
     );
