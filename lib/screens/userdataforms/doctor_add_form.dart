@@ -184,15 +184,6 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                   ),
                           )),
                         )),
-                    IconButton(
-                      icon: Icon(
-                        Icons.perm_contact_cal,
-                        color: Colors.deepPurple,
-                      ),
-                      onPressed: () {},
-                      iconSize: 50,
-                      color: Colors.yellow[800],
-                    )
                   ],
                 ),
 // --------------------------form begins here---------------------------------------//
