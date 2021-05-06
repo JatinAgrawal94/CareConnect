@@ -210,7 +210,9 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                 onPressed: () {
                                   _setDate(context);
                                 }),
-                            Text("23/04/2021", style: TextStyle(fontSize: 20)),
+                            Text(
+                                "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                style: TextStyle(fontSize: 20)),
                           ],
                         )),
                     Container(
