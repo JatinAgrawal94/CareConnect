@@ -186,13 +186,17 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                               _setDate(context);
                             },
                           ),
-                          Text("12/04/2021", style: TextStyle(fontSize: 20)),
+                          Text(
+                              "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                              style: TextStyle(fontSize: 20)),
                           IconButton(
                               icon: Icon(Icons.timer_rounded),
                               onPressed: () {
                                 _setTime(context);
                               }),
-                          Text("05:21 PM", style: TextStyle(fontSize: 20))
+                          Text(
+                              "${selectedtime.hour.toString()}:${selectedtime.minute.toString()}",
+                              style: TextStyle(fontSize: 20))
                         ],
                       )),
                   ElevatedButton(

@@ -94,9 +94,9 @@ class _NotesScreenState extends State<NotesScreen> {
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: <Widget>[
-                              Icon(Icons.camera_alt_rounded, size: 40),
+                              /*Icon(Icons.camera_alt_rounded, size: 40),
                               Icon(Icons.video_call_outlined, size: 40),
-                              Icon(Icons.attach_file_outlined, size: 40),
+                              Icon(Icons.attach_file_outlined, size: 40),*/
                               ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                       primary: Colors.deepPurple),

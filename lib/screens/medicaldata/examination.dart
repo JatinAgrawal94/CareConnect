@@ -334,7 +334,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                   style: TextStyle(fontSize: 20),
                                 )
                               ])),
-                          Row(
+                         /* Row(
                             children: <Widget>[
                               IconButton(
                                   icon: Icon(
@@ -349,7 +349,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                   icon: Icon(Icons.attach_file, size: 30),
                                   onPressed: () {})
                             ],
-                          ),
+                          ),*/
                           ElevatedButton(
                               onPressed: () async {
                                 _patientData.addExamination(patientId, {

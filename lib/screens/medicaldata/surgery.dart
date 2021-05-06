@@ -179,9 +179,9 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: <Widget>[
-                                Icon(Icons.camera_alt, size: 30),
+                                /*Icon(Icons.camera_alt, size: 30),
                                 Icon(Icons.video_call, size: 30),
-                                Icon(Icons.attach_file, size: 30),
+                                Icon(Icons.attach_file, size: 30),*/
                                 ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                         primary: Colors.deepPurple),
