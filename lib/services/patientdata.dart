@@ -18,9 +18,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:careconnect/screens/medicaldata/prescription.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
+import 'package:image_picker/image_picker.dart';
 
 class PatientData {
   // keys to map correct data on aboutpage.
+  static PickedFile media;
+
+  PickedFile get getMedia {
+    return PatientData.media;
+  }
+
+  set setMedia(value) {
+    PatientData.media = value;
+  }
 
   final patientInfoKeys = {
     0: 'name',
@@ -35,7 +45,7 @@ class PatientData {
   };
 
 // widget to decide which page to route on medicaldata screen.
-  Widget getDataScreen(int index, String patientId) {
+  Widget getDataScreen(int index, String patientId, {String userId}) {
     if (index == 0) {
       return AboutScreen(
         patientId: patientId,
@@ -49,7 +59,7 @@ class PatientData {
     } else if (index == 3) {
       return BloodPressureScreen(patientId: patientId);
     } else if (index == 4) {
-      return ExaminationScreen(patientId: patientId);
+      return ExaminationScreen(patientId: patientId, userId: userId);
     } else if (index == 5) {
       return FamilyHistoryScreen(patientId: patientId);
     } else if (index == 6) {
@@ -329,6 +339,81 @@ class PatientData {
     }
   }
 
+  Future<void> uploadPatientPhoto(
+      File filepath, String date, String category, String userId) async {
+    try {
+      await firebase_storage.FirebaseStorage.instance
+          .ref('Patient/$userId/photo/$category/$date.png')
+          .putFile(filepath);
+      print("File Uploaded Successfully");
+    } on firebase_core.FirebaseException catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> uploadPatientVideo(
+      File filepath, String date, String category, String userId) async {
+    try {
+      await firebase_storage.FirebaseStorage.instance
+          .ref('Patient/$userId/video/$category/$date.mp4')
+          .putFile(filepath);
+    } on firebase_core.FirebaseException catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> uploadPatientFile(
+      File filepath, String date, String category, String userId) async {
+    try {
+      await firebase_storage.FirebaseStorage.instance
+          .ref('Patient/$userId/file/$category/$date.pdf')
+          .putFile(filepath);
+      print("File Uploaded Successfully");
+    } on firebase_core.FirebaseException catch (e) {
+      print(e);
+    }
+  }
+
+  _imgfromCamera() async {
+    ImagePicker picker = ImagePicker();
+    final pickerfile =
+        await picker.getImage(source: ImageSource.camera, imageQuality: 50);
+    PatientData.media = pickerfile;
+  }
+
+  _imgfromgallery() async {
+    ImagePicker picker = ImagePicker();
+    final galleryimage =
+        await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
+    PatientData.media = galleryimage;
+  }
+
+  void showpicker(context) {
+    PatientData patient = PatientData();
+    var image = showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+              child: Container(
+                  child: Wrap(children: <Widget>[
+            ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text("PhotoGallery"),
+                onTap: () async {
+                  patient._imgfromgallery();
+                  Navigator.of(context).pop();
+                }),
+            ListTile(
+                leading: Icon(Icons.photo_camera),
+                title: Text("Camera"),
+                onTap: () {
+                  patient._imgfromCamera();
+                  Navigator.of(context).pop();
+                }),
+          ])));
+        });
+  }
+
   Future<String> getProfileImageURL(String userId) async {
     try {
       String downloadURL = await firebase_storage.FirebaseStorage.instance
@@ -378,11 +463,11 @@ class PatientData {
   }
 
 // yet to be configured not ready to be used
-  Future deletePatient(String patientId, String userId) {
+  Future deletePatient(String patientId, String userId) async {
     var id;
     CollectionReference patient =
         FirebaseFirestore.instance.collection('Patient');
-    patient
+    await patient
         .doc(patientId)
         .delete()
         .then((value) => print("User Deleted"))
@@ -390,7 +475,7 @@ class PatientData {
 
     CollectionReference user = FirebaseFirestore.instance.collection('user');
 
-    user
+    await user
         .where('userid', isEqualTo: userId)
         .get()
         .then((QuerySnapshot snapshot) {
@@ -402,5 +487,19 @@ class PatientData {
     user.doc(id).delete().then((value) {
       print("Patient Deleted");
     }).catchError((error) => print(error));
+  }
+
+  Future getPatientUserId(String patientId) async {
+    CollectionReference user = FirebaseFirestore.instance.collection('Patient');
+    String userId;
+    user
+        .where('userid', isEqualTo: userId)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((element) {
+        userId = element['userid'];
+      });
+    });
+    return userId;
   }
 }

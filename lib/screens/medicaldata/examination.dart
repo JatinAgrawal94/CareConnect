@@ -4,19 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class ExaminationScreen extends StatefulWidget {
   final String patientId;
-  ExaminationScreen({Key key, @required this.patientId}) : super(key: key);
+  final String userId;
+  ExaminationScreen({Key key, @required this.patientId, this.userId})
+      : super(key: key);
 
   @override
-  _ExaminationScreenState createState() => _ExaminationScreenState(patientId);
+  _ExaminationScreenState createState() =>
+      _ExaminationScreenState(patientId, this.userId);
 }
 
 class _ExaminationScreenState extends State<ExaminationScreen> {
   final String patientId;
-  _ExaminationScreenState(this.patientId);
+  final String userId;
+  String category = "EX";
+  _ExaminationScreenState(this.patientId, this.userId);
   PatientData _patientData = PatientData();
+  PickedFile _mediaFile;
   DateTime selecteddate = DateTime.now();
   CollectionReference examination;
   String temperature = "";
@@ -334,22 +342,37 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                   style: TextStyle(fontSize: 20),
                                 )
                               ])),
-                         /* Row(
+                          Row(
                             children: <Widget>[
                               IconButton(
                                   icon: Icon(
                                     Icons.camera_alt,
                                     size: 30,
                                   ),
-                                  onPressed: () {}),
+                                  onPressed: () {
+                                    _patientData.showpicker(context);
+                                    _mediaFile = PatientData.media;
+                                  }),
                               IconButton(
                                   icon: Icon(Icons.video_call, size: 30),
-                                  onPressed: () {}),
+                                  onPressed: () {
+                                    // _patientData.uploadPatientVideo(
+                                    //     File(_mediaFile.path),
+                                    //     "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                    //     category,
+                                    //     userId);
+                                  }),
                               IconButton(
                                   icon: Icon(Icons.attach_file, size: 30),
-                                  onPressed: () {})
+                                  onPressed: () {
+                                    // _patientData.uploadPatientFile(
+                                    //     File(_mediaFile.path),
+                                    //     "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                    //     category,
+                                    //     userId);
+                                  })
                             ],
-                          ),*/
+                          ),
                           ElevatedButton(
                               onPressed: () async {
                                 _patientData.addExamination(patientId, {
@@ -364,6 +387,11 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                   'date':
                                       "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
                                 });
+                                _patientData.uploadPatientPhoto(
+                                    File(_mediaFile.path),
+                                    "${selecteddate.day}-${selecteddate.month}-${selecteddate.year}",
+                                    category,
+                                    userId);
                                 Fluttertoast.showToast(
                                     msg: "Data Saved",
                                     toastLength: Toast.LENGTH_LONG,

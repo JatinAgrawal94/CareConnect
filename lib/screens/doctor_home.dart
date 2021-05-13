@@ -103,8 +103,10 @@ class _DoctorHomeState extends State<DoctorHome> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  MedicalScreen(patientId: patientId)));
+                              builder: (context) => MedicalScreen(
+                                    patientId: patientId,
+                                    userId: document.data()['userid'],
+                                  )));
                     },
                   ),
                   decoration: BoxDecoration(border: Border.all(width: 0.3)),

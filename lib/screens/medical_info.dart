@@ -1,22 +1,25 @@
-  import 'package:careconnect/services/auth.dart';
+import 'package:careconnect/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 
 class MedicalScreen extends StatefulWidget {
   final String patientId;
   final bool patientScreen;
-  MedicalScreen({Key key, @required this.patientId, this.patientScreen})
+  final String userId;
+  MedicalScreen(
+      {Key key, @required this.patientId, this.patientScreen, this.userId})
       : super(key: key);
 
   @override
   _MedicalScreenState createState() =>
-      _MedicalScreenState(this.patientId, this.patientScreen);
+      _MedicalScreenState(this.patientId, this.patientScreen, this.userId);
 }
 
 class _MedicalScreenState extends State<MedicalScreen> {
   final String patientId;
   bool patientScreen;
-  _MedicalScreenState(this.patientId, this.patientScreen);
+  final String userId;
+  _MedicalScreenState(this.patientId, this.patientScreen, this.userId);
 
   PatientData _patientData = PatientData();
   AuthService auth = AuthService();
@@ -107,7 +110,8 @@ class _MedicalScreenState extends State<MedicalScreen> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => _patientData.getDataScreen(
-                              index, widget.patientId)));
+                              index, widget.patientId,
+                              userId: userId)));
                 },
               ));
             }));
