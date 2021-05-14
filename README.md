@@ -1,6 +1,6 @@
-# careconnect
+# Careconnect
 
-A new Flutter project.
+A Mobile App that helps doctors and patients manage medical data effectively, to overcome challenges faced in record-book approach.
 
 ## Getting Started
 
