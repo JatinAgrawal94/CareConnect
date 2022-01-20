@@ -19,6 +19,7 @@ import 'package:careconnect/screens/medicaldata/prescription.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 
 class PatientData {
   // keys to map correct data on aboutpage.
@@ -383,9 +384,14 @@ class PatientData {
 
   _imgfromgallery() async {
     ImagePicker picker = ImagePicker();
+
     final galleryimage =
         await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
     PatientData.media = galleryimage;
+  }
+
+  _pickMultipleFiles() async{
+    
   }
 
   void showpicker(context) {

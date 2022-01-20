@@ -1,13 +1,18 @@
 // file to check is user is logged in or not
 import 'package:careconnect/models/registereduser.dart';
-import 'package:careconnect/screens/admin_screen.dart';
 import 'package:careconnect/screens/authentication/signin.dart';
-import 'package:careconnect/screens/doctor_home.dart';
-import 'package:careconnect/screens/patient_screen.dart';
+import 'package:careconnect/services/role.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Wrapper extends StatelessWidget {
+class Wrapper extends StatefulWidget {
+  Wrapper({Key key}) : super(key: key);
+
+  @override
+  _WrapperState createState() => _WrapperState();
+}
+
+class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<RegisteredUser>(context);
@@ -23,31 +28,7 @@ class Wrapper extends StatelessWidget {
         child: Signin(),
       );
     } else {
-      // Navigator.pop(context);
-      if (user.roleGet == 'doctor') {
-        return GestureDetector(
-            onTap: () {
-              FocusScopeNode currentFocus = FocusScope.of(context);
-              if (!currentFocus.hasPrimaryFocus &&
-                  currentFocus.focusedChild != null) {
-                FocusManager.instance.primaryFocus.unfocus();
-              }
-            },
-            child: DoctorHome(email: user.emailGet));
-      } else if (user.roleGet == 'patient') {
-        return GestureDetector(
-            onTap: () {
-              FocusScopeNode currentFocus = FocusScope.of(context);
-              if (!currentFocus.hasPrimaryFocus &&
-                  currentFocus.focusedChild != null) {
-                FocusManager.instance.primaryFocus.unfocus();
-              }
-            },
-            child: PatientHome(
-              email: user.emailGet,
-            ));
-      } else {
-        return GestureDetector(
+      return GestureDetector(
           onTap: () {
             FocusScopeNode currentFocus = FocusScope.of(context);
             if (!currentFocus.hasPrimaryFocus &&
@@ -55,9 +36,7 @@ class Wrapper extends StatelessWidget {
               FocusManager.instance.primaryFocus.unfocus();
             }
           },
-          child: AdminHome(email: user.emailGet),
-        );
-      }
+          child: RoleAuthorization(email: user.emailGet));
     }
   }
 }

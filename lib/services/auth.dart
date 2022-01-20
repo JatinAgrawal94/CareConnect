@@ -12,24 +12,28 @@ class AuthService {
   static String role = 'doctor';
   static String userid;
 
+  Future getRole(String email) async {
+    List data = [];
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get()
+        .then((value) {
+      value.docs.forEach((element) {
+        // print(element['role']);
+        data.add({'role': element['role']});
+      });
+    });
+    return data;
+  }
+
   // get RegisteredUser(model) format for logged in user.
   RegisteredUser _userFromFirebase(User user) {
-    String roleLocal;
-    String useridLocal;
     if (user != null) {
-      print(user.email);
-      if (AuthService.userid == null) {
-        print("I was here");
-        _authorize(user.email).then((value) {
-          roleLocal = value['role'];
-          useridLocal = value['userid'];
-        });
-      }
       return RegisteredUser(
-          email: user.email,
-          uid: user.uid,
-          role: roleLocal != null ? roleLocal : AuthService.role,
-          userid: useridLocal != null ? useridLocal : AuthService.userid);
+        email: user.email,
+        uid: user.uid,
+      );
     } else {
       return null;
     }
@@ -63,7 +67,7 @@ class AuthService {
 
   Future _authorize(String email) async {
     List data = [];
-    print("I was in authorize");
+    // print("I was in authorize");
     await _firestore
         .collection('users')
         .where('email', isEqualTo: email)

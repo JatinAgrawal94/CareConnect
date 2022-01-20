@@ -343,18 +343,19 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                 )
                               ])),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: <Widget>[
                               IconButton(
                                   icon: Icon(
                                     Icons.camera_alt,
-                                    size: 30,
+                                    size: 35,
                                   ),
                                   onPressed: () {
-                                    _patientData.showpicker(context);
-                                    _mediaFile = PatientData.media;
+                                    // _patientData.showpicker(context);
+                                    // _mediaFile = PatientData.media;
                                   }),
-                              IconButton(
-                                  icon: Icon(Icons.video_call, size: 30),
+                              IconButton( 
+                                  icon: Icon(Icons.video_call, size: 35),
                                   onPressed: () {
                                     // _patientData.uploadPatientVideo(
                                     //     File(_mediaFile.path),
@@ -363,7 +364,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                     //     userId);
                                   }),
                               IconButton(
-                                  icon: Icon(Icons.attach_file, size: 30),
+                                  icon: Icon(Icons.attach_file, size: 35),
                                   onPressed: () {
                                     // _patientData.uploadPatientFile(
                                     //     File(_mediaFile.path),
