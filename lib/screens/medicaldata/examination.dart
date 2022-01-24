@@ -354,7 +354,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                     // _patientData.showpicker(context);
                                     // _mediaFile = PatientData.media;
                                   }),
-                              IconButton( 
+                              IconButton(
                                   icon: Icon(Icons.video_call, size: 35),
                                   onPressed: () {
                                     // _patientData.uploadPatientVideo(
@@ -376,32 +376,50 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                           ),
                           ElevatedButton(
                               onPressed: () async {
-                                _patientData.addExamination(patientId, {
-                                  'temperature': temperature,
-                                  'weight': weight,
-                                  'height': height,
-                                  'symptoms': symptoms,
-                                  'diagnosis': diagnosis,
-                                  'notes': notes,
-                                  'doctor': doctor,
-                                  'place': place,
-                                  'date':
-                                      "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                });
-                                _patientData.uploadPatientPhoto(
-                                    File(_mediaFile.path),
-                                    "${selecteddate.day}-${selecteddate.month}-${selecteddate.year}",
-                                    category,
-                                    userId);
-                                Fluttertoast.showToast(
-                                    msg: "Data Saved",
-                                    toastLength: Toast.LENGTH_LONG,
-                                    gravity: ToastGravity.SNACKBAR,
-                                    backgroundColor: Colors.grey,
-                                    textColor: Colors.white,
-                                    fontSize: 15,
-                                    timeInSecForIosWeb: 1);
-                                Navigator.pop(context);
+                                if (temperature != "" &&
+                                    weight != "" &&
+                                    height != "" &&
+                                    symptoms != "" &&
+                                    diagnosis != "" &&
+                                    notes != "" &&
+                                    doctor != "" &&
+                                    place != "") {
+                                  _patientData.addExamination(patientId, {
+                                    'temperature': temperature,
+                                    'weight': weight,
+                                    'height': height,
+                                    'symptoms': symptoms,
+                                    'diagnosis': diagnosis,
+                                    'notes': notes,
+                                    'doctor': doctor,
+                                    'place': place,
+                                    'date':
+                                        "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                  });
+                                  // _patientData.uploadPatientPhoto(
+                                  //     File(_mediaFile.path),
+                                  //     "${selecteddate.day}-${selecteddate.month}-${selecteddate.year}",
+                                  //     category,
+                                  //     userId);
+                                  Fluttertoast.showToast(
+                                      msg: "Data Saved",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.SNACKBAR,
+                                      backgroundColor: Colors.grey,
+                                      textColor: Colors.white,
+                                      fontSize: 15,
+                                      timeInSecForIosWeb: 1);
+                                  Navigator.pop(context);
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg: "Field Empty!",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.SNACKBAR,
+                                      backgroundColor: Colors.grey,
+                                      textColor: Colors.white,
+                                      fontSize: 15,
+                                      timeInSecForIosWeb: 1);
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                   primary: Colors.deepPurple),

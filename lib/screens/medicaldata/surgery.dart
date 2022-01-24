@@ -186,24 +186,38 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                     style: ElevatedButton.styleFrom(
                                         primary: Colors.deepPurple),
                                     onPressed: () async {
-                                      await _patientData
-                                          .addSurgeryData(patientId, {
-                                        'title': title,
-                                        'result': result,
-                                        'doctor': doctor,
-                                        'place': place,
-                                        'date':
-                                            "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
-                                      });
-                                      Fluttertoast.showToast(
-                                          msg: "Data Saved",
-                                          toastLength: Toast.LENGTH_LONG,
-                                          gravity: ToastGravity.SNACKBAR,
-                                          backgroundColor: Colors.grey,
-                                          textColor: Colors.white,
-                                          fontSize: 15,
-                                          timeInSecForIosWeb: 1);
-                                      Navigator.pop(context);
+                                      if (title != null &&
+                                          result != null &&
+                                          doctor != null &&
+                                          place != null) {
+                                        await _patientData
+                                            .addSurgeryData(patientId, {
+                                          'title': title,
+                                          'result': result,
+                                          'doctor': doctor,
+                                          'place': place,
+                                          'date':
+                                              "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                        });
+                                        Fluttertoast.showToast(
+                                            msg: "Data Saved",
+                                            toastLength: Toast.LENGTH_LONG,
+                                            gravity: ToastGravity.SNACKBAR,
+                                            backgroundColor: Colors.grey,
+                                            textColor: Colors.white,
+                                            fontSize: 15,
+                                            timeInSecForIosWeb: 1);
+                                        Navigator.pop(context);
+                                      } else {
+                                        Fluttertoast.showToast(
+                                            msg: "Field Empty!",
+                                            toastLength: Toast.LENGTH_LONG,
+                                            gravity: ToastGravity.SNACKBAR,
+                                            backgroundColor: Colors.grey,
+                                            textColor: Colors.white,
+                                            fontSize: 15,
+                                            timeInSecForIosWeb: 1);
+                                      }
                                     },
                                     child: Text(
                                       "Save",

@@ -191,22 +191,34 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                           style: ElevatedButton.styleFrom(
                               primary: Colors.deepPurple),
                           onPressed: () async {
-                            await _patientData.addMedicalVisit(patientId, {
-                              'date':
-                                  "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                              'visitType': visitType == 0 ? "New" : "Follow Up",
-                              'doctor': doctor,
-                              'place': place
-                            });
-                            Fluttertoast.showToast(
-                                msg: "Data Saved",
-                                toastLength: Toast.LENGTH_LONG,
-                                gravity: ToastGravity.SNACKBAR,
-                                backgroundColor: Colors.grey,
-                                textColor: Colors.white,
-                                fontSize: 15,
-                                timeInSecForIosWeb: 1);
-                            Navigator.pop(context);
+                            if (doctor != "" && place != "") {
+                              await _patientData.addMedicalVisit(patientId, {
+                                'date':
+                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                'visitType':
+                                    visitType == 0 ? "New" : "Follow Up",
+                                'doctor': doctor,
+                                'place': place
+                              });
+                              Fluttertoast.showToast(
+                                  msg: "Data Saved",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.SNACKBAR,
+                                  backgroundColor: Colors.grey,
+                                  textColor: Colors.white,
+                                  fontSize: 15,
+                                  timeInSecForIosWeb: 1);
+                              Navigator.pop(context);
+                            } else {
+                              Fluttertoast.showToast(
+                                  msg: "Field Empty!",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.SNACKBAR,
+                                  backgroundColor: Colors.grey,
+                                  textColor: Colors.white,
+                                  fontSize: 15,
+                                  timeInSecForIosWeb: 1);
+                            }
                           },
                           child: Text("Save", style: TextStyle(fontSize: 20)))
                     ],

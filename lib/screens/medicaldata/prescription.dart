@@ -175,21 +175,36 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                               style: ElevatedButton.styleFrom(
                                   primary: Colors.deepPurple),
                               onPressed: () async {
-                                await _patientData.addPrescription(patientId, {
-                                  'drug': drug,
-                                  'dose': dose,
-                                  'doctor': doctor,
-                                  'place': place,
-                                });
-                                Fluttertoast.showToast(
-                                    msg: "Data Saved",
-                                    toastLength: Toast.LENGTH_LONG,
-                                    gravity: ToastGravity.SNACKBAR,
-                                    backgroundColor: Colors.grey,
-                                    textColor: Colors.white,
-                                    fontSize: 15,
-                                    timeInSecForIosWeb: 1);
-                                Navigator.pop(context);
+                                if (drug != null &&
+                                    dose != null &&
+                                    doctor != null &&
+                                    place != null) {
+                                  await _patientData
+                                      .addPrescription(patientId, {
+                                    'drug': drug,
+                                    'dose': dose,
+                                    'doctor': doctor,
+                                    'place': place,
+                                  });
+                                  Fluttertoast.showToast(
+                                      msg: "Data Saved",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.SNACKBAR,
+                                      backgroundColor: Colors.grey,
+                                      textColor: Colors.white,
+                                      fontSize: 15,
+                                      timeInSecForIosWeb: 1);
+                                  Navigator.pop(context);
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg: "Field Empty!",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.SNACKBAR,
+                                      backgroundColor: Colors.grey,
+                                      textColor: Colors.white,
+                                      fontSize: 15,
+                                      timeInSecForIosWeb: 1);
+                                }
                               },
                               child: Text(
                                 "Save",

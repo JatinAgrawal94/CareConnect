@@ -226,24 +226,39 @@ class _LabTestScreenState extends State<LabTestScreen> {
                             style: ElevatedButton.styleFrom(
                                 primary: Colors.deepPurple),
                             onPressed: () async {
-                              await _patientData.addLabTest(patientId, {
-                                'test': test,
-                                'result': result,
-                                'normal': normal,
-                                'doctor': doctor,
-                                'place': place,
-                                'date':
-                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
-                              });
-                              Fluttertoast.showToast(
-                                  msg: "Data Saved",
-                                  toastLength: Toast.LENGTH_LONG,
-                                  gravity: ToastGravity.SNACKBAR,
-                                  backgroundColor: Colors.grey,
-                                  textColor: Colors.white,
-                                  fontSize: 15,
-                                  timeInSecForIosWeb: 1);
-                              Navigator.pop(context);
+                              if (test != "" &&
+                                  result != "" &&
+                                  normal != "" &&
+                                  doctor != "" &&
+                                  place != "") {
+                                await _patientData.addLabTest(patientId, {
+                                  'test': test,
+                                  'result': result,
+                                  'normal': normal,
+                                  'doctor': doctor,
+                                  'place': place,
+                                  'date':
+                                      "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                });
+                                Fluttertoast.showToast(
+                                    msg: "Data Saved",
+                                    toastLength: Toast.LENGTH_LONG,
+                                    gravity: ToastGravity.SNACKBAR,
+                                    backgroundColor: Colors.grey,
+                                    textColor: Colors.white,
+                                    fontSize: 15,
+                                    timeInSecForIosWeb: 1);
+                                Navigator.pop(context);
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg: "Field Empty!",
+                                    toastLength: Toast.LENGTH_LONG,
+                                    gravity: ToastGravity.SNACKBAR,
+                                    backgroundColor: Colors.grey,
+                                    textColor: Colors.white,
+                                    fontSize: 15,
+                                    timeInSecForIosWeb: 1);
+                              }
                             },
                             child: Text("Save"),
                           ),

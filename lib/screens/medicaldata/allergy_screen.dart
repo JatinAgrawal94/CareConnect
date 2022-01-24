@@ -148,20 +148,32 @@ class _AllergyScreenState extends State<AllergyScreen> {
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.deepPurple),
                                 onPressed: () async {
-                                  await _patientData.addAllergyData(patientId, {
-                                    'type': type,
-                                    'date':
-                                        "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
-                                  });
-                                  Fluttertoast.showToast(
-                                      msg: "Data Saved",
-                                      toastLength: Toast.LENGTH_LONG,
-                                      gravity: ToastGravity.SNACKBAR,
-                                      backgroundColor: Colors.grey,
-                                      textColor: Colors.white,
-                                      fontSize: 15,
-                                      timeInSecForIosWeb: 1);
-                                  Navigator.pop(context);
+                                  if (type != "") {
+                                    await _patientData
+                                        .addAllergyData(patientId, {
+                                      'type': type,
+                                      'date':
+                                          "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                    });
+                                    Fluttertoast.showToast(
+                                        msg: "Data Saved",
+                                        toastLength: Toast.LENGTH_LONG,
+                                        gravity: ToastGravity.SNACKBAR,
+                                        backgroundColor: Colors.grey,
+                                        textColor: Colors.white,
+                                        fontSize: 15,
+                                        timeInSecForIosWeb: 1);
+                                    Navigator.pop(context);
+                                  } else {
+                                    Fluttertoast.showToast(
+                                        msg: "Field Empty!",
+                                        toastLength: Toast.LENGTH_LONG,
+                                        gravity: ToastGravity.SNACKBAR,
+                                        backgroundColor: Colors.grey,
+                                        textColor: Colors.white,
+                                        fontSize: 15,
+                                        timeInSecForIosWeb: 1);
+                                  }
                                 },
                                 child: Text(
                                   "Add",

@@ -261,25 +261,36 @@ class _AppointmentState extends State<Appointment> {
                       style:
                           ElevatedButton.styleFrom(primary: Colors.deepPurple),
                       onPressed: () async {
-                        await _patientData.addAppointment(patientId, {
-                          'notes': notes,
-                          'date':
-                              "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                          'time':
-                              "${selectedtime.hour.toString()}:${selectedtime.minute.toString()}",
-                          'doctor': doctor,
-                          'place': place,
-                          'visitType': visitType == 0 ? "New" : "Follow Up"
-                        });
-                        Fluttertoast.showToast(
-                            msg: "Data Saved",
-                            toastLength: Toast.LENGTH_LONG,
-                            gravity: ToastGravity.SNACKBAR,
-                            backgroundColor: Colors.grey,
-                            textColor: Colors.white,
-                            fontSize: 15,
-                            timeInSecForIosWeb: 1);
-                        Navigator.pop(context);
+                        if (notes != "" && doctor != "" && place != "") {
+                          await _patientData.addAppointment(patientId, {
+                            'notes': notes,
+                            'date':
+                                "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                            'time':
+                                "${selectedtime.hour.toString()}:${selectedtime.minute.toString()}",
+                            'doctor': doctor,
+                            'place': place,
+                            'visitType': visitType == 0 ? "New" : "Follow Up"
+                          });
+                          Fluttertoast.showToast(
+                              msg: "Data Saved",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.SNACKBAR,
+                              backgroundColor: Colors.grey,
+                              textColor: Colors.white,
+                              fontSize: 15,
+                              timeInSecForIosWeb: 1);
+                          Navigator.pop(context);
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: "Field Empty!",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.SNACKBAR,
+                              backgroundColor: Colors.grey,
+                              textColor: Colors.white,
+                              fontSize: 15,
+                              timeInSecForIosWeb: 1);
+                        }
                       },
                       child: Text("Save", style: TextStyle(fontSize: 20)))
                 ],
