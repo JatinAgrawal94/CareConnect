@@ -1,8 +1,8 @@
 import 'package:careconnect/components/loading.dart';
-import 'package:careconnect/screens/medical_info.dart';
+import 'package:careconnect/screens/doctor_info.dart';
+import 'package:careconnect/components/medical_info.dart';
 import 'package:careconnect/screens/userdataforms/admin_profile.dart';
 import 'package:careconnect/screens/userdataforms/doctor_add_form.dart';
-import 'package:careconnect/screens/userdataforms/doctor_profile.dart';
 import 'package:careconnect/screens/userdataforms/patient_add_form.dart';
 import 'package:careconnect/services/auth.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +29,6 @@ class _AdminHomeState extends State<AdminHome> {
   static String patientDocumentId;
   static String doctorDocumentId;
   static String adminDocumentId;
-
   @override
   void initState() {
     super.initState();
@@ -124,7 +123,6 @@ class _AdminHomeState extends State<AdminHome> {
                 Container(
                   child: StreamBuilder<QuerySnapshot>(
                       stream: patientList.snapshots(),
-                      
                       builder: (BuildContext context,
                           AsyncSnapshot<QuerySnapshot> snapshot) {
                         if (snapshot.hasError) {
@@ -193,9 +191,13 @@ class _AdminHomeState extends State<AdminHome> {
                                 doctorDocumentId = document.id;
                                 Navigator.push(
                                     context,
+                                    // MaterialPageRoute(
+                                    //     builder: (context) => DoctorProfile(
+                                    //         doctorId: doctorDocumentId)));
                                     MaterialPageRoute(
-                                        builder: (context) => DoctorProfile(
-                                            doctorId: doctorDocumentId)));
+                                        builder: (context) => DoctorInfo(
+                                              documentId: doctorDocumentId,
+                                            )));
                               },
                             ),
                             decoration:

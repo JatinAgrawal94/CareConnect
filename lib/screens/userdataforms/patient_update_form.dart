@@ -1,6 +1,5 @@
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/services/patientdata.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';

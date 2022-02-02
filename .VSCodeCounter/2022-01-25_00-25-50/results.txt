@@ -1,0 +1,139 @@
+Date : 2022-01-25 00:25:50
+Directory : e:\Projects\careconnect
+Total : 77 files,  10255 codes, 227 comments, 515 blanks, all 10997 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| Dart       |         53 |      9,860 |        113 |        447 |     10,420 |
+| XML        |          9 |        127 |         51 |         11 |        189 |
+| JSON       |          4 |         87 |          0 |          2 |         89 |
+| Groovy     |          3 |         86 |          3 |         19 |        108 |
+| YAML       |          1 |         34 |         44 |         17 |         95 |
+| HTML       |          1 |         26 |         15 |          5 |         46 |
+| Markdown   |          2 |         13 |          0 |          9 |         22 |
+| Swift      |          1 |         12 |          0 |          2 |         14 |
+| Properties |          2 |          9 |          1 |          2 |         12 |
+| C++        |          1 |          1 |          0 |          1 |          2 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                  | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                     |         77 |     10,255 |        227 |        515 |     10,997 |
+| android                                                                               |         13 |        201 |         53 |         30 |        284 |
+| android\app                                                                           |          9 |        155 |         52 |         19 |        226 |
+| android\app\src                                                                       |          7 |         66 |         49 |          9 |        124 |
+| android\app\src\debug                                                                 |          1 |          4 |          3 |          1 |          8 |
+| android\app\src\main                                                                  |          5 |         58 |         43 |          7 |        108 |
+| android\app\src\main\res                                                              |          4 |         26 |         32 |          6 |         64 |
+| android\app\src\main\res\drawable                                                     |          1 |          4 |          7 |          2 |         13 |
+| android\app\src\main\res\drawable-v21                                                 |          1 |          4 |          7 |          2 |         13 |
+| android\app\src\main\res\values                                                       |          1 |          9 |          9 |          1 |         19 |
+| android\app\src\main\res\values-night                                                 |          1 |          9 |          9 |          1 |         19 |
+| android\app\src\profile                                                               |          1 |          4 |          3 |          1 |          8 |
+| android\gradle                                                                        |          1 |          5 |          1 |          1 |          7 |
+| android\gradle\wrapper                                                                |          1 |          5 |          1 |          1 |          7 |
+| ios                                                                                   |          7 |        101 |          2 |          8 |        111 |
+| ios\Runner                                                                            |          7 |        101 |          2 |          8 |        111 |
+| ios\Runner\Assets.xcassets                                                            |          3 |         27 |          0 |          3 |         30 |
+| ios\Runner\Assets.xcassets\AppIcon.appiconset                                         |          1 |          1 |          0 |          0 |          1 |
+| ios\Runner\Assets.xcassets\LaunchImage.imageset                                       |          2 |         26 |          0 |          3 |         29 |
+| ios\Runner\Base.lproj                                                                 |          2 |         61 |          2 |          2 |         65 |
+| lib                                                                                   |         52 |      9,846 |        103 |        440 |     10,389 |
+| lib\components                                                                        |         16 |        899 |          1 |         76 |        976 |
+| lib\models                                                                            |          1 |         16 |          3 |          5 |         24 |
+| lib\screens                                                                           |         28 |      7,973 |         72 |        259 |      8,304 |
+| lib\screens\authentication                                                            |          2 |        276 |          9 |         15 |        300 |
+| lib\screens\medicaldata                                                               |         15 |      3,829 |         18 |        133 |      3,980 |
+| lib\screens\userdataforms                                                             |          7 |      3,407 |         45 |         81 |      3,533 |
+| lib\services                                                                          |          6 |        895 |         13 |         92 |      1,000 |
+| test                                                                                  |          1 |         14 |         10 |          7 |         31 |
+| web                                                                                   |          2 |         49 |         15 |          6 |         70 |
++---------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                              | language   | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| e:\Projects\careconnect\README.md                                                     | Markdown   |         10 |          0 |          7 |         17 |
+| e:\Projects\careconnect\android\app\build.gradle                                      | Groovy     |         49 |          3 |         10 |         62 |
+| e:\Projects\careconnect\android\app\google-services.json                              | JSON       |         40 |          0 |          0 |         40 |
+| e:\Projects\careconnect\android\app\src\debug\AndroidManifest.xml                     | XML        |          4 |          3 |          1 |          8 |
+| e:\Projects\careconnect\android\app\src\main\AndroidManifest.xml                      | XML        |         32 |         11 |          1 |         44 |
+| e:\Projects\careconnect\android\app\src\main\res\drawable-v21\launch_background.xml   | XML        |          4 |          7 |          2 |         13 |
+| e:\Projects\careconnect\android\app\src\main\res\drawable\launch_background.xml       | XML        |          4 |          7 |          2 |         13 |
+| e:\Projects\careconnect\android\app\src\main\res\values-night\styles.xml              | XML        |          9 |          9 |          1 |         19 |
+| e:\Projects\careconnect\android\app\src\main\res\values\styles.xml                    | XML        |          9 |          9 |          1 |         19 |
+| e:\Projects\careconnect\android\app\src\profile\AndroidManifest.xml                   | XML        |          4 |          3 |          1 |          8 |
+| e:\Projects\careconnect\android\build.gradle                                          | Groovy     |         29 |          0 |          5 |         34 |
+| e:\Projects\careconnect\android\gradle.properties                                     | Properties |          4 |          0 |          1 |          5 |
+| e:\Projects\careconnect\android\gradle\wrapper\gradle-wrapper.properties              | Properties |          5 |          1 |          1 |          7 |
+| e:\Projects\careconnect\android\settings.gradle                                       | Groovy     |          8 |          0 |          4 |         12 |
+| e:\Projects\careconnect\ios\Runner\AppDelegate.swift                                  | Swift      |         12 |          0 |          2 |         14 |
+| e:\Projects\careconnect\ios\Runner\Assets.xcassets\AppIcon.appiconset\Contents.json   | JSON       |          1 |          0 |          0 |          1 |
+| e:\Projects\careconnect\ios\Runner\Assets.xcassets\LaunchImage.imageset\Contents.json | JSON       |         23 |          0 |          1 |         24 |
+| e:\Projects\careconnect\ios\Runner\Assets.xcassets\LaunchImage.imageset\README.md     | Markdown   |          3 |          0 |          2 |          5 |
+| e:\Projects\careconnect\ios\Runner\Base.lproj\LaunchScreen.storyboard                 | XML        |         36 |          1 |          1 |         38 |
+| e:\Projects\careconnect\ios\Runner\Base.lproj\Main.storyboard                         | XML        |         25 |          1 |          1 |         27 |
+| e:\Projects\careconnect\ios\Runner\Runner-Bridging-Header.h                           | C++        |          1 |          0 |          1 |          2 |
+| e:\Projects\careconnect\lib\components\allergyList.dart                               | Dart       |         33 |          0 |          3 |         36 |
+| e:\Projects\careconnect\lib\components\appointment_list.dart                          | Dart       |         81 |          0 |          7 |         88 |
+| e:\Projects\careconnect\lib\components\blood_glucose_List.dart                        | Dart       |         49 |          0 |          3 |         52 |
+| e:\Projects\careconnect\lib\components\blood_pressure_list.dart                       | Dart       |         68 |          0 |          4 |         72 |
+| e:\Projects\careconnect\lib\components\examinationList.dart                           | Dart       |        168 |          0 |          6 |        174 |
+| e:\Projects\careconnect\lib\components\family_list.dart                               | Dart       |         34 |          0 |          4 |         38 |
+| e:\Projects\careconnect\lib\components\keyboarddismiss.dart                           | Dart       |         19 |          0 |          3 |         22 |
+| e:\Projects\careconnect\lib\components\labtest_list.dart                              | Dart       |         67 |          0 |          5 |         72 |
+| e:\Projects\careconnect\lib\components\loading.dart                                   | Dart       |         17 |          1 |          4 |         22 |
+| e:\Projects\careconnect\lib\components\medical_visit.dart                             | Dart       |         52 |          0 |          7 |         59 |
+| e:\Projects\careconnect\lib\components\notes.dart                                     | Dart       |         40 |          0 |          4 |         44 |
+| e:\Projects\careconnect\lib\components\pathology_list.dart                            | Dart       |         63 |          0 |          4 |         67 |
+| e:\Projects\careconnect\lib\components\prescription_list.dart                         | Dart       |         54 |          0 |          7 |         61 |
+| e:\Projects\careconnect\lib\components\radiology_list.dart                            | Dart       |         63 |          0 |          5 |         68 |
+| e:\Projects\careconnect\lib\components\surgery_list.dart                              | Dart       |         63 |          0 |          6 |         69 |
+| e:\Projects\careconnect\lib\components\vaccine_list.dart                              | Dart       |         28 |          0 |          4 |         32 |
+| e:\Projects\careconnect\lib\main.dart                                                 | Dart       |         63 |         14 |          8 |         85 |
+| e:\Projects\careconnect\lib\models\registereduser.dart                                | Dart       |         16 |          3 |          5 |         24 |
+| e:\Projects\careconnect\lib\screens\admin_screen.dart                                 | Dart       |        202 |          0 |          9 |        211 |
+| e:\Projects\careconnect\lib\screens\authentication\forgotpassword.dart                | Dart       |        102 |          4 |          9 |        115 |
+| e:\Projects\careconnect\lib\screens\authentication\signin.dart                        | Dart       |        174 |          5 |          6 |        185 |
+| e:\Projects\careconnect\lib\screens\doctor_home.dart                                  | Dart       |        110 |          0 |          8 |        118 |
+| e:\Projects\careconnect\lib\screens\medical_info.dart                                 | Dart       |        113 |          0 |          7 |        120 |
+| e:\Projects\careconnect\lib\screens\medicaldata\Appointment.dart                      | Dart       |        322 |          0 |         10 |        332 |
+| e:\Projects\careconnect\lib\screens\medicaldata\about_screen.dart                     | Dart       |        210 |          0 |          9 |        219 |
+| e:\Projects\careconnect\lib\screens\medicaldata\allergy_screen.dart                   | Dart       |        206 |          1 |          9 |        216 |
+| e:\Projects\careconnect\lib\screens\medicaldata\blood_glucose.dart                    | Dart       |        302 |          0 |          9 |        311 |
+| e:\Projects\careconnect\lib\screens\medicaldata\blood_pressure.dart                   | Dart       |        262 |          0 |          9 |        271 |
+| e:\Projects\careconnect\lib\screens\medicaldata\examination.dart                      | Dart       |        441 |         17 |          9 |        467 |
+| e:\Projects\careconnect\lib\screens\medicaldata\family_history.dart                   | Dart       |        154 |          0 |          7 |        161 |
+| e:\Projects\careconnect\lib\screens\medicaldata\labtest.dart                          | Dart       |        295 |          0 |          9 |        304 |
+| e:\Projects\careconnect\lib\screens\medicaldata\medical_visit.dart                    | Dart       |        248 |          0 |          9 |        257 |
+| e:\Projects\careconnect\lib\screens\medicaldata\notes.dart                            | Dart       |        156 |          0 |          8 |        164 |
+| e:\Projects\careconnect\lib\screens\medicaldata\pathology.dart                        | Dart       |        297 |          0 |         10 |        307 |
+| e:\Projects\careconnect\lib\screens\medicaldata\prescription.dart                     | Dart       |        244 |          0 |          7 |        251 |
+| e:\Projects\careconnect\lib\screens\medicaldata\radiology.dart                        | Dart       |        254 |          0 |          9 |        263 |
+| e:\Projects\careconnect\lib\screens\medicaldata\surgery.dart                          | Dart       |        254 |          0 |         10 |        264 |
+| e:\Projects\careconnect\lib\screens\medicaldata\vaccine.dart                          | Dart       |        184 |          0 |          9 |        193 |
+| e:\Projects\careconnect\lib\screens\patient_screen.dart                               | Dart       |         36 |          0 |          6 |         42 |
+| e:\Projects\careconnect\lib\screens\userdataforms\admin_profile.dart                  | Dart       |        196 |          0 |          8 |        204 |
+| e:\Projects\careconnect\lib\screens\userdataforms\admin_update_form.dart              | Dart       |        580 |          8 |         15 |        603 |
+| e:\Projects\careconnect\lib\screens\userdataforms\doctor_add_form.dart                | Dart       |        586 |          9 |         11 |        606 |
+| e:\Projects\careconnect\lib\screens\userdataforms\doctor_profile.dart                 | Dart       |        193 |          0 |          8 |        201 |
+| e:\Projects\careconnect\lib\screens\userdataforms\doctor_update_form.dart             | Dart       |        633 |         10 |         14 |        657 |
+| e:\Projects\careconnect\lib\screens\userdataforms\patient_add_form.dart               | Dart       |        584 |          9 |         12 |        605 |
+| e:\Projects\careconnect\lib\screens\userdataforms\patient_update_form.dart            | Dart       |        635 |          9 |         13 |        657 |
+| e:\Projects\careconnect\lib\services\admin_data.dart                                  | Dart       |         86 |          0 |          8 |         94 |
+| e:\Projects\careconnect\lib\services\auth.dart                                        | Dart       |        130 |          5 |         14 |        149 |
+| e:\Projects\careconnect\lib\services\doctorData.dart                                  | Dart       |        145 |          0 |         13 |        158 |
+| e:\Projects\careconnect\lib\services\patientdata.dart                                 | Dart       |        459 |          6 |         47 |        512 |
+| e:\Projects\careconnect\lib\services\role.dart                                        | Dart       |         37 |          1 |          6 |         44 |
+| e:\Projects\careconnect\lib\services\wrapper.dart                                     | Dart       |         38 |          1 |          4 |         43 |
+| e:\Projects\careconnect\pubspec.yaml                                                  | YAML       |         34 |         44 |         17 |         95 |
+| e:\Projects\careconnect\test\widget_test.dart                                         | Dart       |         14 |         10 |          7 |         31 |
+| e:\Projects\careconnect\web\index.html                                                | HTML       |         26 |         15 |          5 |         46 |
+| e:\Projects\careconnect\web\manifest.json                                             | JSON       |         23 |          0 |          1 |         24 |
+| Total                                                                                 |            |     10,255 |        227 |        515 |     10,997 |
++---------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

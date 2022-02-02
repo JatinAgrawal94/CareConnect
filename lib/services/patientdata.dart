@@ -19,7 +19,6 @@ import 'package:careconnect/screens/medicaldata/prescription.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:image_picker/image_picker.dart';
-import 'package:file_picker/file_picker.dart';
 
 class PatientData {
   // keys to map correct data on aboutpage.
@@ -123,6 +122,21 @@ class PatientData {
     return data;
   }
 
+  // Future getPatientIdByEmail(String email) async {
+  //   var data;
+  //   FirebaseFirestore.instance
+  //       .collection('users')
+  //       .where('email', isEqualTo: email)
+  //       .where('role', isEqualTo: 'patient')
+  //       .get()
+  //       .then((QuerySnapshot snapshot) {
+  //     snapshot.docs.forEach((element) {
+  //       // data.add({'email'})
+  //     });
+  //   });
+  //   return data;
+  // }
+
   Future getDoctorInfo(dynamic doctorid) async {
     var data = Map<String, dynamic>();
     await FirebaseFirestore.instance
@@ -207,15 +221,19 @@ class PatientData {
   }
 
   Future addAppointment(String patientId, data) async {
-    CollectionReference patient =
-        FirebaseFirestore.instance.collection('Patient/$patientId/appointment');
-    await patient.add({
-      'notes': data['notes'],
-      'time': data['time'],
-      'doctor': data['doctor'],
+    CollectionReference appointment =
+        FirebaseFirestore.instance.collection('Appointment');
+    await appointment.add({
+      'reason': data['reason'],
       'date': data['date'],
-      'place': data['place'],
-      'visitType': data['visitType']
+      'timing': data['timing'],
+      'doctorname': data['doctorname'],
+      'doctoremail': data['doctoremail'],
+      'patientname': data['patientname'],
+      'patientemail': data['patientemail'],
+      'visittype': data['visittype'],
+      'paymentstatus': data['paymentstatus'],
+      'paymentamount': data['paymentamount'],
     });
   }
 
@@ -390,13 +408,13 @@ class PatientData {
     PatientData.media = galleryimage;
   }
 
-  _pickMultipleFiles() async{
-    
-  }
+  // _pickMultipleFiles() async{
+
+  // }
 
   void showpicker(context) {
     PatientData patient = PatientData();
-    var image = showModalBottomSheet(
+    showModalBottomSheet(
         context: context,
         builder: (BuildContext bc) {
           return SafeArea(
@@ -455,7 +473,6 @@ class PatientData {
 
   Future getDocsId(String email) async {
     var id;
-    print("$email in getDocsId");
     await FirebaseFirestore.instance
         .collection('Patient')
         .where('email', isEqualTo: email)

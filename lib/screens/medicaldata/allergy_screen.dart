@@ -189,7 +189,8 @@ class _AllergyScreenState extends State<AllergyScreen> {
                   child: StreamBuilder<QuerySnapshot>(
                 stream: allergy.snapshots(),
                 builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                    AsyncSnapshot<QuerySnapshot>
+                        snapshot) {
                   if (snapshot.hasError) {
                     return Text('Something went wrong');
                   }
@@ -199,8 +200,8 @@ class _AllergyScreenState extends State<AllergyScreen> {
                   }
 
                   return new ListView(
-                    children:
-                        snapshot.data.docs.map((DocumentSnapshot document) {
+                    children: snapshot.data.docs
+                        .map((DocumentSnapshot document) {
                       return AllergyList(
                           type: document.data()['type'],
                           date: document.data()['date']);

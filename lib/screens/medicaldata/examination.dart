@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 
 class ExaminationScreen extends StatefulWidget {
   final String patientId;
@@ -24,7 +22,6 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
   String category = "EX";
   _ExaminationScreenState(this.patientId, this.userId);
   PatientData _patientData = PatientData();
-  PickedFile _mediaFile;
   DateTime selecteddate = DateTime.now();
   CollectionReference examination;
   String temperature = "";
@@ -432,7 +429,8 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                 child: StreamBuilder<QuerySnapshot>(
                   stream: examination.snapshots(),
                   builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                      AsyncSnapshot<QuerySnapshot>
+                          snapshot) {
                     if (snapshot.hasError) {
                       return Text('Something went wrong');
                     }
@@ -442,8 +440,8 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                     }
 
                     return new ListView(
-                      children:
-                          snapshot.data.docs.map((DocumentSnapshot document) {
+                      children: snapshot.data.docs.map(
+                          (DocumentSnapshot document) {
                         return ExaminationList(
                             temperature: document.data()['temperature'],
                             weight: document.data()['temperature'],

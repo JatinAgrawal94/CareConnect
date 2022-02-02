@@ -22,6 +22,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
   String userId;
   var user;
   var role;
+  var data;
   static String imageURL;
   _DoctorProfileState(this.doctorId);
   static var doctorInfo = Map<String, dynamic>();
@@ -57,6 +58,8 @@ class _DoctorProfileState extends State<DoctorProfile> {
     "Gender",
     "Blood Group",
     "Designation",
+    'Type',
+    'Appointment',
     "Contact",
     "Address"
   ];

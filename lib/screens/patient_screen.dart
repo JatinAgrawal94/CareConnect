@@ -1,5 +1,5 @@
 import 'package:careconnect/components/loading.dart';
-import 'package:careconnect/screens/medical_info.dart';
+import 'package:careconnect/components/medical_info.dart';
 import 'package:careconnect/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';

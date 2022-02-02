@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'package:careconnect/screens/medicaldata/doctor_appointment.dart';
+import 'package:careconnect/screens/userdataforms/doctor_profile.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 
 class DoctorData {
   static String doctorId;
@@ -13,9 +16,28 @@ class DoctorData {
     4: 'gender',
     5: 'bloodgroup',
     6: 'designation',
-    7: 'contact',
-    8: 'address'
+    7: 'doctype',
+    8: "timing",
+    9: 'contact',
+    10: 'address'
   };
+
+  Future getAllDoctors() async {
+    List data = [];
+    await FirebaseFirestore.instance
+        .collection('Doctor')
+        .get()
+        .then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((element) {
+        data.add({
+          "name": element['name'],
+          'timing': element['timing'],
+          'email': element['email']
+        });
+      });
+    });
+    return data;
+  }
 
   Future getDoctorInfo(String doctorid) async {
     var data = Map<String, dynamic>();
@@ -42,7 +64,8 @@ class DoctorData {
           'contact': data['contact'],
           'address': data['address'],
           'designation': data['designation'],
-          'userid': data['userid']
+          'userid': data['userid'],
+          'doctype': data['doctype']
         })
         .then((value) {})
         .catchError((error) {
@@ -99,7 +122,8 @@ class DoctorData {
           'bloodgroup': data['bloodgroup'],
           'contact': data['contact'],
           'designation': data['designation'],
-          'address': data['address']
+          'address': data['address'],
+          'doctype': data['doctype']
         })
         .then((value) {})
         .catchError((error) {});
@@ -153,5 +177,111 @@ class DoctorData {
       });
     });
     return id;
+  }
+
+  Widget getScreen(int index, String doctorId) {
+    if (index == 0) {
+      return DoctorProfile(doctorId: doctorId);
+    } else {
+      return DoctorAppointment(
+        doctorId: doctorId,
+      );
+    }
+  }
+
+  Future createDoctorAppointment(String doctorId, data) async {
+    CollectionReference appointment =
+        FirebaseFirestore.instance.collection('Appointment');
+    await appointment.add({
+      "date": data["date"],
+    });
+  }
+
+  Map count(elements) {
+    var map = Map();
+    elements.forEach((element) {
+      if (!map.containsKey(element)) {
+        map[element] = 1;
+      } else {
+        map[element] += 1;
+      }
+    });
+    return map;
+  }
+
+  Future getAppointmentDates(String doctorId) async {
+    List data = [];
+    var date = [];
+    var doctoremail = " ";
+    var info = await getDoctorInfo(doctorId);
+    doctoremail = info['email'];
+    await FirebaseFirestore.instance
+        .collection('Appointment')
+        .where('doctoremail', isEqualTo: info['email'].toString())
+        .get()
+        .then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((element) {
+        data.add({'date': element['date'], 'timing': element['timing']});
+      });
+    });
+    data.forEach((item) {
+      date.add(item['date']);
+    });
+    var dateOccurence = count(date);
+    var timing = data[0]['timing'];
+    return [date, dateOccurence, timing, doctoremail];
+  }
+
+  Future getPatientsBasedOnDateAndDoctor(
+      String doctoremail, String date) async {
+    List data = [];
+    await FirebaseFirestore.instance
+        .collection('Appointment')
+        .where('doctoremail', isEqualTo: doctoremail)
+        .where('date', isEqualTo: date)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((element) {
+        data.add({
+          'patientname': element['patientname'],
+          'patientemail': element['patientemail'],
+          'reason': element['reason'],
+          'visittype': element['visittype'],
+          'paymentstatus': element['paymentstatus'],
+          'paymentamount': element['paymentamount']
+        });
+      });
+    });
+    return data;
+  }
+
+  Future getAppointmentId(String doctoremail, String patientemail, String date,
+      String paymentstatus) async {
+    var id;
+    await FirebaseFirestore.instance
+        .collection('Appointment')
+        .where('doctoremail', isEqualTo: doctoremail)
+        .where('patientemail', isEqualTo: patientemail)
+        .where('date', isEqualTo: date)
+        .where('paymentstatus', isEqualTo: paymentstatus)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((element) {
+        id = element.id;
+      });
+    });
+    return id;
+  }
+
+  Future updatePaymentAmount(String doctorEmail, String patientEmail,
+      String date, String paymentStatus, String paymentamount) async {
+    var docId =
+        await getAppointmentId(doctorEmail, patientEmail, date, paymentStatus);
+    await FirebaseFirestore.instance
+        .collection('Appointment')
+        .doc(docId)
+        .update({'paymentamount': paymentamount})
+        .then((value) {})
+        .catchError((error) {});
   }
 }

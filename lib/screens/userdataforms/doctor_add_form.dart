@@ -36,6 +36,8 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
   String address = "";
   String name = "";
   String email = "";
+  String doctype = "";
+  String appointmentTimings = "";
 
   @override
   void initState() {
@@ -482,6 +484,98 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                             ],
                           ),
                         ),
+
+                        // appointmenttimingbeginhere
+                        Container(
+                          padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                  margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
+                                  child: Text(
+                                    "Appointment Timing",
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(fontSize: 18),
+                                  )),
+                              SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.5,
+                                  child: TextFormField(
+                                    onChanged: (val) {
+                                      setState(() {
+                                        appointmentTimings = val;
+                                      });
+                                    },
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return "Field can't be empty";
+                                      }
+                                      return null;
+                                    },
+                                    keyboardType: TextInputType.text,
+                                    maxLength: 16,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                    decoration: InputDecoration(
+                                        focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Colors.deepPurple)),
+                                        border: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                          width: 1,
+                                        ))),
+                                  ))
+                            ],
+                          ),
+                        ),
+                        // -----------------------doctype field begins here
+                        Container(
+                          padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                  margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
+                                  child: Text(
+                                    "Type",
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(fontSize: 18),
+                                  )),
+                              SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.5,
+                                  child: TextFormField(
+                                    onChanged: (val) {
+                                      setState(() {
+                                        doctype = val;
+                                      });
+                                    },
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return "Field can't be empty";
+                                      }
+                                      return null;
+                                    },
+                                    keyboardType: TextInputType.text,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                    decoration: InputDecoration(
+                                        focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Colors.deepPurple)),
+                                        border: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                          width: 1,
+                                        ))),
+                                  ))
+                            ],
+                          ),
+                        ),
                         // -------------------address field begins here
                         Container(
                           padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
@@ -553,6 +647,8 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                           'bloodgroup': bloodgroup,
                                           'contact': contact,
                                           'designation': designation,
+                                          'doctype': doctype,
+                                          'timing': appointmentTimings,
                                           'address': address,
                                           'userid': 'D$_doctorUserId'
                                         });

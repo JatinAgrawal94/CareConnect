@@ -166,7 +166,8 @@ class _VaccineScreenState extends State<VaccineScreen> {
                   child: StreamBuilder<QuerySnapshot>(
                     stream: vaccineList.snapshots(),
                     builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                        AsyncSnapshot<QuerySnapshot>
+                            snapshot) {
                       if (snapshot.hasError) {
                         return Text('Something went wrong');
                       }
@@ -176,8 +177,8 @@ class _VaccineScreenState extends State<VaccineScreen> {
                       }
 
                       return new ListView(
-                        children:
-                            snapshot.data.docs.map((DocumentSnapshot document) {
+                        children: snapshot.data.docs.map(
+                            (DocumentSnapshot document) {
                           return VaccineList(
                               vaccine: document.data()['vaccine'],
                               date: document.data()['date']);

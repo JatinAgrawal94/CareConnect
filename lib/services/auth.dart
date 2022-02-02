@@ -3,8 +3,8 @@ import 'package:random_password_generator/random_password_generator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:careconnect/models/registereduser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mailgun/mailgun.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
+// import 'package:mailgun/mailgun.dart';
 
 class AuthService {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -98,7 +98,7 @@ class AuthService {
 
   Future registerUserWithEmailAndPassword(String email, String password) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
+      await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       return "user-created";
     } on FirebaseAuthException catch (e) {
@@ -123,26 +123,22 @@ class AuthService {
     if (result == "user-created") {
       return {'password': password, 'msg': result};
     } else if (result == 'email-already-in-use') {
-      print(result);
       return {'msg': result};
     } else {
-      print(result);
       return {'msg': result};
     }
   }
 
   Future sendMails(String email, String password) async {
-    var apiKey = env['API_KEY'];
-    var domain = env['DOMAIN_NAME'];
+    // var apiKey = env['API_KEY'];
+    // var domain = env['DOMAIN_NAME'];
 
-    var mailgun = MailgunMailer(domain: domain, apiKey: apiKey);
-    var response = await mailgun.send(
-        from: "CareConnect<jatinagrawal0801@gmail.com>",
-        to: [email],
-        subject: "Password for CareConnect Account",
-        text:
-            "Your Password is $password \n Note:This is a machine generated Password.Kindly reset password to ensure security");
-    print(response.status);
-    print(response.message);
+    // var mailgun = MailgunMailer(domain: domain, apiKey: apiKey);
+    // await mailgun.send(
+    //     from: "CareConnect<jatinagrawal0801@gmail.com>",
+    //     to: [email],
+    //     subject: "Password for CareConnect Account",
+    //     text:
+    //         "Your Password is $password \n Note:This is a machine generated Password.Kindly reset password to ensure security");
   }
 }

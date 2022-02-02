@@ -137,7 +137,8 @@ class _NotesScreenState extends State<NotesScreen> {
                   child: StreamBuilder<QuerySnapshot>(
                     stream: notes.snapshots(),
                     builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                        AsyncSnapshot<QuerySnapshot>
+                            snapshot) {
                       if (snapshot.hasError) {
                         return Text('Something went wrong');
                       }
@@ -147,8 +148,8 @@ class _NotesScreenState extends State<NotesScreen> {
                       }
 
                       return new ListView(
-                        children:
-                            snapshot.data.docs.map((DocumentSnapshot document) {
+                        children: snapshot.data.docs.map(
+                            (DocumentSnapshot document) {
                           return NotesList(
                               title: document.data()['title'],
                               description: document.data()['description']);

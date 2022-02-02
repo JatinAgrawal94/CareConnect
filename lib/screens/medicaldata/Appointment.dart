@@ -4,6 +4,7 @@ import 'package:careconnect/components/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:careconnect/services/patientdata.dart';
+import 'package:careconnect/services/doctordata.dart';
 
 class Appointment extends StatefulWidget {
   final String patientId;
@@ -16,46 +17,42 @@ class Appointment extends StatefulWidget {
 class _AppointmentState extends State<Appointment> {
   final String patientId;
   _AppointmentState(this.patientId);
-  String notes = "";
-  String doctor = "";
-  String place = "";
-  int visitType = 0;
-  DateTime selecteddate = DateTime.now();
-  TimeOfDay selectedtime = TimeOfDay.now();
-  PatientData _patientData = PatientData();
-  CollectionReference appointment;
+  String reason = "";
+  String doctor;
+  String paymentstatus = 'Unpaid';
+  int visittype = 0;
 
+  DateTime selecteddate = DateTime.now();
+  PatientData _patientData = PatientData();
+  DoctorData _doctorData = DoctorData();
+  CollectionReference appointment;
+  List<String> doctorList = [];
+  List doctordata = [];
+  var patientdata;
   @override
   void initState() {
     super.initState();
-    setState(() {
-      appointment = FirebaseFirestore.instance
-          .collection('Patient/$patientId/appointment');
-    });
-  }
-
-  _setTime(BuildContext context) async {
-    final TimeOfDay picked = await showTimePicker(
-        context: context,
-        initialTime: selectedtime,
-        builder: (BuildContext context, child) {
-          return Theme(
-              data: ThemeData.dark().copyWith(
-                colorScheme: ColorScheme.light(
-                  primary: Colors.white,
-                  onPrimary: Colors.deepPurple[300],
-                  surface: Colors.deepPurple,
-                  onSurface: Colors.black,
-                ),
-                dialogBackgroundColor: Colors.white,
-              ),
-              child: child);
+    // doctor name,timing,email
+    _doctorData.getAllDoctors().then((value) {
+      value.forEach((item) {
+        setState(() {
+          doctorList.add(item['name'] + '(' + item['timing'] + ')');
+          doctordata.add({
+            'name': item['name'],
+            'timing': item['timing'],
+            'email': item['email']
+          });
         });
-    if (picked != null) {
-      setState(() {
-        selectedtime = picked;
       });
-    }
+    });
+    _patientData.getPatientInfo(patientId).then((value) {
+      setState(() {
+        patientdata = {'name': value['name'], 'email': value['email']};
+      });
+    });
+    setState(() {
+      appointment = FirebaseFirestore.instance.collection('Appointment');
+    });
   }
 
   _setDate(BuildContext context) async {
@@ -119,23 +116,6 @@ class _AppointmentState extends State<Appointment> {
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                    padding: EdgeInsets.all(5),
-                    child: Row(
-                      children: <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.timer_sharp),
-                          onPressed: () {
-                            _setTime(context);
-                          },
-                        ),
-                        Text(
-                            "${selectedtime.hour.toString()}:${selectedtime.minute.toString()}",
-                            style: TextStyle(fontSize: 20)),
-                      ],
-                    ),
-                  ),
-                  Container(
                     padding: EdgeInsets.all(5),
                     child: Row(
                       children: <Widget>[
@@ -150,20 +130,20 @@ class _AppointmentState extends State<Appointment> {
                                 Radio(
                                     activeColor: Colors.deepPurple,
                                     value: 0,
-                                    groupValue: visitType,
+                                    groupValue: visittype,
                                     onChanged: (value) {
                                       setState(() {
-                                        visitType = value;
+                                        visittype = value;
                                       });
                                     }),
                                 Text("New", style: TextStyle(fontSize: 20)),
                                 Radio(
                                     activeColor: Colors.deepPurple,
                                     value: 1,
-                                    groupValue: visitType,
+                                    groupValue: visittype,
                                     onChanged: (value) {
                                       setState(() {
-                                        visitType = value;
+                                        visittype = value;
                                       });
                                     }),
                                 Text("Follow Up",
@@ -177,7 +157,7 @@ class _AppointmentState extends State<Appointment> {
                       padding: EdgeInsets.all(5),
                       child: Row(children: <Widget>[
                         Text(
-                          "Notes",
+                          "Reason",
                           style: TextStyle(fontSize: 20),
                         ),
                         Container(
@@ -188,12 +168,12 @@ class _AppointmentState extends State<Appointment> {
                                 cursorColor: Colors.deepPurple,
                                 onChanged: (value) {
                                   setState(() {
-                                    notes = value;
+                                    reason = value;
                                   });
                                 },
                                 keyboardType: TextInputType.text,
                                 decoration: InputDecoration(
-                                    hintText: "Notes",
+                                    hintText: "Reason",
                                     focusedBorder: UnderlineInputBorder(
                                         borderSide: BorderSide(
                                             width: 1,
@@ -210,67 +190,42 @@ class _AppointmentState extends State<Appointment> {
                         ),
                         Container(
                             margin: EdgeInsets.fromLTRB(15, 0, 5, 0),
-                            width: MediaQuery.of(context).size.width * 0.7,
-                            child: Form(
-                              child: TextFormField(
-                                cursorColor: Colors.deepPurple,
-                                onChanged: (value) {
-                                  setState(() {
-                                    doctor = value;
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                    hintText: "Doctor",
-                                    focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color: Colors.deepPurple))),
-                                keyboardType: TextInputType.text,
-                              ),
-                            )),
-                      ])),
-                  Container(
-                      padding: EdgeInsets.all(5),
-                      child: Row(children: <Widget>[
-                        Text(
-                          "Place",
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        Container(
-                            margin: EdgeInsets.fromLTRB(15, 0, 5, 0),
-                            width: MediaQuery.of(context).size.width * 0.7,
-                            child: Form(
-                              child: TextFormField(
-                                cursorColor: Colors.deepPurple,
-                                onChanged: (value) {
-                                  setState(() {
-                                    place = value;
-                                  });
-                                },
-                                keyboardType: TextInputType.text,
-                                decoration: InputDecoration(
-                                    hintText: "Place",
-                                    focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color: Colors.deepPurple))),
-                              ),
-                            )),
+                            child: Container(
+                                child: DropdownButton<String>(
+                              value: doctor,
+                              items: doctorList.map<DropdownMenuItem<String>>(
+                                  (String value) {
+                                return DropdownMenuItem<String>(
+                                    child: Text(value,
+                                        style: TextStyle(fontSize: 18)),
+                                    value: value);
+                              }).toList(),
+                              hint: Text("Select doctor"),
+                              onChanged: (String value) {
+                                setState(() {
+                                  doctor = value;
+                                });
+                              },
+                            ))),
                       ])),
                   ElevatedButton(
                       style:
                           ElevatedButton.styleFrom(primary: Colors.deepPurple),
                       onPressed: () async {
-                        if (notes != "" && doctor != "" && place != "") {
+                        if (reason != "" && doctor != null) {
+                          var doctorindex = doctorList.indexOf(doctor);
                           await _patientData.addAppointment(patientId, {
-                            'notes': notes,
+                            'reason': reason,
                             'date':
                                 "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                            'time':
-                                "${selectedtime.hour.toString()}:${selectedtime.minute.toString()}",
-                            'doctor': doctor,
-                            'place': place,
-                            'visitType': visitType == 0 ? "New" : "Follow Up"
+                            'timing': doctordata[doctorindex]['timing'],
+                            'doctorname': doctordata[doctorindex]['name'],
+                            'doctoremail': doctordata[doctorindex]['email'],
+                            'patientname': patientdata['name'],
+                            'patientemail': patientdata['email'],
+                            'paymentstatus': paymentstatus,
+                            'paymentamount': " ",
+                            'visittype': visittype == 0 ? "New" : "Follow Up",
                           });
                           Fluttertoast.showToast(
                               msg: "Data Saved",
@@ -301,7 +256,8 @@ class _AppointmentState extends State<Appointment> {
                 child: StreamBuilder<QuerySnapshot>(
                   stream: appointment.snapshots(),
                   builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                      AsyncSnapshot<QuerySnapshot>
+                          snapshot) {
                     if (snapshot.hasError) {
                       return Text('Something went wrong');
                     }
@@ -311,15 +267,17 @@ class _AppointmentState extends State<Appointment> {
                     }
 
                     return new ListView(
-                      children:
-                          snapshot.data.docs.map((DocumentSnapshot document) {
+                      children: snapshot.data.docs.map(
+                          (DocumentSnapshot document) {
                         return AppointmentList(
-                          notes: document.data()['notes'],
-                          doctor: document.data()['doctor'],
-                          place: document.data()['place'],
+                          reason: document.data()['reason'],
+                          doctor: document.data()['doctorname'],
+                          doctoremail: document.data()['doctoremail'],
+                          paymentstatus: document.data()['paymentstatus'],
                           date: document.data()['date'],
-                          time: document.data()['time'],
-                          visitType: document.data()['visitType'],
+                          timing: document.data()['timing'],
+                          visittype: document.data()['visittype'],
+                          paymentamount: document.data()['paymentamount'],
                         );
                       }).toList(),
                     );

@@ -1,12 +1,9 @@
 import 'package:careconnect/models/registereduser.dart';
 import 'package:careconnect/screens/userdataforms/admin_update_form.dart';
-import 'package:careconnect/screens/userdataforms/doctor_update_form.dart';
 import 'package:careconnect/services/admin_data.dart';
 import 'package:careconnect/services/auth.dart';
-import 'package:careconnect/services/doctorData.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:careconnect/components/loading.dart';
 import 'package:provider/provider.dart';
 

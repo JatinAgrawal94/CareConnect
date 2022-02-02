@@ -45,6 +45,7 @@ class _DoctorFormState extends State<DoctorForm> {
   String address = " ";
   String name = " ";
   String email = " ";
+  String doctype = " ";
 
   @override
   void initState() {
@@ -58,6 +59,7 @@ class _DoctorFormState extends State<DoctorForm> {
         designation = doctorInfo['designation'];
         contact = doctorInfo['contact'].toString();
         bloodgroup = doctorInfo['bloodgroup'];
+        doctype = doctorInfo['doctype'];
         address = doctorInfo['address'];
         gender = doctorInfo['gender'] == 'Male'
             ? 0
@@ -491,7 +493,7 @@ class _DoctorFormState extends State<DoctorForm> {
                                 ],
                               ),
                             ),
-                            // ---------------------insurance no field begins here.
+                            // ---------------------designation field begins here.
                             Container(
                               padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
                               child: Row(
@@ -542,6 +544,58 @@ class _DoctorFormState extends State<DoctorForm> {
                                 ],
                               ),
                             ),
+                            // doctortype field begins here
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                              child: Row(
+                                children: <Widget>[
+                                  Container(
+                                      margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                      width: MediaQuery.of(context).size.width *
+                                          0.3,
+                                      child: Text(
+                                        "Type",
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(fontSize: 18),
+                                      )),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.5,
+                                      child: TextFormField(
+                                        cursorColor: Colors.deepPurple,
+                                        onChanged: (val) {
+                                          setState(() {
+                                            doctype = val;
+                                          });
+                                        },
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return "Field can't be empty";
+                                          }
+                                          return null;
+                                        },
+                                        controller:
+                                            TextEditingController.fromValue(
+                                                TextEditingValue(
+                                                    text: doctype,
+                                                    selection:
+                                                        TextSelection.collapsed(
+                                                            offset: doctype
+                                                                .length))),
+                                        keyboardType: TextInputType.text,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                        decoration: InputDecoration(
+                                            focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Colors.deepPurple))),
+                                      ))
+                                ],
+                              ),
+                            ),
+
                             // -------------------address field begins here
                             Container(
                               padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
@@ -619,7 +673,8 @@ class _DoctorFormState extends State<DoctorForm> {
                                             'bloodgroup': bloodgroup,
                                             'contact': contact,
                                             'designation': designation,
-                                            'address': address
+                                            'address': address,
+                                            'doctype': doctype
                                           });
                                           if (_image != null) {
                                             _doctorData.updateFile(
