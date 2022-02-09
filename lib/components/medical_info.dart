@@ -39,7 +39,7 @@ class _MedicalScreenState extends State<MedicalScreen> {
     "Radiology",
     "Surgery",
     "Vaccine",
-    "Assign Appointment"
+    "Book Appointment"
   ];
   List iconList = [
     'assets/about.png',

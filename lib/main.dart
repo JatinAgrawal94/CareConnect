@@ -6,9 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:careconnect/services/auth.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
-// import 'package:firebase_auth/firebase_auth.dart';
 
-Future main() async {
+void main() async {
   // NOTE: The filename will default to .env and doesn't need to be defined in this case
   await DotEnv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +20,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-
     return FutureBuilder(
         future: _initialization,
         builder: (context, snapshot) {

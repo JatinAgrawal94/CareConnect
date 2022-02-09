@@ -21,6 +21,7 @@ class _AppointmentState extends State<Appointment> {
   String doctor;
   String paymentstatus = 'Unpaid';
   int visittype = 0;
+  int appointmentType = 0;
 
   DateTime selecteddate = DateTime.now();
   PatientData _patientData = PatientData();
@@ -154,6 +155,43 @@ class _AppointmentState extends State<Appointment> {
                     ),
                   ),
                   Container(
+                    padding: EdgeInsets.all(5),
+                    child: Row(
+                      children: <Widget>[
+                        Text(
+                          "AppointmentType",
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        Container(
+                            // margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                            child: Row(
+                          children: <Widget>[
+                            Radio(
+                                activeColor: Colors.deepPurple,
+                                value: 0,
+                                groupValue: appointmentType,
+                                onChanged: (value) {
+                                  setState(() {
+                                    appointmentType = value;
+                                  });
+                                }),
+                            Text("Offline", style: TextStyle(fontSize: 20)),
+                            Radio(
+                                activeColor: Colors.deepPurple,
+                                value: 1,
+                                groupValue: appointmentType,
+                                onChanged: (value) {
+                                  setState(() {
+                                    appointmentType = value;
+                                  });
+                                }),
+                            Text("Online", style: TextStyle(fontSize: 20)),
+                          ],
+                        ))
+                      ],
+                    ),
+                  ),
+                  Container(
                       padding: EdgeInsets.all(5),
                       child: Row(children: <Widget>[
                         Text(
@@ -212,8 +250,25 @@ class _AppointmentState extends State<Appointment> {
                       style:
                           ElevatedButton.styleFrom(primary: Colors.deepPurple),
                       onPressed: () async {
-                        if (reason != "" && doctor != null) {
-                          var doctorindex = doctorList.indexOf(doctor);
+                        var doctorindex = doctorList.indexOf(doctor);
+                        var status =
+                            await _doctorData.checkUserValidityForAppointment(
+                                doctordata[doctorindex]['email'],
+                                patientdata['email'],
+                                "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}");
+                        if (status == 0) {
+                          Fluttertoast.showToast(
+                              msg: "Appointment limit reached",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.SNACKBAR,
+                              backgroundColor: Colors.grey,
+                              textColor: Colors.white,
+                              fontSize: 15,
+                              timeInSecForIosWeb: 1);
+                              
+                        }else if (reason != "" && doctor != null && status == 1) {
+                          // var doctorindex = doctorList.indexOf(doctor);
+                          print(doctordata[doctorindex]['timing']);
                           await _patientData.addAppointment(patientId, {
                             'reason': reason,
                             'date':
@@ -226,6 +281,8 @@ class _AppointmentState extends State<Appointment> {
                             'paymentstatus': paymentstatus,
                             'paymentamount': " ",
                             'visittype': visittype == 0 ? "New" : "Follow Up",
+                            'appointmenttype':
+                                appointmentType == 0 ? "Offline" : "Online"
                           });
                           Fluttertoast.showToast(
                               msg: "Data Saved",
@@ -247,7 +304,7 @@ class _AppointmentState extends State<Appointment> {
                               timeInSecForIosWeb: 1);
                         }
                       },
-                      child: Text("Save", style: TextStyle(fontSize: 20)))
+                      child: Text("Book", style: TextStyle(fontSize: 20)))
                 ],
               ),
             )),
@@ -256,8 +313,7 @@ class _AppointmentState extends State<Appointment> {
                 child: StreamBuilder<QuerySnapshot>(
                   stream: appointment.snapshots(),
                   builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot>
-                          snapshot) {
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.hasError) {
                       return Text('Something went wrong');
                     }
@@ -267,18 +323,19 @@ class _AppointmentState extends State<Appointment> {
                     }
 
                     return new ListView(
-                      children: snapshot.data.docs.map(
-                          (DocumentSnapshot document) {
+                      children:
+                          snapshot.data.docs.map((DocumentSnapshot document) {
                         return AppointmentList(
-                          reason: document.data()['reason'],
-                          doctor: document.data()['doctorname'],
-                          doctoremail: document.data()['doctoremail'],
-                          paymentstatus: document.data()['paymentstatus'],
-                          date: document.data()['date'],
-                          timing: document.data()['timing'],
-                          visittype: document.data()['visittype'],
-                          paymentamount: document.data()['paymentamount'],
-                        );
+                            reason: document.data()['reason'],
+                            doctor: document.data()['doctorname'],
+                            doctoremail: document.data()['doctoremail'],
+                            paymentstatus: document.data()['paymentstatus'],
+                            date: document.data()['date'],
+                            timing: document.data()['timing'],
+                            visittype: document.data()['visittype'],
+                            paymentamount: document.data()['paymentamount'],
+                            appointmenttype: document.data()['appointmenttype'],
+                            patientemail: document.data()['patientemail']);
                       }).toList(),
                     );
                   },

@@ -41,7 +41,8 @@ class _AppointmentPatientListState extends State<AppointmentPatientList> {
             'reason': item['reason'],
             'visittype': item['visittype'],
             'paymentstatus': item['paymentstatus'],
-            'paymentamount': item['paymentamount']
+            'paymentamount': item['paymentamount'],
+            'appointmenttype': item['appointmenttype'],
           });
         });
       });
@@ -93,6 +94,11 @@ class _AppointmentPatientListState extends State<AppointmentPatientList> {
                                         Text(
                                           "Paymentstatus: " +
                                               data[index]['paymentstatus'],
+                                          style: TextStyle(fontSize: 17),
+                                        ),
+                                        Text(
+                                          "AppointmentType: " +
+                                              data[index]['appointmenttype'],
                                           style: TextStyle(fontSize: 17),
                                         ),
                                         Container(

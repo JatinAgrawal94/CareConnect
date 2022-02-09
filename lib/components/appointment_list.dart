@@ -1,6 +1,8 @@
+import 'package:careconnect/services/patientdata.dart';
 import 'package:flutter/material.dart';
 // import 'package:fluttertoast/fluttertoast.dart';
 
+import 'package:url_launcher/url_launcher.dart';
 
 class AppointmentList extends StatefulWidget {
   final String date;
@@ -11,6 +13,8 @@ class AppointmentList extends StatefulWidget {
   final String paymentstatus;
   final String paymentamount;
   final String doctoremail;
+  final String patientemail;
+  final String appointmenttype;
   AppointmentList(
       {Key key,
       this.date,
@@ -20,7 +24,9 @@ class AppointmentList extends StatefulWidget {
       this.doctor,
       this.doctoremail,
       this.paymentstatus,
-      this.paymentamount})
+      this.paymentamount,
+      this.appointmenttype,
+      this.patientemail})
       : super(key: key);
 
   @override
@@ -32,7 +38,9 @@ class AppointmentList extends StatefulWidget {
       this.doctor,
       this.doctoremail,
       this.paymentstatus,
-      this.paymentamount);
+      this.paymentamount,
+      this.appointmenttype,
+      this.patientemail);
 }
 
 class _AppointmentListState extends State<AppointmentList> {
@@ -42,26 +50,50 @@ class _AppointmentListState extends State<AppointmentList> {
   final String reason;
   final String doctor;
   final String doctoremail;
+  final String patientemail;
   final String paymentstatus;
   final String paymentamount;
-  _AppointmentListState(this.date, this.timing, this.visittype, this.reason,
-      this.doctor, this.doctoremail, this.paymentstatus, this.paymentamount);
+  final String appointmenttype;
 
-  void onGooglePayResult(paymentResult) {
-    debugPrint(paymentResult.toString());
+  _AppointmentListState(
+      this.date,
+      this.timing,
+      this.visittype,
+      this.reason,
+      this.doctor,
+      this.doctoremail,
+      this.paymentstatus,
+      this.paymentamount,
+      this.appointmenttype,
+      this.patientemail);
+
+  PatientData _patientData = PatientData();
+  List data = [];
+  @override
+  void initState() {
+    super.initState();
+    _patientData.getPatientIdByEmail(patientemail).then((value) {
+      value.forEach((item) => {
+            setState(() => {
+                  data.add({'userid': item['userid'], 'phone': item['phone']})
+                })
+          });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-   
     return Container(
         margin: EdgeInsets.all(5),
+        padding: EdgeInsets.all(5),
         decoration: BoxDecoration(border: Border.all(width: 0.5)),
         child: Column(
           children: <Widget>[
             Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
                       "$date",
@@ -73,6 +105,10 @@ class _AppointmentListState extends State<AppointmentList> {
                     ),
                     Text(
                       "VisitType: $visittype",
+                      style: TextStyle(fontSize: 17),
+                    ),
+                    Text(
+                      "AppointmentType: $appointmenttype",
                       style: TextStyle(fontSize: 17),
                     ),
                     Text(
@@ -117,26 +153,39 @@ class _AppointmentListState extends State<AppointmentList> {
                   paymentstatus == 'Unpaid'
                       ? Container(
                           margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-            
+                          child: ElevatedButton(
+                            child: Text(
+                              "Pay",
+                              style: TextStyle(fontSize: 17),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.deepPurple),
+                            onPressed: () async {
+                              var _url =
+                                  'https://careconnect-api.herokuapp.com/pay?amount=$paymentamount&customerid=' +
+                                      data[0]['userid'] +
+                                      '&patientemail=$patientemail&phone=' +
+                                      data[0]['phone'] +
+                                      '&doctoremail=$doctoremail' +
+                                      '&date=$date' +
+                                      '&timing=$timing';
 
-                          // ElevatedButton(
-                          //   child: Text(
-                          //     "Pay",
-                          //     style: TextStyle(fontSize: 17),
-                          //   ),
-                          //   style: ElevatedButton.styleFrom(
-                          //       primary: Colors.deepPurple),
-                          //   onPressed: () {
-                          //     return Fluttertoast.showToast(
-                          //         msg: "Chal Paisa Nikal !",
-                          //         toastLength: Toast.LENGTH_LONG,
-                          //         gravity: ToastGravity.SNACKBAR,
-                          //         backgroundColor: Colors.deepPurple,
-                          //         textColor: Colors.white,
-                          //         fontSize: 15,
-                          //         timeInSecForIosWeb: 1);
-                          //   },
-                          // ),
+                              if (!await launch(_url)) {
+                                throw 'Could not launch $_url';
+                              } else {
+                                print("Success");
+                              }
+
+                              // return Fluttertoast.showToast(
+                              //     msg: "Chal Paisa Nikal !",
+                              //     toastLength: Toast.LENGTH_LONG,
+                              //     gravity: ToastGravity.SNACKBAR,
+                              //     backgroundColor: Colors.deepPurple,
+                              //     textColor: Colors.white,
+                              //     fontSize: 15,
+                              //     timeInSecForIosWeb: 1);
+                            },
+                          ),
                         )
                       : Container()
                 ],

@@ -122,20 +122,19 @@ class PatientData {
     return data;
   }
 
-  // Future getPatientIdByEmail(String email) async {
-  //   var data;
-  //   FirebaseFirestore.instance
-  //       .collection('users')
-  //       .where('email', isEqualTo: email)
-  //       .where('role', isEqualTo: 'patient')
-  //       .get()
-  //       .then((QuerySnapshot snapshot) {
-  //     snapshot.docs.forEach((element) {
-  //       // data.add({'email'})
-  //     });
-  //   });
-  //   return data;
-  // }
+  Future getPatientIdByEmail(String email) async {
+    List data = [];
+    await FirebaseFirestore.instance
+        .collection('Patient')
+        .where('email', isEqualTo: email)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((element) {
+        data.add({'userid': element['userid'], 'phone': element['phoneno']});
+      });
+    });
+    return data;
+  }
 
   Future getDoctorInfo(dynamic doctorid) async {
     var data = Map<String, dynamic>();
@@ -232,6 +231,7 @@ class PatientData {
       'patientname': data['patientname'],
       'patientemail': data['patientemail'],
       'visittype': data['visittype'],
+      'appointmenttype': data['appointmenttype'],
       'paymentstatus': data['paymentstatus'],
       'paymentamount': data['paymentamount'],
     });

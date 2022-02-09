@@ -248,7 +248,8 @@ class DoctorData {
           'reason': element['reason'],
           'visittype': element['visittype'],
           'paymentstatus': element['paymentstatus'],
-          'paymentamount': element['paymentamount']
+          'paymentamount': element['paymentamount'],
+          'appointmenttype': element['appointmenttype'],
         });
       });
     });
@@ -283,5 +284,29 @@ class DoctorData {
         .update({'paymentamount': paymentamount})
         .then((value) {})
         .catchError((error) {});
+  }
+
+  Future checkUserValidityForAppointment(
+      String doctoremail, String patientemail, String date) async {
+    List data = [];
+    await FirebaseFirestore.instance
+        .collection('Appointment')
+        .where('doctoremail', isEqualTo: doctoremail)
+        .where('patientemail', isEqualTo: patientemail)
+        .where('date', isEqualTo: date)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((element) {
+        if (element != null) {
+          
+          data.add(element['patientemail']);
+        }
+      });
+    });
+    if (data.length == 1) {
+      return 0;
+    } else {
+      return 1;
+    }
   }
 }
