@@ -220,9 +220,9 @@ class PatientData {
   }
 
   Future addAppointment(String patientId, data) async {
-    CollectionReference appointment =
-        FirebaseFirestore.instance.collection('Appointment');
-    await appointment.add({
+    String zoom;
+
+    var offline = {
       'reason': data['reason'],
       'date': data['date'],
       'timing': data['timing'],
@@ -234,7 +234,39 @@ class PatientData {
       'appointmenttype': data['appointmenttype'],
       'paymentstatus': data['paymentstatus'],
       'paymentamount': data['paymentamount'],
-    });
+    };
+
+    if (data['appointmenttype'] == 'Online') {
+      await FirebaseFirestore.instance
+          .collection('Doctor')
+          .where('email', isEqualTo: data['doctoremail'])
+          .get()
+          .then((QuerySnapshot snapshot) {
+        snapshot.docs.forEach((element) {
+          zoom = element['zoom'];
+        });
+      });
+      CollectionReference appointment =
+          FirebaseFirestore.instance.collection('Appointment');
+      await appointment.add({
+        'reason': data['reason'],
+        'date': data['date'],
+        'timing': data['timing'],
+        'doctorname': data['doctorname'],
+        'doctoremail': data['doctoremail'],
+        'patientname': data['patientname'],
+        'patientemail': data['patientemail'],
+        'visittype': data['visittype'],
+        'appointmenttype': data['appointmenttype'],
+        'paymentstatus': data['paymentstatus'],
+        'paymentamount': data['paymentamount'],
+        'zoom': zoom
+      });
+    } else {
+      CollectionReference appointment =
+          FirebaseFirestore.instance.collection('Appointment');
+      await appointment.add(offline);
+    }
   }
 
   Future addRadiologyData(String patientId, data) async {
@@ -280,7 +312,6 @@ class PatientData {
       'drug': data['drug'],
       'dose': data['dose'],
       'doctor': data['doctor'],
-      'place': data['place'],
     });
   }
 

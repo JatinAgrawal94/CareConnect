@@ -65,7 +65,8 @@ class DoctorData {
           'address': data['address'],
           'designation': data['designation'],
           'userid': data['userid'],
-          'doctype': data['doctype']
+          'doctype': data['doctype'],
+          'zoom': " "
         })
         .then((value) {})
         .catchError((error) {
@@ -298,7 +299,6 @@ class DoctorData {
         .then((QuerySnapshot snapshot) {
       snapshot.docs.forEach((element) {
         if (element != null) {
-          
           data.add(element['patientemail']);
         }
       });

@@ -23,7 +23,6 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
   String documentId = '';
   static String imageURL;
   static var patientInfo = Map<String, dynamic>();
-
   DateTime selecteddate = DateTime.now();
   int gender = patientInfo['gender'] == 'Male'
       ? 0

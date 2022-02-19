@@ -1,6 +1,7 @@
 import 'package:careconnect/components/prescription_list.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
+import 'package:careconnect/services/doctordata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,16 +20,79 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   String dose;
   String doctor;
   String place;
+  int frequency = 0;
+  List<String> timings = [];
+  TimeOfDay selectedtime = TimeOfDay.now();
+  DateTime selecteddate = DateTime.now();
+  List<String> data = [];
   _PrescriptionScreenState(this.patientId);
   PatientData _patientData = PatientData();
+  DoctorData _doctorData = DoctorData();
   CollectionReference prescription;
+
   @override
   void initState() {
     super.initState();
+    _doctorData.getAllDoctors().then((value) => {
+          value.forEach((item) {
+            setState(() {
+              data.add(item['name']);
+            });
+          })
+        });
     setState(() {
       prescription = FirebaseFirestore.instance
           .collection('Patient/$patientId/prescription');
     });
+  }
+
+  _setDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: selecteddate, // Refer step 1
+        firstDate: DateTime(1950),
+        lastDate: DateTime(2030),
+        builder: (BuildContext context, child) {
+          return Theme(
+              data: ThemeData.dark().copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: Colors.deepPurple,
+                  onPrimary: Colors.white,
+                  surface: Colors.deepPurple,
+                  onSurface: Colors.deepPurple,
+                ),
+                dialogBackgroundColor: Colors.white,
+              ),
+              child: child);
+        });
+    if (picked != null && picked != selecteddate)
+      setState(() {
+        selecteddate = picked;
+      });
+  }
+
+  _setTime(BuildContext context) async {
+    final TimeOfDay picked = await showTimePicker(
+        context: context,
+        initialTime: selectedtime,
+        builder: (BuildContext context, child) {
+          return Theme(
+              data: ThemeData.dark().copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: Colors.white,
+                  onPrimary: Colors.deepPurple[300],
+                  surface: Colors.deepPurple,
+                  onSurface: Colors.black,
+                ),
+                dialogBackgroundColor: Colors.white,
+              ),
+              child: child);
+        });
+    if (picked != null) {
+      setState(() {
+        selectedtime = picked;
+      });
+    }
   }
 
   @override
@@ -101,69 +165,111 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                       ),
                     ),
                     Container(
-                      child: Row(
-                        children: <Widget>[
+                        padding: EdgeInsets.all(5),
+                        child: Row(children: <Widget>[
+                          Text(
+                            "Doctor",
+                            style: TextStyle(fontSize: 20),
+                          ),
                           Container(
-                              width: MediaQuery.of(context).size.width * 0.2,
-                              child: Text(
-                                "Doctor",
-                                style: TextStyle(fontSize: 20),
-                              )),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            width: MediaQuery.of(context).size.width * 0.7,
-                            child: Form(
-                              child: TextFormField(
-                                cursorColor: Colors.deepPurple,
-                                onChanged: (value) {
+                              margin: EdgeInsets.fromLTRB(15, 0, 5, 0),
+                              child: Container(
+                                  child: DropdownButton<String>(
+                                value: doctor,
+                                items: data.map<DropdownMenuItem<String>>(
+                                    (String value) {
+                                  return DropdownMenuItem<String>(
+                                      child: Text(value,
+                                          style: TextStyle(fontSize: 18)),
+                                      value: value);
+                                }).toList(),
+                                hint: Text("Select doctor"),
+                                onChanged: (String value) {
                                   setState(() {
                                     doctor = value;
                                   });
                                 },
-                                decoration: InputDecoration(
-                                    hintText: "Doctor",
-                                    focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color: Colors.deepPurple))),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
+                              ))),
+                        ])),
                     Container(
-                      child: Row(
-                        children: <Widget>[
-                          Container(
-                              width: MediaQuery.of(context).size.width * 0.2,
-                              child: Text(
-                                "Place",
-                                style: TextStyle(fontSize: 20),
-                              )),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            width: MediaQuery.of(context).size.width * 0.7,
-                            child: Form(
-                              child: TextFormField(
-                                cursorColor: Colors.deepPurple,
-                                onChanged: (value) {
+                        child: Row(children: <Widget>[
+                      Text("Frequency", style: TextStyle(fontSize: 20)),
+                      Container(
+                        margin: EdgeInsets.all(5),
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        child: TextFormField(
+                          cursorColor: Colors.deepPurple,
+                          onChanged: (value) {
+                            try {
+                              setState(() {
+                                frequency = int.parse(value);
+                              });
+                            } catch (err) {
+                              Fluttertoast.showToast(
+                                  msg: "Enter integer value",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.SNACKBAR,
+                                  backgroundColor: Colors.grey,
+                                  textColor: Colors.white,
+                                  fontSize: 15,
+                                  timeInSecForIosWeb: 1);
+                            }
+                          },
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(fontSize: 20),
+                          decoration: InputDecoration(
+                              hintText: "Frequency",
+                              focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 1, color: Colors.deepPurple))),
+                        ),
+                      )
+                    ])),
+                    Container(
+                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            IconButton(
+                              icon: Icon(Icons.date_range,
+                                  color: Colors.deepPurple),
+                              onPressed: () {
+                                _setDate(context);
+                              },
+                            ),
+                            Text(
+                                "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                style: TextStyle(fontSize: 20)),
+                          ],
+                        )),
+                    Container(
+                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            IconButton(
+                                icon: Icon(Icons.timer_rounded,
+                                    color: Colors.deepPurple),
+                                onPressed: () {
+                                  _setTime(context);
+                                }),
+                            Text(
+                                "${selectedtime.hour > 12 ? ((selectedtime.hour - 12).toString()) : (selectedtime.hour)}:${selectedtime.minute < 10 ? ("0${selectedtime.minute}") : (selectedtime.minute)}" +
+                                    "  " +
+                                    "${selectedtime.hour > 12 ? ("PM") : ("AM")}",
+                                style: TextStyle(fontSize: 20)),
+                            IconButton(
+                                onPressed: () {
                                   setState(() {
-                                    place = value;
+                                    timings.add(
+                                        "${selectedtime.hour > 12 ? ((selectedtime.hour - 12).toString()) : (selectedtime.hour)}:${selectedtime.minute < 10 ? ("0${selectedtime.minute}") : (selectedtime.minute)}" +
+                                            "  " +
+                                            "${selectedtime.hour > 12 ? ("PM") : ("AM")}");
                                   });
                                 },
-                                decoration: InputDecoration(
-                                    hintText: "Place",
-                                    focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color: Colors.deepPurple))),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
+                                icon: Icon(Icons.add, color: Colors.deepPurple))
+                          ],
+                        )),
                     Container(
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -177,14 +283,12 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                               onPressed: () async {
                                 if (drug != null &&
                                     dose != null &&
-                                    doctor != null &&
-                                    place != null) {
+                                    doctor != null) {
                                   await _patientData
                                       .addPrescription(patientId, {
                                     'drug': drug,
                                     'dose': dose,
                                     'doctor': doctor,
-                                    'place': place,
                                   });
                                   Fluttertoast.showToast(
                                       msg: "Data Saved",
@@ -212,6 +316,14 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                               ),
                             ),
                           ]),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: frequency,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(child: Text(timings[index]));
+                        },
+                      ),
                     )
                   ],
                 ),
@@ -237,7 +349,6 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                             drug: document.data()['drug'],
                             dose: document.data()['dose'],
                             doctor: document.data()['doctor'],
-                            place: document.data()['place'],
                           );
                         }).toList(),
                       );

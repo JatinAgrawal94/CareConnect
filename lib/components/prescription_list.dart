@@ -4,23 +4,21 @@ class PrescriptionList extends StatefulWidget {
   final String drug;
   final String dose;
   final String doctor;
-  final String place;
 
-  PrescriptionList({Key key, this.drug, this.dose, this.doctor, this.place})
+  PrescriptionList({Key key, this.drug, this.dose, this.doctor})
       : super(key: key);
 
   @override
   _PrescriptionListState createState() =>
-      _PrescriptionListState(this.drug, this.dose, this.doctor, this.place);
+      _PrescriptionListState(this.drug, this.dose, this.doctor);
 }
 
 class _PrescriptionListState extends State<PrescriptionList> {
   final String drug;
   final String dose;
   final String doctor;
-  final String place;
 
-  _PrescriptionListState(this.drug, this.dose, this.doctor, this.place);
+  _PrescriptionListState(this.drug, this.dose, this.doctor);
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +30,7 @@ class _PrescriptionListState extends State<PrescriptionList> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
                 "$drug",
@@ -40,17 +39,21 @@ class _PrescriptionListState extends State<PrescriptionList> {
               Text(
                 "$dose",
                 style: TextStyle(fontSize: 14),
-              )
+              ),
+              Text(
+                "Doctor:$doctor",
+                style: TextStyle(fontSize: 14),
+              ),
             ],
           ),
           Column(children: <Widget>[
-            Text(
-              "Doctor:$doctor",
-              style: TextStyle(fontSize: 14),
-            ),
-            Text(
-              "Place: $place",
-              style: TextStyle(fontSize: 14),
+            Container(
+              child: IconButton(
+                iconSize: 50,
+                color: Colors.deepPurple,
+                icon: Icon(Icons.notification_add),
+                onPressed: () {},
+              ),
             )
           ])
         ],

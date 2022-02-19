@@ -265,10 +265,9 @@ class _AppointmentState extends State<Appointment> {
                               textColor: Colors.white,
                               fontSize: 15,
                               timeInSecForIosWeb: 1);
-                              
-                        }else if (reason != "" && doctor != null && status == 1) {
-                          // var doctorindex = doctorList.indexOf(doctor);
-                          print(doctordata[doctorindex]['timing']);
+                        } else if (reason != "" &&
+                            doctor != null &&
+                            status == 1) {
                           await _patientData.addAppointment(patientId, {
                             'reason': reason,
                             'date':
@@ -321,21 +320,38 @@ class _AppointmentState extends State<Appointment> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return LoadingHeart();
                     }
-
                     return new ListView(
                       children:
                           snapshot.data.docs.map((DocumentSnapshot document) {
-                        return AppointmentList(
-                            reason: document.data()['reason'],
-                            doctor: document.data()['doctorname'],
-                            doctoremail: document.data()['doctoremail'],
-                            paymentstatus: document.data()['paymentstatus'],
-                            date: document.data()['date'],
-                            timing: document.data()['timing'],
-                            visittype: document.data()['visittype'],
-                            paymentamount: document.data()['paymentamount'],
-                            appointmenttype: document.data()['appointmenttype'],
-                            patientemail: document.data()['patientemail']);
+                        if (document.data()['appointmenttype'] == 'Online') {
+                          return AppointmentList(
+                              reason: document.data()['reason'],
+                              doctor: document.data()['doctorname'],
+                              doctoremail: document.data()['doctoremail'],
+                              paymentstatus: document.data()['paymentstatus'],
+                              date: document.data()['date'],
+                              timing: document.data()['timing'],
+                              visittype: document.data()['visittype'],
+                              paymentamount: document.data()['paymentamount'],
+                              appointmenttype:
+                                  document.data()['appointmenttype'],
+                              patientemail: document.data()['patientemail'],
+                              zoomlink: document.data()['zoom']);
+                        } else {
+                          return AppointmentList(
+                              reason: document.data()['reason'],
+                              doctor: document.data()['doctorname'],
+                              doctoremail: document.data()['doctoremail'],
+                              paymentstatus: document.data()['paymentstatus'],
+                              date: document.data()['date'],
+                              timing: document.data()['timing'],
+                              visittype: document.data()['visittype'],
+                              paymentamount: document.data()['paymentamount'],
+                              appointmenttype:
+                                  document.data()['appointmenttype'],
+                              patientemail: document.data()['patientemail'],
+                              zoomlink: '');
+                        }
                       }).toList(),
                     );
                   },

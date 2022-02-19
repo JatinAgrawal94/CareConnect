@@ -176,7 +176,6 @@ class _AppointmentPatientListState extends State<AppointmentPatientList> {
                                                                 if (paymentAmount
                                                                         .trim() !=
                                                                     null) {
-                                                                  print(date);
                                                                   _doctorData.updatePaymentAmount(
                                                                       doctoremail,
                                                                       data[index]

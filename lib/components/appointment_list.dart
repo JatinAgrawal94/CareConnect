@@ -15,6 +15,7 @@ class AppointmentList extends StatefulWidget {
   final String doctoremail;
   final String patientemail;
   final String appointmenttype;
+  final String zoomlink;
   AppointmentList(
       {Key key,
       this.date,
@@ -26,7 +27,8 @@ class AppointmentList extends StatefulWidget {
       this.paymentstatus,
       this.paymentamount,
       this.appointmenttype,
-      this.patientemail})
+      this.patientemail,
+      this.zoomlink})
       : super(key: key);
 
   @override
@@ -40,7 +42,8 @@ class AppointmentList extends StatefulWidget {
       this.paymentstatus,
       this.paymentamount,
       this.appointmenttype,
-      this.patientemail);
+      this.patientemail,
+      this.zoomlink);
 }
 
 class _AppointmentListState extends State<AppointmentList> {
@@ -54,6 +57,7 @@ class _AppointmentListState extends State<AppointmentList> {
   final String paymentstatus;
   final String paymentamount;
   final String appointmenttype;
+  final String zoomlink;
 
   _AppointmentListState(
       this.date,
@@ -65,7 +69,8 @@ class _AppointmentListState extends State<AppointmentList> {
       this.paymentstatus,
       this.paymentamount,
       this.appointmenttype,
-      this.patientemail);
+      this.patientemail,
+      this.zoomlink);
 
   PatientData _patientData = PatientData();
   List data = [];
@@ -145,6 +150,21 @@ class _AppointmentListState extends State<AppointmentList> {
                 )
               ],
             ),
+            appointmenttype == 'Online'
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        child: Text(
+                          "Zoom Meeting:$zoomlink",
+                          style: TextStyle(fontSize: 17),
+                          maxLines: 20,
+                        ),
+                      )
+                    ],
+                  )
+                : Container(),
             Container(
               child: Row(
                 children: <Widget>[

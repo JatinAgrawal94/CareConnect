@@ -46,6 +46,7 @@ class _DoctorFormState extends State<DoctorForm> {
   String name = " ";
   String email = " ";
   String doctype = " ";
+  String zoom = " ";
 
   @override
   void initState() {
@@ -61,6 +62,7 @@ class _DoctorFormState extends State<DoctorForm> {
         bloodgroup = doctorInfo['bloodgroup'];
         doctype = doctorInfo['doctype'];
         address = doctorInfo['address'];
+        zoom = doctorInfo['zoom'];
         gender = doctorInfo['gender'] == 'Male'
             ? 0
             : doctorInfo['gender'] == 'Female'
@@ -650,6 +652,56 @@ class _DoctorFormState extends State<DoctorForm> {
                               ),
                             ),
                             Container(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                              child: Row(
+                                children: <Widget>[
+                                  Container(
+                                      margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                      width: MediaQuery.of(context).size.width *
+                                          0.3,
+                                      child: Text(
+                                        "Zoom Meeting ID&PWD",
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(fontSize: 18),
+                                      )),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.5,
+                                      child: TextFormField(
+                                        cursorColor: Colors.deepPurple,
+                                        onChanged: (val) {
+                                          setState(() {
+                                            zoom = val;
+                                          });
+                                        },
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return "Field can't be empty";
+                                          }
+                                          return null;
+                                        },
+                                        controller:
+                                            TextEditingController.fromValue(
+                                                TextEditingValue(
+                                                    text: zoom,
+                                                    selection:
+                                                        TextSelection.collapsed(
+                                                            offset:
+                                                                zoom.length))),
+                                        keyboardType: TextInputType.text,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                        decoration: InputDecoration(
+                                            focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Colors.deepPurple))),
+                                      ))
+                                ],
+                              ),
+                            ),
+                            Container(
                               margin: EdgeInsets.fromLTRB(0, 30, 0, 30),
                               child: Row(
                                 mainAxisAlignment:
@@ -674,7 +726,8 @@ class _DoctorFormState extends State<DoctorForm> {
                                             'contact': contact,
                                             'designation': designation,
                                             'address': address,
-                                            'doctype': doctype
+                                            'doctype': doctype,
+                                            'zoom': zoom
                                           });
                                           if (_image != null) {
                                             _doctorData.updateFile(
