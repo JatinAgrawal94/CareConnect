@@ -52,7 +52,10 @@ dependencies:
   url_launcher: ^6.0.4
   http: ^0.12.2
   shared_preferences: ^2.0.12
+  firebase_messaging: ^8.0.0-dev.15
+  flutter_local_notifications: ^4.0.1+2
   
+
 
 dev_dependencies:
   

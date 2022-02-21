@@ -29,11 +29,6 @@ class _AllergyScreenState extends State<AllergyScreen> {
     });
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   _setDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: context,
