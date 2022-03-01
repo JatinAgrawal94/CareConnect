@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 
 class ExaminationScreen extends StatefulWidget {
   final String patientId;
@@ -32,7 +33,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
   String notes = "";
   String doctor = "";
   String place = "";
-
+  List<FilePickerResult> images = [];
   @override
   void initState() {
     super.initState();
@@ -347,7 +348,19 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                     Icons.camera_alt,
                                     size: 35,
                                   ),
-                                  onPressed: () {
+                                  onPressed: () async {
+                                    final result = await FilePicker.platform
+                                        .pickFiles(
+                                            type: FileType.custom,
+                                            allowedExtensions: [
+                                          'jpg',
+                                          'jpeg',
+                                          'png'
+                                        ]);
+                                    if (result != null) {
+                                      images.add(result);
+                                    }
+                                    print(result);
                                     // _patientData.showpicker(context);
                                     // _mediaFile = PatientData.media;
                                   }),
@@ -429,8 +442,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                 child: StreamBuilder<QuerySnapshot>(
                   stream: examination.snapshots(),
                   builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot>
-                          snapshot) {
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.hasError) {
                       return Text('Something went wrong');
                     }
@@ -440,8 +452,8 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                     }
 
                     return new ListView(
-                      children: snapshot.data.docs.map(
-                          (DocumentSnapshot document) {
+                      children:
+                          snapshot.data.docs.map((DocumentSnapshot document) {
                         return ExaminationList(
                             temperature: document.data()['temperature'],
                             weight: document.data()['temperature'],

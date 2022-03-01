@@ -12,6 +12,19 @@ import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('Handling a background message ${message.messageId}');
+  print(message.data);
+  flutterLocalNotificationsPlugin.show(
+      message.hashCode,
+      message.data['title'],
+      message.data['body'],
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channel.id,
+          channel.name,
+          channel.description,
+          icon: 'launch_background',
+        ),
+      ));
 }
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(

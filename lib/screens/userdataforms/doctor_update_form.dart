@@ -469,6 +469,9 @@ class _DoctorFormState extends State<DoctorForm> {
                                           });
                                         },
                                         validator: (value) {
+                                          if (value.length < 10) {
+                                            return "Enter 10 digit contact number";
+                                          }
                                           if (value.isEmpty) {
                                             return "Field can't be empty";
                                           }

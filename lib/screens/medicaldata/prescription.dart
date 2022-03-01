@@ -191,40 +191,40 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                 },
                               ))),
                         ])),
-                    Container(
-                        child: Row(children: <Widget>[
-                      Text("Frequency", style: TextStyle(fontSize: 20)),
-                      Container(
-                        margin: EdgeInsets.all(5),
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        child: TextFormField(
-                          cursorColor: Colors.deepPurple,
-                          onChanged: (value) {
-                            try {
-                              setState(() {
-                                frequency = int.parse(value);
-                              });
-                            } catch (err) {
-                              Fluttertoast.showToast(
-                                  msg: "Enter integer value",
-                                  toastLength: Toast.LENGTH_LONG,
-                                  gravity: ToastGravity.SNACKBAR,
-                                  backgroundColor: Colors.grey,
-                                  textColor: Colors.white,
-                                  fontSize: 15,
-                                  timeInSecForIosWeb: 1);
-                            }
-                          },
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(fontSize: 20),
-                          decoration: InputDecoration(
-                              hintText: "Frequency",
-                              focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 1, color: Colors.deepPurple))),
-                        ),
-                      )
-                    ])),
+                    // Container(
+                    //     child: Row(children: <Widget>[
+                    //   Text("Frequency", style: TextStyle(fontSize: 20)),
+                    //   Container(
+                    //     margin: EdgeInsets.all(5),
+                    //     width: MediaQuery.of(context).size.width * 0.4,
+                    //     child: TextFormField(
+                    //       cursorColor: Colors.deepPurple,
+                    //       onChanged: (value) {
+                    //         try {
+                    //           setState(() {
+                    //             frequency = int.parse(value);
+                    //           });
+                    //         } catch (err) {
+                    //           Fluttertoast.showToast(
+                    //               msg: "Enter integer value",
+                    //               toastLength: Toast.LENGTH_LONG,
+                    //               gravity: ToastGravity.SNACKBAR,
+                    //               backgroundColor: Colors.grey,
+                    //               textColor: Colors.white,
+                    //               fontSize: 15,
+                    //               timeInSecForIosWeb: 1);
+                    //         }
+                    //       },
+                    //       keyboardType: TextInputType.number,
+                    //       style: TextStyle(fontSize: 20),
+                    //       decoration: InputDecoration(
+                    //           hintText: "Frequency",
+                    //           focusedBorder: UnderlineInputBorder(
+                    //               borderSide: BorderSide(
+                    //                   width: 1, color: Colors.deepPurple))),
+                    //     ),
+                    //   )
+                    // ])),
                     Container(
                         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                         child: Row(
@@ -267,7 +267,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                             "${selectedtime.hour > 12 ? ("PM") : ("AM")}");
                                   });
                                 },
-                                icon: Icon(Icons.add, color: Colors.deepPurple))
+                                icon: Icon(Icons.add_circle,
+                                    color: Colors.deepPurple))
                           ],
                         )),
                     Container(
@@ -289,6 +290,9 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                     'drug': drug,
                                     'dose': dose,
                                     'doctor': doctor,
+                                    'date':
+                                        "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                    'timings': timings
                                   });
                                   Fluttertoast.showToast(
                                       msg: "Data Saved",
@@ -319,9 +323,29 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                     ),
                     Expanded(
                       child: ListView.builder(
-                        itemCount: frequency,
+                        itemCount: timings.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return Container(child: Text(timings[index]));
+                          return Container(
+                              padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+                              margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
+                              decoration:
+                                  BoxDecoration(border: Border.all(width: 1)),
+                              child: Row(
+                                children: <Widget>[
+                                  Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.3,
+                                      child: Text(timings[index],
+                                          style: TextStyle(fontSize: 20))),
+                                  IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          timings.removeAt(index);
+                                        });
+                                      },
+                                      icon: Icon(Icons.remove_circle))
+                                ],
+                              ));
                         },
                       ),
                     )

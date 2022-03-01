@@ -463,6 +463,9 @@ class _AdminFormState extends State<AdminForm> {
                                           });
                                         },
                                         validator: (value) {
+                                          if (value.length < 10) {
+                                            return "Enter 10 digit contact number";
+                                          }
                                           if (value.isEmpty) {
                                             return "Field can't be empty";
                                           }

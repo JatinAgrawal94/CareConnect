@@ -312,6 +312,8 @@ class PatientData {
       'drug': data['drug'],
       'dose': data['dose'],
       'doctor': data['doctor'],
+      'date':data['date'],
+      'timing':data['timings']
     });
   }
 
