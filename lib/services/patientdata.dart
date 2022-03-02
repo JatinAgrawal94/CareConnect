@@ -312,8 +312,9 @@ class PatientData {
       'drug': data['drug'],
       'dose': data['dose'],
       'doctor': data['doctor'],
-      'date':data['date'],
-      'timing':data['timings']
+      'date': data['date'],
+      'timing': data['timings'],
+      'delete': 0
     });
   }
 
@@ -392,10 +393,10 @@ class PatientData {
   }
 
   Future<void> uploadPatientPhoto(
-      File filepath, String date, String category, String userId) async {
+      File filepath, String name, String category, String userId) async {
     try {
       await firebase_storage.FirebaseStorage.instance
-          .ref('Patient/$userId/photo/$category/$date.png')
+          .ref('Patient/$userId/$category/images/$name')
           .putFile(filepath);
       print("File Uploaded Successfully");
     } on firebase_core.FirebaseException catch (e) {
@@ -403,11 +404,55 @@ class PatientData {
     }
   }
 
+  Future<List<dynamic>> prepareFiles(List test) async {
+    var data = [];
+    for (var i = 0; i < test.length; i++) {
+      data.add({
+        'filename': File(test[i]),
+        'name': getName(File(test[i]).toString())
+      });
+    }
+    return data;
+  }
+
+  String getName(String filename) {
+    List temp = filename.split('/');
+    temp = temp[temp.length - 1].split('\'');
+    return temp[0];
+  }
+
+  Future uploadMediaFiles(test, category, userId) async {
+    var a;
+    if (test['image'].length != 0) {
+      a = test['image'];
+      for (var i = 0; i < a.length; i++) {
+        await uploadPatientPhoto(
+            a[i]['filename'], a[i]['name'], category, userId);
+      }
+    }
+
+    if (test['video'].length != 0) {
+      a = test['video'];
+      for (var i = 0; i < a.length; i++) {
+        await uploadPatientVideo(
+            a[i]['filename'], a[i]['name'], category, userId);
+      }
+    }
+
+    if (test['file'].length != 0) {
+      a = test['file'];
+      for (var i = 0; i < a.length; i++) {
+        await uploadPatientFile(
+            a[i]['filename'], a[i]['name'], category, userId);
+      }
+    }
+  }
+
   Future<void> uploadPatientVideo(
-      File filepath, String date, String category, String userId) async {
+      File filepath, String name, String category, String userId) async {
     try {
       await firebase_storage.FirebaseStorage.instance
-          .ref('Patient/$userId/video/$category/$date.mp4')
+          .ref('Patient/$userId/$category/videos/$name')
           .putFile(filepath);
     } on firebase_core.FirebaseException catch (e) {
       print(e);
@@ -415,10 +460,10 @@ class PatientData {
   }
 
   Future<void> uploadPatientFile(
-      File filepath, String date, String category, String userId) async {
+      File filepath, String name, String category, String userId) async {
     try {
       await firebase_storage.FirebaseStorage.instance
-          .ref('Patient/$userId/file/$category/$date.pdf')
+          .ref('Patient/$userId/$category/files/$name')
           .putFile(filepath);
       print("File Uploaded Successfully");
     } on firebase_core.FirebaseException catch (e) {
@@ -558,4 +603,7 @@ class PatientData {
     });
     return userId;
   }
+
+  // delete patient records functions
+  //
 }

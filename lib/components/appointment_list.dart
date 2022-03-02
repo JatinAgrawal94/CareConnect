@@ -182,7 +182,7 @@ class _AppointmentListState extends State<AppointmentList> {
                                 primary: Colors.deepPurple),
                             onPressed: () async {
                               var _url =
-                                  'https://careconnect-api.herokuapp.com/pay?amount=$paymentamount&customerid=' +
+                                  'https://careconnect-api.herokuapp.com/payment/pay?amount=$paymentamount&customerid=' +
                                       data[0]['userid'] +
                                       '&patientemail=$patientemail&phone=' +
                                       data[0]['phone'] +

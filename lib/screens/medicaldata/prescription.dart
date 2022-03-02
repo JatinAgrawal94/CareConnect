@@ -180,10 +180,13 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                     (String value) {
                                   return DropdownMenuItem<String>(
                                       child: Text(value,
-                                          style: TextStyle(fontSize: 18)),
+                                          style: TextStyle(fontSize: 12)),
                                       value: value);
                                 }).toList(),
-                                hint: Text("Select doctor"),
+                                hint: Text(
+                                  "Select doctor",
+                                  style: TextStyle(fontSize: 20),
+                                ),
                                 onChanged: (String value) {
                                   setState(() {
                                     doctor = value;
@@ -191,40 +194,6 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                 },
                               ))),
                         ])),
-                    // Container(
-                    //     child: Row(children: <Widget>[
-                    //   Text("Frequency", style: TextStyle(fontSize: 20)),
-                    //   Container(
-                    //     margin: EdgeInsets.all(5),
-                    //     width: MediaQuery.of(context).size.width * 0.4,
-                    //     child: TextFormField(
-                    //       cursorColor: Colors.deepPurple,
-                    //       onChanged: (value) {
-                    //         try {
-                    //           setState(() {
-                    //             frequency = int.parse(value);
-                    //           });
-                    //         } catch (err) {
-                    //           Fluttertoast.showToast(
-                    //               msg: "Enter integer value",
-                    //               toastLength: Toast.LENGTH_LONG,
-                    //               gravity: ToastGravity.SNACKBAR,
-                    //               backgroundColor: Colors.grey,
-                    //               textColor: Colors.white,
-                    //               fontSize: 15,
-                    //               timeInSecForIosWeb: 1);
-                    //         }
-                    //       },
-                    //       keyboardType: TextInputType.number,
-                    //       style: TextStyle(fontSize: 20),
-                    //       decoration: InputDecoration(
-                    //           hintText: "Frequency",
-                    //           focusedBorder: UnderlineInputBorder(
-                    //               borderSide: BorderSide(
-                    //                   width: 1, color: Colors.deepPurple))),
-                    //     ),
-                    //   )
-                    // ])),
                     Container(
                         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                         child: Row(
@@ -370,10 +339,11 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                         children:
                             snapshot.data.docs.map((DocumentSnapshot document) {
                           return PrescriptionList(
-                            drug: document.data()['drug'],
-                            dose: document.data()['dose'],
-                            doctor: document.data()['doctor'],
-                          );
+                              drug: document.data()['drug'],
+                              dose: document.data()['dose'],
+                              doctor: document.data()['doctor'],
+                              date: document.data()['date'],
+                              timing: document.data()['timing']);
                         }).toList(),
                       );
                     },
