@@ -25,7 +25,6 @@ class _DoctorHomeState extends State<DoctorHome> {
   static String patientId;
   CollectionReference patientList =
       FirebaseFirestore.instance.collection('Patient');
-
   String documentId;
 
   @override

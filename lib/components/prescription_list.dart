@@ -1,3 +1,4 @@
+import 'package:careconnect/services/patientdata.dart';
 import 'package:flutter/material.dart';
 
 class PrescriptionList extends StatefulWidget {
@@ -6,14 +7,29 @@ class PrescriptionList extends StatefulWidget {
   final String doctor;
   final String date;
   final timing;
+  final String patientId;
+  final String prescriptionId;
 
   PrescriptionList(
-      {Key key, this.drug, this.dose, this.doctor, this.date, this.timing})
+      {Key key,
+      this.drug,
+      this.dose,
+      this.doctor,
+      this.date,
+      this.timing,
+      this.patientId,
+      this.prescriptionId})
       : super(key: key);
 
   @override
   _PrescriptionListState createState() => _PrescriptionListState(
-      this.drug, this.dose, this.doctor, this.date, this.timing);
+      this.drug,
+      this.dose,
+      this.doctor,
+      this.date,
+      this.timing,
+      this.patientId,
+      this.prescriptionId);
 }
 
 class _PrescriptionListState extends State<PrescriptionList> {
@@ -22,9 +38,11 @@ class _PrescriptionListState extends State<PrescriptionList> {
   final String doctor;
   final String date;
   final timing;
-
-  _PrescriptionListState(
-      this.drug, this.dose, this.doctor, this.date, this.timing);
+  final String patientId;
+  final String prescriptionId;
+  PatientData _patient = PatientData();
+  _PrescriptionListState(this.drug, this.dose, this.doctor, this.date,
+      this.timing, this.patientId, this.prescriptionId);
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +92,10 @@ class _PrescriptionListState extends State<PrescriptionList> {
                 iconSize: 30,
                 color: Colors.deepPurple,
                 icon: Icon(Icons.delete),
-                onPressed: () {},
+                onPressed: () async {
+                  await _patient.deleteAnyPatientRecord(
+                      patientId, prescriptionId, 'prescription');
+                },
               ),
             )
           ])

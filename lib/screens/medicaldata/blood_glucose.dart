@@ -17,6 +17,7 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
   final String patientId;
   _BloodGlucoseScreenState(this.patientId);
   PatientData _patientData = PatientData();
+  final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   int readingType = 0;
   DateTime selecteddate = DateTime.now();
   TimeOfDay selectedtime = TimeOfDay.now();
@@ -161,31 +162,32 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                     Row(
                       children: <Widget>[
                         Form(
+                            key: formkey,
                             child: SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.3,
-                          child: TextFormField(
-                              cursorColor: Colors.deepPurple,
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return "Field can't be empty";
-                                }
-                                return null;
-                              },
-                              onChanged: (value) {
-                                setState(() {
-                                  result = value;
-                                });
-                              },
-                              keyboardType: TextInputType.number,
-                              style: TextStyle(
-                                fontSize: 18,
-                              ),
-                              decoration: InputDecoration(
-                                  focusedBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                          width: 1,
-                                          color: Colors.deepPurple)))),
-                        )),
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              child: TextFormField(
+                                  cursorColor: Colors.deepPurple,
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return "Field can't be empty";
+                                    }
+                                    return null;
+                                  },
+                                  onChanged: (value) {
+                                    setState(() {
+                                      result = value;
+                                    });
+                                  },
+                                  keyboardType: TextInputType.number,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                  decoration: InputDecoration(
+                                      focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1,
+                                              color: Colors.deepPurple)))),
+                            )),
                         DropdownButton<String>(
                           value: resultUnit,
                           items: <String>['mg/dL', 'mmol/L']
@@ -227,7 +229,9 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                               },
                             ),
                             Text(
-                                "${selectedtime.hour.toString()}:${selectedtime.minute.toString()}",
+                                "${selectedtime.hour > 12 ? ((selectedtime.hour - 12).toString()) : (selectedtime.hour)}:${selectedtime.minute < 10 ? ("0${selectedtime.minute}") : (selectedtime.minute)}" +
+                                    "  " +
+                                    "${selectedtime.hour > 12 ? ("PM") : ("AM")}",
                                 style: TextStyle(fontSize: 18)),
                           ],
                         )),
@@ -235,7 +239,7 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                         style: ElevatedButton.styleFrom(
                             primary: Colors.deepPurple),
                         onPressed: () async {
-                          if (result != "") {
+                          if (formkey.currentState.validate()) {
                             _patientData.addBloodGlucose(patientId, {
                               'type': readingType == 0
                                   ? 'Fasting'
@@ -247,7 +251,9 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                               'date':
                                   "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
                               'time':
-                                  "${selectedtime.hour.toString()}:${selectedtime.minute.toString()}",
+                                  "${selectedtime.hour > 12 ? ((selectedtime.hour - 12).toString()) : (selectedtime.hour)}:${selectedtime.minute < 10 ? ("0${selectedtime.minute}") : (selectedtime.minute)}" +
+                                      "  " +
+                                      "${selectedtime.hour > 12 ? ("PM") : ("AM")}"
                             });
                             Fluttertoast.showToast(
                                 msg: "Data Saved",
@@ -258,16 +264,7 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                                 fontSize: 15,
                                 timeInSecForIosWeb: 1);
                             Navigator.pop(context);
-                          } else {
-                            Fluttertoast.showToast(
-                                msg: "Field Empty!",
-                                toastLength: Toast.LENGTH_LONG,
-                                gravity: ToastGravity.SNACKBAR,
-                                backgroundColor: Colors.grey,
-                                textColor: Colors.white,
-                                fontSize: 15,
-                                timeInSecForIosWeb: 1);
-                          }
+                          } else {}
                         },
                         child: Text(
                           "Save",

@@ -20,6 +20,7 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
   PatientData _patientData = PatientData();
   CollectionReference family;
   String memberName = '';
+  final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   String description = '';
   @override
   void initState() {
@@ -50,19 +51,20 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
             children: [
               Container(
                 padding: EdgeInsets.all(10),
-                child: Column(
-                  children: <Widget>[
-                    Row(
+                child: Form(
+                    key: formkey,
+                    child: Column(
                       children: <Widget>[
-                        Icon(Icons.family_restroom, size: 30),
-                        Text("Family Member History",
-                            style: TextStyle(fontSize: 20)),
-                      ],
-                    ),
-                    Container(
-                        margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                        width: MediaQuery.of(context).size.width * 0.7,
-                        child: Form(
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.family_restroom, size: 30),
+                            Text("Family Member History",
+                                style: TextStyle(fontSize: 20)),
+                          ],
+                        ),
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                          width: MediaQuery.of(context).size.width * 0.7,
                           child: TextFormField(
                             cursorColor: Colors.deepPurple,
                             onChanged: (value) {
@@ -70,17 +72,23 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                                 memberName = value;
                               });
                             },
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return "Field can't be empty";
+                              } else {
+                                return null;
+                              }
+                            },
                             decoration: InputDecoration(
                                 hintText: "Family Member Name",
                                 focusedBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(
                                         width: 1, color: Colors.deepPurple))),
                           ),
-                        )),
-                    Container(
-                        margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                        width: MediaQuery.of(context).size.width * 0.7,
-                        child: Form(
+                        ),
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                          width: MediaQuery.of(context).size.width * 0.7,
                           child: TextFormField(
                               cursorColor: Colors.deepPurple,
                               onChanged: (value) {
@@ -88,45 +96,52 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                                   description = value;
                                 });
                               },
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return "Field can't be empty";
+                                } else {
+                                  return null;
+                                }
+                              },
                               decoration: InputDecoration(
                                   hintText: "Description",
                                   focusedBorder: UnderlineInputBorder(
                                       borderSide: BorderSide(
                                           width: 1,
                                           color: Colors.deepPurple)))),
-                        )),
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            primary: Colors.deepPurple),
-                        onPressed: () async {
-                          if (memberName != "" && description != "") {
-                            await _patientData.addFamilyHistory(patientId, {
-                              'name': memberName,
-                              'description': description
-                            });
-                            Fluttertoast.showToast(
-                                msg: "Data Saved",
-                                toastLength: Toast.LENGTH_LONG,
-                                gravity: ToastGravity.SNACKBAR,
-                                backgroundColor: Colors.grey,
-                                textColor: Colors.white,
-                                fontSize: 15,
-                                timeInSecForIosWeb: 1);
-                            Navigator.pop(context);
-                          } else {
-                            Fluttertoast.showToast(
-                                msg: "Field Empty!",
-                                toastLength: Toast.LENGTH_LONG,
-                                gravity: ToastGravity.SNACKBAR,
-                                backgroundColor: Colors.grey,
-                                textColor: Colors.white,
-                                fontSize: 15,
-                                timeInSecForIosWeb: 1);
-                          }
-                        },
-                        child: Text("Save", style: TextStyle(fontSize: 20)))
-                  ],
-                ),
+                        ),
+                        ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.deepPurple),
+                            onPressed: () async {
+                              if (formkey.currentState.validate()) {
+                                await _patientData.addFamilyHistory(patientId, {
+                                  'name': memberName,
+                                  'description': description
+                                });
+                                Fluttertoast.showToast(
+                                    msg: "Data Saved",
+                                    toastLength: Toast.LENGTH_LONG,
+                                    gravity: ToastGravity.SNACKBAR,
+                                    backgroundColor: Colors.grey,
+                                    textColor: Colors.white,
+                                    fontSize: 15,
+                                    timeInSecForIosWeb: 1);
+                                Navigator.pop(context);
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg: "Error",
+                                    toastLength: Toast.LENGTH_LONG,
+                                    gravity: ToastGravity.SNACKBAR,
+                                    backgroundColor: Colors.grey,
+                                    textColor: Colors.white,
+                                    fontSize: 15,
+                                    timeInSecForIosWeb: 1);
+                              }
+                            },
+                            child: Text("Save", style: TextStyle(fontSize: 20)))
+                      ],
+                    )),
               ),
               Container(
                 child: StreamBuilder<QuerySnapshot>(

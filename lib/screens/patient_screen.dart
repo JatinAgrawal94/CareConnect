@@ -18,13 +18,15 @@ class _PatientHomeState extends State<PatientHome> {
   AuthService auth = AuthService();
   PatientData patient = PatientData();
   String documentId;
+  String userId;
 
   @override
   void initState() {
     super.initState();
     patient.getDocsId(email).then((value) {
       setState(() {
-        documentId = value;
+        documentId = value['documentId'];
+        userId = value['userId'];
       });
     });
   }
@@ -33,9 +35,7 @@ class _PatientHomeState extends State<PatientHome> {
   Widget build(BuildContext context) {
     return documentId != null
         ? MedicalScreen(
-            patientId: documentId,
-            patientScreen: true,
-          )
+            patientId: documentId, patientScreen: true, userId: userId)
         : LoadingHeart();
   }
 }

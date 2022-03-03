@@ -1,4 +1,5 @@
 import 'package:careconnect/components/pathology_list.dart';
+import 'package:careconnect/services/doctorData.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -13,21 +14,32 @@ class PathologyScreen extends StatefulWidget {
   _PathologyScreenState createState() => _PathologyScreenState(patientId);
 }
 
+// Medical Visit feature is for outside appointments outside careconnect which need to be entered by patient
+// and later approved by doctor
+
 class _PathologyScreenState extends State<PathologyScreen> {
   final String patientId;
   String title = "";
   String result = "";
-  String doctor = "";
+  String doctor;
   String place = "";
-
+  final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   _PathologyScreenState(this.patientId);
   PatientData _patientData = PatientData();
   CollectionReference pathology;
   DateTime selecteddate = DateTime.now();
-
+  DoctorData _doctorData = DoctorData();
+  List<String> data = [];
   @override
   void initState() {
     super.initState();
+    _doctorData.getAllDoctors().then((value) => {
+          value.forEach((item) {
+            setState(() {
+              data.add(item['name']);
+            });
+          })
+        });
     setState(() {
       pathology =
           FirebaseFirestore.instance.collection('Patient/$patientId/pathology');
@@ -80,26 +92,35 @@ class _PathologyScreenState extends State<PathologyScreen> {
               SingleChildScrollView(
                   child: Container(
                 padding: EdgeInsets.all(5),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                        padding: EdgeInsets.all(5),
-                        child: Row(
-                          children: <Widget>[
-                            Text(
-                              "Title",
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            Container(
-                                margin: EdgeInsets.fromLTRB(15, 0, 5, 0),
-                                width: MediaQuery.of(context).size.width * 0.7,
-                                child: Form(
+                child: Form(
+                    key: formkey,
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                            padding: EdgeInsets.all(5),
+                            child: Row(
+                              children: <Widget>[
+                                Text(
+                                  "Title",
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.fromLTRB(15, 0, 5, 0),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.7,
                                   child: TextFormField(
                                     cursorColor: Colors.deepPurple,
                                     onChanged: (value) {
                                       setState(() {
                                         title = value;
                                       });
+                                    },
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return "Field can't be empty";
+                                      } else {
+                                        return null;
+                                      }
                                     },
                                     keyboardType: TextInputType.text,
                                     decoration: InputDecoration(
@@ -109,27 +130,34 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                                 width: 1,
                                                 color: Colors.deepPurple))),
                                   ),
-                                )),
-                          ],
-                        )),
-                    Container(
-                        padding: EdgeInsets.all(5),
-                        child: Row(
-                          children: <Widget>[
-                            Text(
-                              "Result",
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            Container(
-                                margin: EdgeInsets.fromLTRB(15, 0, 5, 0),
-                                width: MediaQuery.of(context).size.width * 0.7,
-                                child: Form(
+                                ),
+                              ],
+                            )),
+                        Container(
+                            padding: EdgeInsets.all(5),
+                            child: Row(
+                              children: <Widget>[
+                                Text(
+                                  "Result",
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.fromLTRB(15, 0, 5, 0),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.7,
                                   child: TextFormField(
                                     cursorColor: Colors.deepPurple,
                                     onChanged: (value) {
                                       setState(() {
                                         result = value;
                                       });
+                                    },
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return "Field can't be empty";
+                                      } else {
+                                        return null;
+                                      }
                                     },
                                     keyboardType: TextInputType.text,
                                     decoration: InputDecoration(
@@ -139,57 +167,75 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                                 width: 1,
                                                 color: Colors.deepPurple))),
                                   ),
-                                )),
-                          ],
-                        )),
-                    Container(
-                        padding: EdgeInsets.all(5),
-                        child: Row(
-                          children: <Widget>[
-                            Text(
-                              "Doctor",
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            Container(
-                                margin: EdgeInsets.fromLTRB(15, 0, 5, 0),
-                                width: MediaQuery.of(context).size.width * 0.7,
-                                child: Form(
-                                  child: TextFormField(
-                                    cursorColor: Colors.deepPurple,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        doctor = value;
-                                      });
-                                    },
-                                    keyboardType: TextInputType.text,
-                                    decoration: InputDecoration(
-                                        hintText: "Doctor",
-                                        focusedBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                width: 1,
-                                                color: Colors.deepPurple))),
-                                  ),
-                                )),
-                          ],
-                        )),
-                    Container(
-                        padding: EdgeInsets.all(5),
-                        child: Row(
-                          children: <Widget>[
-                            Text(
-                              "Place",
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            Container(
-                                margin: EdgeInsets.fromLTRB(15, 0, 5, 0),
-                                width: MediaQuery.of(context).size.width * 0.7,
-                                child: Form(
+                                ),
+                              ],
+                            )),
+                        Container(
+                            padding: EdgeInsets.all(5),
+                            child: Row(
+                              children: <Widget>[
+                                Text(
+                                  "Doctor",
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Container(
+                                    margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    child: Container(
+                                        child: DropdownButtonFormField<String>(
+                                      value: doctor,
+                                      items: data.map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                        return DropdownMenuItem<String>(
+                                            child: Text(value,
+                                                style: TextStyle(fontSize: 15)),
+                                            value: value);
+                                      }).toList(),
+                                      hint: Text(
+                                        "Select doctor",
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                      onChanged: (String value) {
+                                        setState(() {
+                                          doctor = value;
+                                        });
+                                      },
+                                      validator: (value) {
+                                        if (value.isEmpty) {
+                                          return "Field can't be empty";
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                    ))),
+                              ],
+                            )),
+                        Container(
+                            padding: EdgeInsets.all(5),
+                            child: Row(
+                              children: <Widget>[
+                                Text(
+                                  "Place",
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.fromLTRB(15, 0, 5, 0),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.7,
                                   child: TextFormField(
                                     cursorColor: Colors.deepPurple,
                                     onChanged: (value) {
                                       setState(() {
                                         place = value;
                                       });
+                                    },
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return "Field can't be empty";
+                                      } else {
+                                        return null;
+                                      }
                                     },
                                     keyboardType: TextInputType.text,
                                     decoration: InputDecoration(
@@ -199,78 +245,75 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                                 width: 1,
                                                 color: Colors.deepPurple))),
                                   ),
-                                )),
-                          ],
-                        )),
-                    Container(
-                      margin: EdgeInsets.all(15),
-                      child: Row(
-                        children: <Widget>[
-                          IconButton(
-                            icon: Icon(Icons.date_range, size: 30),
-                            onPressed: () {
-                              _setDate(context);
-                            },
+                                ),
+                              ],
+                            )),
+                        Container(
+                          margin: EdgeInsets.all(15),
+                          child: Row(
+                            children: <Widget>[
+                              IconButton(
+                                icon: Icon(Icons.date_range, size: 30),
+                                onPressed: () {
+                                  _setDate(context);
+                                },
+                              ),
+                              Text(
+                                  "Date : ${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                  style: TextStyle(fontSize: 20))
+                            ],
                           ),
-                          Text(
-                              "Date : ${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                              style: TextStyle(fontSize: 20))
-                        ],
-                      ),
-                    ),
-                    Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          Icon(Icons.camera_alt, size: 30),
-                          Icon(Icons.video_call, size: 30),
-                          Icon(Icons.attach_file, size: 30),
-                          ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  primary: Colors.deepPurple),
-                              onPressed: () async {
-                                if (title != "" &&
-                                    result != "" &&
-                                    doctor != "" &&
-                                    place != "") {
-                                  await _patientData
-                                      .addPathologyData(patientId, {
-                                    'title': title,
-                                    'result': result,
-                                    'doctor': doctor,
-                                    'date':
-                                        "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                    'place': place
-                                  });
-                                  Fluttertoast.showToast(
-                                      msg: "Data Saved",
-                                      toastLength: Toast.LENGTH_LONG,
-                                      gravity: ToastGravity.SNACKBAR,
-                                      backgroundColor: Colors.grey,
-                                      textColor: Colors.white,
-                                      fontSize: 15,
-                                      timeInSecForIosWeb: 1);
-                                  Navigator.pop(context);
-                                } else {
-                                  Fluttertoast.showToast(
-                                      msg: "Field Empty!",
-                                      toastLength: Toast.LENGTH_LONG,
-                                      gravity: ToastGravity.SNACKBAR,
-                                      backgroundColor: Colors.grey,
-                                      textColor: Colors.white,
-                                      fontSize: 15,
-                                      timeInSecForIosWeb: 1);
-                                }
-                              },
-                              child: Text(
-                                "Save",
-                                style: TextStyle(fontSize: 20),
-                              ))
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+                        ),
+                        Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              Icon(Icons.camera_alt, size: 30),
+                              Icon(Icons.video_call, size: 30),
+                              Icon(Icons.attach_file, size: 30),
+                              ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Colors.deepPurple),
+                                  onPressed: () async {
+                                    if (formkey.currentState.validate()) {
+                                      await _patientData
+                                          .addPathologyData(patientId, {
+                                        'title': title,
+                                        'result': result,
+                                        'doctor': doctor,
+                                        'date':
+                                            "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                        'place': place
+                                      });
+                                      Fluttertoast.showToast(
+                                          msg: "Data Saved",
+                                          toastLength: Toast.LENGTH_LONG,
+                                          gravity: ToastGravity.SNACKBAR,
+                                          backgroundColor: Colors.grey,
+                                          textColor: Colors.white,
+                                          fontSize: 15,
+                                          timeInSecForIosWeb: 1);
+                                      Navigator.pop(context);
+                                    } else {
+                                      Fluttertoast.showToast(
+                                          msg: "Error",
+                                          toastLength: Toast.LENGTH_LONG,
+                                          gravity: ToastGravity.SNACKBAR,
+                                          backgroundColor: Colors.grey,
+                                          textColor: Colors.white,
+                                          fontSize: 15,
+                                          timeInSecForIosWeb: 1);
+                                    }
+                                  },
+                                  child: Text(
+                                    "Save",
+                                    style: TextStyle(fontSize: 20),
+                                  ))
+                            ],
+                          ),
+                        )
+                      ],
+                    )),
               )),
               Container(
                   padding: EdgeInsets.all(5),

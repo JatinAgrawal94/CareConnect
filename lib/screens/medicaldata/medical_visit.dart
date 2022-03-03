@@ -20,6 +20,7 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
   String doctor = '';
   String place = '';
   _MedicalVisitScreenState(this.patientId);
+  final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   PatientData _patientData = PatientData();
   DateTime selecteddate = DateTime.now();
   CollectionReference visit;
@@ -78,79 +79,89 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
             children: [
               Container(
                   padding: EdgeInsets.all(5),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.all(5),
-                        child: Row(
-                          children: <Widget>[
-                            Text("Date", style: TextStyle(fontSize: 20)),
-                            IconButton(
-                                icon: Icon(Icons.date_range),
-                                onPressed: () {
-                                  _setDate(context);
-                                }),
-                            Container(
-                                margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                width: MediaQuery.of(context).size.width * 0.5,
-                                child: Text(
-                                  "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                  style: TextStyle(fontSize: 20),
-                                )),
-                          ],
-                        ),
-                      ),
-                      Container(
-                          margin: EdgeInsets.all(5),
-                          child: Row(
-                            children: <Widget>[
-                              Text("Visit Type",
-                                  style: TextStyle(fontSize: 20)),
-                              Container(
-                                  margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Radio(
-                                          activeColor: Colors.deepPurple,
-                                          value: 0,
-                                          groupValue: visitType,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              visitType = value;
-                                            });
-                                          }),
-                                      Text("New",
-                                          style: TextStyle(fontSize: 20)),
-                                      Radio(
-                                          activeColor: Colors.deepPurple,
-                                          value: 1,
-                                          groupValue: visitType,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              visitType = value;
-                                            });
-                                          }),
-                                      Text("Follow Up",
-                                          style: TextStyle(fontSize: 20)),
-                                    ],
-                                  ))
-                            ],
-                          )),
-                      Container(
-                        margin: EdgeInsets.all(5),
-                        child: Row(
-                          children: <Widget>[
-                            Text("Doctor", style: TextStyle(fontSize: 20)),
-                            Container(
-                                margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                width: MediaQuery.of(context).size.width * 0.5,
-                                child: Form(
+                  child: Form(
+                      key: formkey,
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                            margin: EdgeInsets.all(5),
+                            child: Row(
+                              children: <Widget>[
+                                Text("Date", style: TextStyle(fontSize: 20)),
+                                IconButton(
+                                    icon: Icon(Icons.date_range),
+                                    onPressed: () {
+                                      _setDate(context);
+                                    }),
+                                Container(
+                                    margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    child: Text(
+                                      "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                      style: TextStyle(fontSize: 20),
+                                    )),
+                              ],
+                            ),
+                          ),
+                          Container(
+                              margin: EdgeInsets.all(5),
+                              child: Row(
+                                children: <Widget>[
+                                  Text("Visit Type",
+                                      style: TextStyle(fontSize: 20)),
+                                  Container(
+                                      margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Radio(
+                                              activeColor: Colors.deepPurple,
+                                              value: 0,
+                                              groupValue: visitType,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  visitType = value;
+                                                });
+                                              }),
+                                          Text("New",
+                                              style: TextStyle(fontSize: 20)),
+                                          Radio(
+                                              activeColor: Colors.deepPurple,
+                                              value: 1,
+                                              groupValue: visitType,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  visitType = value;
+                                                });
+                                              }),
+                                          Text("Follow Up",
+                                              style: TextStyle(fontSize: 20)),
+                                        ],
+                                      ))
+                                ],
+                              )),
+                          Container(
+                            margin: EdgeInsets.all(5),
+                            child: Row(
+                              children: <Widget>[
+                                Text("Doctor", style: TextStyle(fontSize: 20)),
+                                Container(
+                                    margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
                                     child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (value) {
                                           setState(() {
                                             doctor = value;
                                           });
+                                        },
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return "Field can't be empty";
+                                          } else {
+                                            return null;
+                                          }
                                         },
                                         keyboardType: TextInputType.text,
                                         decoration: InputDecoration(
@@ -159,24 +170,31 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                                 borderSide: BorderSide(
                                                     width: 1,
                                                     color:
-                                                        Colors.deepPurple))))))
-                          ],
-                        ),
-                      ),
-                      Container(
-                          margin: EdgeInsets.all(5),
-                          child: Row(children: <Widget>[
-                            Text("Place", style: TextStyle(fontSize: 20)),
-                            Container(
-                                margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                width: MediaQuery.of(context).size.width * 0.5,
-                                child: Form(
+                                                        Colors.deepPurple)))))
+                              ],
+                            ),
+                          ),
+                          Container(
+                              margin: EdgeInsets.all(5),
+                              child: Row(children: <Widget>[
+                                Text("Place", style: TextStyle(fontSize: 20)),
+                                Container(
+                                    margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
                                     child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (value) {
                                           setState(() {
                                             place = value;
                                           });
+                                        },
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return "Field can't be empty";
+                                          } else {
+                                            return null;
+                                          }
                                         },
                                         keyboardType: TextInputType.text,
                                         decoration: InputDecoration(
@@ -185,44 +203,46 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                                 borderSide: BorderSide(
                                                     width: 1,
                                                     color:
-                                                        Colors.deepPurple)))))),
-                          ])),
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              primary: Colors.deepPurple),
-                          onPressed: () async {
-                            if (doctor != "" && place != "") {
-                              await _patientData.addMedicalVisit(patientId, {
-                                'date':
-                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                'visitType':
-                                    visitType == 0 ? "New" : "Follow Up",
-                                'doctor': doctor,
-                                'place': place
-                              });
-                              Fluttertoast.showToast(
-                                  msg: "Data Saved",
-                                  toastLength: Toast.LENGTH_LONG,
-                                  gravity: ToastGravity.SNACKBAR,
-                                  backgroundColor: Colors.grey,
-                                  textColor: Colors.white,
-                                  fontSize: 15,
-                                  timeInSecForIosWeb: 1);
-                              Navigator.pop(context);
-                            } else {
-                              Fluttertoast.showToast(
-                                  msg: "Field Empty!",
-                                  toastLength: Toast.LENGTH_LONG,
-                                  gravity: ToastGravity.SNACKBAR,
-                                  backgroundColor: Colors.grey,
-                                  textColor: Colors.white,
-                                  fontSize: 15,
-                                  timeInSecForIosWeb: 1);
-                            }
-                          },
-                          child: Text("Save", style: TextStyle(fontSize: 20)))
-                    ],
-                  )),
+                                                        Colors.deepPurple))))),
+                              ])),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.deepPurple),
+                              onPressed: () async {
+                                if (formkey.currentState.validate()) {
+                                  await _patientData
+                                      .addMedicalVisit(patientId, {
+                                    'date':
+                                        "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                    'visitType':
+                                        visitType == 0 ? "New" : "Follow Up",
+                                    'doctor': doctor,
+                                    'place': place
+                                  });
+                                  Fluttertoast.showToast(
+                                      msg: "Data Saved",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.SNACKBAR,
+                                      backgroundColor: Colors.grey,
+                                      textColor: Colors.white,
+                                      fontSize: 15,
+                                      timeInSecForIosWeb: 1);
+                                  Navigator.pop(context);
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg: "Error",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.SNACKBAR,
+                                      backgroundColor: Colors.grey,
+                                      textColor: Colors.white,
+                                      fontSize: 15,
+                                      timeInSecForIosWeb: 1);
+                                }
+                              },
+                              child:
+                                  Text("Save", style: TextStyle(fontSize: 20)))
+                        ],
+                      ))),
               Container(
                   padding: EdgeInsets.all(5),
                   child: StreamBuilder<QuerySnapshot>(

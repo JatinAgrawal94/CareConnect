@@ -19,6 +19,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
   String systolic = "";
   String diastolic = "";
   String pulse = "";
+  final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   DateTime selecteddate = DateTime.now();
   TimeOfDay selectedtime = TimeOfDay.now();
   _BloodPressureScreenState(this.patientId);
@@ -112,68 +113,87 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                     ],
                   ),
                   Form(
+                      key: formkey,
                       child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Form(
-                          child: Container(
-                        width: MediaQuery.of(context).size.width * 0.3,
-                        child: TextFormField(
-                          cursorColor: Colors.deepPurple,
-                          onChanged: (value) {
-                            setState(() {
-                              systolic = value;
-                            });
-                          },
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(fontSize: 20),
-                          decoration: InputDecoration(
-                              hintText: "systolic",
-                              focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 1, color: Colors.deepPurple))),
-                        ),
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            child: TextFormField(
+                              cursorColor: Colors.deepPurple,
+                              onChanged: (value) {
+                                setState(() {
+                                  systolic = value;
+                                });
+                              },
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return "Field can't be empty";
+                                } else {
+                                  return null;
+                                }
+                              },
+                              keyboardType: TextInputType.number,
+                              style: TextStyle(fontSize: 20),
+                              decoration: InputDecoration(
+                                  hintText: "systolic",
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 1, color: Colors.deepPurple))),
+                            ),
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            child: TextFormField(
+                              cursorColor: Colors.deepPurple,
+                              onChanged: (value) {
+                                setState(() {
+                                  diastolic = value;
+                                });
+                              },
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return "Field can't be empty";
+                                } else {
+                                  return null;
+                                }
+                              },
+                              keyboardType: TextInputType.number,
+                              style: TextStyle(fontSize: 20),
+                              decoration: InputDecoration(
+                                  hintText: "diastolic",
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 1, color: Colors.deepPurple))),
+                            ),
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            child: TextFormField(
+                              cursorColor: Colors.deepPurple,
+                              onChanged: (value) {
+                                setState(() {
+                                  pulse = value;
+                                });
+                              },
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return "Field can't be empty";
+                                } else {
+                                  return null;
+                                }
+                              },
+                              keyboardType: TextInputType.number,
+                              style: TextStyle(fontSize: 20),
+                              decoration: InputDecoration(
+                                  hintText: "pulse",
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 1, color: Colors.deepPurple))),
+                            ),
+                          )
+                        ],
                       )),
-                      Form(
-                          child: Container(
-                        width: MediaQuery.of(context).size.width * 0.3,
-                        child: TextFormField(
-                          cursorColor: Colors.deepPurple,
-                          onChanged: (value) {
-                            setState(() {
-                              diastolic = value;
-                            });
-                          },
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(fontSize: 20),
-                          decoration: InputDecoration(
-                              hintText: "diastolic",
-                              focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 1, color: Colors.deepPurple))),
-                        ),
-                      )),
-                      Form(
-                          child: Container(
-                        width: MediaQuery.of(context).size.width * 0.3,
-                        child: TextFormField(
-                          cursorColor: Colors.deepPurple,
-                          onChanged: (value) {
-                            setState(() {
-                              pulse = value;
-                            });
-                          },
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(fontSize: 20),
-                          decoration: InputDecoration(
-                              hintText: "pulse",
-                              focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 1, color: Colors.deepPurple))),
-                        ),
-                      ))
-                    ],
-                  )),
                   Container(
                       margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                       child: Row(
@@ -202,7 +222,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                       style:
                           ElevatedButton.styleFrom(primary: Colors.deepPurple),
                       onPressed: () async {
-                        if (systolic != "" && diastolic != "" && pulse != "") {
+                        if (formkey.currentState.validate()) {
                           _patientData.addBloodPressure(patientId, {
                             'systolic': systolic,
                             "diastolic": diastolic,
@@ -223,7 +243,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                           Navigator.pop(context);
                         } else {
                           Fluttertoast.showToast(
-                              msg: "Field Empty!",
+                              msg: "Error",
                               toastLength: Toast.LENGTH_LONG,
                               gravity: ToastGravity.SNACKBAR,
                               backgroundColor: Colors.grey,

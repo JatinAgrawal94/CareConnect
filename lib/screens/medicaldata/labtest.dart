@@ -1,9 +1,12 @@
 import 'package:careconnect/components/labtest_list.dart';
 import 'package:careconnect/components/loading.dart';
+import 'package:careconnect/services/doctorData.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 
 class LabTestScreen extends StatefulWidget {
   final String patientId;
@@ -20,14 +23,28 @@ class _LabTestScreenState extends State<LabTestScreen> {
   String normal = '';
   String doctor = '';
   String place = '';
+  List<String> data = [];
+  List images = [];
+  List videos = [];
+  List files = [];
 
   _LabTestScreenState(this.patientId);
+  final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   PatientData _patientData = PatientData();
+  DoctorData _doctorData = DoctorData();
   CollectionReference labtest;
   DateTime selecteddate = DateTime.now();
+
   @override
   void initState() {
     super.initState();
+    _doctorData.getAllDoctors().then((value) => {
+          value.forEach((item) {
+            setState(() {
+              data.add(item['name']);
+            });
+          })
+        });
     setState(() {
       labtest =
           FirebaseFirestore.instance.collection('Patient/$patientId/labtest');
@@ -79,194 +96,269 @@ class _LabTestScreenState extends State<LabTestScreen> {
             children: [
               Container(
                 padding: EdgeInsets.all(10),
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                child: Form(
+                    key: formkey,
+                    child: Column(
                       children: <Widget>[
-                        Form(
-                            child: Container(
-                          width: MediaQuery.of(context).size.width * 0.3,
-                          child: TextFormField(
-                            cursorColor: Colors.deepPurple,
-                            onChanged: (value) {
-                              setState(() {
-                                test = value;
-                              });
-                            },
-                            keyboardType: TextInputType.text,
-                            style: TextStyle(fontSize: 20),
-                            decoration: InputDecoration(
-                                hintText: "Test",
-                                focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        width: 1, color: Colors.deepPurple))),
-                          ),
-                        )),
-                        Form(
-                            child: Container(
-                          width: MediaQuery.of(context).size.width * 0.3,
-                          child: TextFormField(
-                            cursorColor: Colors.deepPurple,
-                            onChanged: (value) {
-                              setState(() {
-                                result = value;
-                              });
-                            },
-                            keyboardType: TextInputType.text,
-                            style: TextStyle(fontSize: 20),
-                            decoration: InputDecoration(
-                                hintText: "Result",
-                                focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        width: 1, color: Colors.deepPurple))),
-                          ),
-                        )),
-                        Form(
-                            child: Container(
-                          width: MediaQuery.of(context).size.width * 0.3,
-                          child: TextFormField(
-                            cursorColor: Colors.deepPurple,
-                            onChanged: (value) {
-                              setState(() {
-                                normal = value;
-                              });
-                            },
-                            keyboardType: TextInputType.text,
-                            style: TextStyle(fontSize: 20),
-                            decoration: InputDecoration(
-                                hintText: "Normal",
-                                focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        width: 1, color: Colors.deepPurple))),
-                          ),
-                        ))
-                      ],
-                    ),
-                    Container(
-                      child: Row(
-                        children: <Widget>[
-                          Text(
-                            "Doctor",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
-                            width: MediaQuery.of(context).size.width * 0.3,
-                            child: Form(
-                                child: TextFormField(
-                              cursorColor: Colors.deepPurple,
-                              onChanged: (value) {
-                                setState(() {
-                                  doctor = value;
-                                });
-                              },
-                              keyboardType: TextInputType.text,
-                              decoration: InputDecoration(
-                                  hintText: "Doctor",
-                                  focusedBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                          width: 1, color: Colors.deepPurple))),
-                            )),
-                          )
-                        ],
-                      ),
-                    ),
-                    Container(
-                      child: Row(
-                        children: <Widget>[
-                          Text(
-                            "Place",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
-                            width: MediaQuery.of(context).size.width * 0.3,
-                            child: Form(
-                                child: TextFormField(
-                              cursorColor: Colors.deepPurple,
-                              onChanged: (value) {
-                                setState(() {
-                                  place = value;
-                                });
-                              },
-                              keyboardType: TextInputType.text,
-                              decoration: InputDecoration(
-                                  hintText: "Place",
-                                  focusedBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                          width: 1, color: Colors.deepPurple))),
-                            )),
-                          )
-                        ],
-                      ),
-                    ),
-                    Container(
-                        margin: EdgeInsets.only(left: 30),
-                        child: Row(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
-                            IconButton(
-                                icon: Icon(Icons.date_range, size: 30),
-                                onPressed: () {
-                                  _setDate(context);
-                                }),
-                            Text(
-                                "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                style: TextStyle(fontSize: 20)),
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              child: TextFormField(
+                                cursorColor: Colors.deepPurple,
+                                onChanged: (value) {
+                                  setState(() {
+                                    test = value;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return "Field can't be empty";
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                keyboardType: TextInputType.text,
+                                style: TextStyle(fontSize: 20),
+                                decoration: InputDecoration(
+                                    hintText: "Test",
+                                    focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1,
+                                            color: Colors.deepPurple))),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              child: TextFormField(
+                                cursorColor: Colors.deepPurple,
+                                onChanged: (value) {
+                                  setState(() {
+                                    result = value;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return "Field can't be empty";
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                keyboardType: TextInputType.text,
+                                style: TextStyle(fontSize: 20),
+                                decoration: InputDecoration(
+                                    hintText: "Result",
+                                    focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1,
+                                            color: Colors.deepPurple))),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              child: TextFormField(
+                                cursorColor: Colors.deepPurple,
+                                onChanged: (value) {
+                                  setState(() {
+                                    normal = value;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return "Field can't be empty";
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                keyboardType: TextInputType.text,
+                                style: TextStyle(fontSize: 20),
+                                decoration: InputDecoration(
+                                    hintText: "Normal",
+                                    focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1,
+                                            color: Colors.deepPurple))),
+                              ),
+                            )
                           ],
-                        )),
-                    Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          Icon(Icons.camera_alt, size: 30),
-                          Icon(Icons.video_call_rounded, size: 30),
-                          Icon(Icons.attach_file_outlined, size: 30),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                primary: Colors.deepPurple),
-                            onPressed: () async {
-                              if (test != "" &&
-                                  result != "" &&
-                                  normal != "" &&
-                                  doctor != "" &&
-                                  place != "") {
-                                await _patientData.addLabTest(patientId, {
-                                  'test': test,
-                                  'result': result,
-                                  'normal': normal,
-                                  'doctor': doctor,
-                                  'place': place,
-                                  'date':
-                                      "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
-                                });
-                                Fluttertoast.showToast(
-                                    msg: "Data Saved",
-                                    toastLength: Toast.LENGTH_LONG,
-                                    gravity: ToastGravity.SNACKBAR,
-                                    backgroundColor: Colors.grey,
-                                    textColor: Colors.white,
-                                    fontSize: 15,
-                                    timeInSecForIosWeb: 1);
-                                Navigator.pop(context);
-                              } else {
-                                Fluttertoast.showToast(
-                                    msg: "Field Empty!",
-                                    toastLength: Toast.LENGTH_LONG,
-                                    gravity: ToastGravity.SNACKBAR,
-                                    backgroundColor: Colors.grey,
-                                    textColor: Colors.white,
-                                    fontSize: 15,
-                                    timeInSecForIosWeb: 1);
-                              }
-                            },
-                            child: Text("Save"),
+                        ),
+                        Container(
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
+                                  child: Text("Doctor",
+                                      style: TextStyle(fontSize: 20))),
+                              Container(
+                                  margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.5,
+                                  child: DropdownButtonFormField(
+                                    hint: Text(
+                                      "Select Doctor",
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                    items: data.map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                      return DropdownMenuItem<String>(
+                                          child: Text(value,
+                                              style: TextStyle(fontSize: 15)),
+                                          value: value);
+                                    }).toList(),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        doctor = value;
+                                      });
+                                    },
+                                    validator: (value) {
+                                      if (doctor == null) {
+                                        return "Select doctor";
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                    decoration: InputDecoration(
+                                        focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.deepPurple))),
+                                  )),
+                            ],
                           ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+                        ),
+                        Container(
+                          child: Row(
+                            children: <Widget>[
+                              Text(
+                                "Place",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              Container(
+                                margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
+                                width: MediaQuery.of(context).size.width * 0.3,
+                                child: TextFormField(
+                                  cursorColor: Colors.deepPurple,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      place = value;
+                                    });
+                                  },
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return "Field can't be empty";
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                  keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(
+                                      hintText: "Place",
+                                      focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1,
+                                              color: Colors.deepPurple))),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        Container(
+                            margin: EdgeInsets.only(left: 30),
+                            child: Row(
+                              children: <Widget>[
+                                IconButton(
+                                    icon: Icon(Icons.date_range, size: 30),
+                                    onPressed: () {
+                                      _setDate(context);
+                                    }),
+                                Text(
+                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                    style: TextStyle(fontSize: 20)),
+                              ],
+                            )),
+                        Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              IconButton(
+                                  onPressed: () async {
+                                    final result = await FilePicker.platform
+                                        .pickFiles(
+                                            allowMultiple: true,
+                                            type: FileType.custom,
+                                            allowedExtensions: [
+                                          'jpg',
+                                          'jpeg',
+                                          'png'
+                                        ]);
+                                    if (result != null) {
+                                      images = await _patientData
+                                          .prepareFiles(result.paths);
+                                    } else {
+                                      print("Error");
+                                    }
+                                  },
+                                  icon: Icon(Icons.camera_alt, size: 30)),
+                              IconButton(
+                                  onPressed: () async {
+                                    final result = await FilePicker.platform
+                                        .pickFiles(
+                                            allowMultiple: true,
+                                            type: FileType.custom,
+                                            allowedExtensions: [
+                                          'mp4',
+                                          'avi',
+                                          'mkv'
+                                        ]);
+                                    if (result != null) {
+                                      videos = await _patientData
+                                          .prepareFiles(result.paths);
+                                    } else {
+                                      print("Error");
+                                    }
+                                  },
+                                  icon:
+                                      Icon(Icons.video_call_rounded, size: 35)),
+                              IconButton(
+                                  onPressed: () async {
+                                    
+                                  },
+                                  icon: Icon(Icons.attach_file_outlined,
+                                      size: 32)),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.deepPurple),
+                                onPressed: () async {
+                                  if (formkey.currentState.validate()) {
+                                    await _patientData.addLabTest(patientId, {
+                                      'test': test,
+                                      'result': result,
+                                      'normal': normal,
+                                      'doctor': doctor,
+                                      'place': place,
+                                      'date':
+                                          "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                    });
+                                    Fluttertoast.showToast(
+                                        msg: "Data Saved",
+                                        toastLength: Toast.LENGTH_LONG,
+                                        gravity: ToastGravity.SNACKBAR,
+                                        backgroundColor: Colors.grey,
+                                        textColor: Colors.white,
+                                        fontSize: 15,
+                                        timeInSecForIosWeb: 1);
+                                    Navigator.pop(context);
+                                  } else {}
+                                },
+                                child: Text("Save"),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    )),
               ),
               Container(
                 child: StreamBuilder<QuerySnapshot>(

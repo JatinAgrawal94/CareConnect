@@ -3,8 +3,8 @@ import 'package:random_password_generator/random_password_generator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:careconnect/models/registereduser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
-// import 'package:mailgun/mailgun.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mailgun/mailgun.dart';
 
 class AuthService {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -130,15 +130,15 @@ class AuthService {
   }
 
   Future sendMails(String email, String password) async {
-    // var apiKey = env['API_KEY'];
-    // var domain = env['DOMAIN_NAME'];
+    var apiKey = env['API_KEY'];
+    var domain = env['DOMAIN_NAME'];
 
-    // var mailgun = MailgunMailer(domain: domain, apiKey: apiKey);
-    // await mailgun.send(
-    //     from: "CareConnect<jatinagrawal0801@gmail.com>",
-    //     to: [email],
-    //     subject: "Password for CareConnect Account",
-    //     text:
-    //         "Your Password is $password \n Note:This is a machine generated Password.Kindly reset password to ensure security");
+    var mailgun = MailgunMailer(domain: domain, apiKey: apiKey);
+    await mailgun.send(
+        from: "CareConnect<jatinagrawal0801@gmail.com>",
+        to: [email],
+        subject: "Password for CareConnect Account",
+        text:
+            "Your Password is $password \n Note:This is a machine generated Password.Kindly reset password to ensure security");
   }
 }

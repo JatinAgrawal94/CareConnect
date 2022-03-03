@@ -318,6 +318,16 @@ class PatientData {
     });
   }
 
+  Future deleteAnyPatientRecord(patientId, recordId, category) async {
+    // patient documentId, prescription docuementId
+    FirebaseFirestore.instance
+        .collection('Patient/$patientId/$category')
+        .doc(recordId)
+        .delete()
+        .then((value) => print("Prescription Deleted"))
+        .catchError((error) => print("Failed to delete prescription: $error"));
+  }
+
   Future addMedicalVisit(String patientId, data) async {
     CollectionReference patient = FirebaseFirestore.instance
         .collection('Patient/$patientId/medicalvisit');
@@ -451,10 +461,11 @@ class PatientData {
   Future<void> uploadPatientVideo(
       File filepath, String name, String category, String userId) async {
     try {
-      await firebase_storage.FirebaseStorage.instance
-          .ref('Patient/$userId/$category/videos/$name')
-          .putFile(filepath);
+      String t = 'Patient/$userId/$category/videos/$name';
+      await firebase_storage.FirebaseStorage.instance.ref(t).putFile(filepath);
+      print("File Uploaded Successfully");
     } on firebase_core.FirebaseException catch (e) {
+      print("This is an exception");
       print(e);
     }
   }
@@ -551,6 +562,7 @@ class PatientData {
 
   Future getDocsId(String email) async {
     var id;
+    var userId;
     await FirebaseFirestore.instance
         .collection('Patient')
         .where('email', isEqualTo: email)
@@ -558,9 +570,10 @@ class PatientData {
         .then((QuerySnapshot snapshot) {
       snapshot.docs.forEach((element) {
         id = element.id;
+        userId = element['userid'];
       });
     });
-    return id;
+    return {"documentId": id, "userId": userId};
   }
 
 // yet to be configured not ready to be used

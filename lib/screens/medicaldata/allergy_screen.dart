@@ -17,6 +17,7 @@ class _AllergyScreenState extends State<AllergyScreen> {
   final String patientId;
   _AllergyScreenState(this.patientId);
   PatientData _patientData = PatientData();
+  final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   DateTime selecteddate = DateTime.now();
   String type = "";
   CollectionReference allergy;
@@ -79,6 +80,7 @@ class _AllergyScreenState extends State<AllergyScreen> {
                       child: Container(
                     padding: EdgeInsets.all(5),
                     child: Form(
+                      key: formkey,
                       child: Column(
                         children: <Widget>[
                           Container(
@@ -143,7 +145,7 @@ class _AllergyScreenState extends State<AllergyScreen> {
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.deepPurple),
                                 onPressed: () async {
-                                  if (type != "") {
+                                  if (formkey.currentState.validate()) {
                                     await _patientData
                                         .addAllergyData(patientId, {
                                       'type': type,
@@ -159,16 +161,7 @@ class _AllergyScreenState extends State<AllergyScreen> {
                                         fontSize: 15,
                                         timeInSecForIosWeb: 1);
                                     Navigator.pop(context);
-                                  } else {
-                                    Fluttertoast.showToast(
-                                        msg: "Field Empty!",
-                                        toastLength: Toast.LENGTH_LONG,
-                                        gravity: ToastGravity.SNACKBAR,
-                                        backgroundColor: Colors.grey,
-                                        textColor: Colors.white,
-                                        fontSize: 15,
-                                        timeInSecForIosWeb: 1);
-                                  }
+                                  } else {}
                                 },
                                 child: Text(
                                   "Add",
@@ -184,8 +177,7 @@ class _AllergyScreenState extends State<AllergyScreen> {
                   child: StreamBuilder<QuerySnapshot>(
                 stream: allergy.snapshots(),
                 builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot>
-                        snapshot) {
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasError) {
                     return Text('Something went wrong');
                   }
@@ -195,8 +187,8 @@ class _AllergyScreenState extends State<AllergyScreen> {
                   }
 
                   return new ListView(
-                    children: snapshot.data.docs
-                        .map((DocumentSnapshot document) {
+                    children:
+                        snapshot.data.docs.map((DocumentSnapshot document) {
                       return AllergyList(
                           type: document.data()['type'],
                           date: document.data()['date']);

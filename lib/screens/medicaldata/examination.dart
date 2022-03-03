@@ -16,13 +16,14 @@ class ExaminationScreen extends StatefulWidget {
 
   @override
   _ExaminationScreenState createState() =>
-      _ExaminationScreenState(patientId, this.userId);
+      _ExaminationScreenState(this.patientId, this.userId);
 }
 
 class _ExaminationScreenState extends State<ExaminationScreen> {
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   final String patientId;
   final String userId;
+
   String category = "EX";
   _ExaminationScreenState(this.patientId, this.userId);
   PatientData _patientData = PatientData();
@@ -52,7 +53,6 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
             });
           })
         });
-
     setState(() {
       examination = FirebaseFirestore.instance
           .collection('Patient/$patientId/examination');
@@ -509,6 +509,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                         'date':
                                             "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
                                       });
+
                                       _patientData.uploadMediaFiles({
                                         'image': images,
                                         'video': videos,

@@ -29,6 +29,7 @@ class _AdminHomeState extends State<AdminHome> {
   static String patientDocumentId;
   static String doctorDocumentId;
   static String adminDocumentId;
+
   @override
   void initState() {
     super.initState();
@@ -147,12 +148,16 @@ class _AdminHomeState extends State<AdminHome> {
                                   "Patient Id: " + document.data()['userid']),
                               trailing: Icon(Icons.info),
                               onTap: () {
-                                patientDocumentId = document.id;
+                                setState(() {
+                                  patientDocumentId = document.id;
+                                });
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => MedicalScreen(
-                                            patientId: patientDocumentId)));
+                                            patientId: patientDocumentId,
+                                            userId:
+                                                document.data()['userid'])));
                               },
                             ),
                             decoration:
