@@ -324,7 +324,7 @@ class PatientData {
         .collection('Patient/$patientId/$category')
         .doc(recordId)
         .delete()
-        .then((value) => print("Prescription Deleted"))
+        .then((value) => print("$category record Deleted"))
         .catchError((error) => print("Failed to delete prescription: $error"));
   }
 

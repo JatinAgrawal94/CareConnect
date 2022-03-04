@@ -17,6 +17,7 @@ class LabTestScreen extends StatefulWidget {
 }
 
 class _LabTestScreenState extends State<LabTestScreen> {
+  String category = "labtest";
   final String patientId;
   String test = '';
   String result = '';
@@ -322,41 +323,57 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                   icon:
                                       Icon(Icons.video_call_rounded, size: 35)),
                               IconButton(
+                                  icon: Icon(Icons.attach_file, size: 32),
                                   onPressed: () async {
-                                    
-                                  },
-                                  icon: Icon(Icons.attach_file_outlined,
-                                      size: 32)),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    primary: Colors.deepPurple),
-                                onPressed: () async {
-                                  if (formkey.currentState.validate()) {
-                                    await _patientData.addLabTest(patientId, {
-                                      'test': test,
-                                      'result': result,
-                                      'normal': normal,
-                                      'doctor': doctor,
-                                      'place': place,
-                                      'date':
-                                          "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
-                                    });
-                                    Fluttertoast.showToast(
-                                        msg: "Data Saved",
-                                        toastLength: Toast.LENGTH_LONG,
-                                        gravity: ToastGravity.SNACKBAR,
-                                        backgroundColor: Colors.grey,
-                                        textColor: Colors.white,
-                                        fontSize: 15,
-                                        timeInSecForIosWeb: 1);
-                                    Navigator.pop(context);
-                                  } else {}
-                                },
-                                child: Text("Save"),
-                              ),
+                                    final result = await FilePicker.platform
+                                        .pickFiles(
+                                            allowMultiple: true,
+                                            type: FileType.custom,
+                                            allowedExtensions: [
+                                          'pdf',
+                                          'doc',
+                                        ]);
+                                    if (result != null) {
+                                      files = await _patientData
+                                          .prepareFiles(result.paths);
+                                    } else {
+                                      print("Error");
+                                    }
+                                  }),
                             ],
                           ),
-                        )
+                        ),
+                        Text(
+                          "Media files should be less than 5MB",
+                          style: TextStyle(fontSize: 15),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.deepPurple),
+                          onPressed: () async {
+                            if (formkey.currentState.validate()) {
+                              await _patientData.addLabTest(patientId, {
+                                'test': test,
+                                'result': result,
+                                'normal': normal,
+                                'doctor': doctor,
+                                'place': place,
+                                'date':
+                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                              });
+                              Fluttertoast.showToast(
+                                  msg: "Data Saved",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.SNACKBAR,
+                                  backgroundColor: Colors.grey,
+                                  textColor: Colors.white,
+                                  fontSize: 15,
+                                  timeInSecForIosWeb: 1);
+                              Navigator.pop(context);
+                            } else {}
+                          },
+                          child: Text("Save"),
+                        ),
                       ],
                     )),
               ),
@@ -382,7 +399,9 @@ class _LabTestScreenState extends State<LabTestScreen> {
                             normal: document.data()['normal'],
                             doctor: document.data()['doctor'],
                             place: document.data()['place'],
-                            date: document.data()['date']);
+                            date: document.data()['date'],
+                            patientId: patientId,
+                            recordId: document.id);
                       }).toList(),
                     );
                   },

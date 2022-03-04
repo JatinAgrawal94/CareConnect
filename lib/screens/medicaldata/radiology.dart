@@ -5,6 +5,7 @@ import 'package:careconnect/services/patientdata.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:file_picker/file_picker.dart';
 
 class RadiologyScreen extends StatefulWidget {
   final String patientId;
@@ -15,6 +16,7 @@ class RadiologyScreen extends StatefulWidget {
 }
 
 class _RadiologyScreenState extends State<RadiologyScreen> {
+  String category = "radiology";
   final String patientId;
   String title;
   String result;
@@ -27,6 +29,9 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
   CollectionReference radiology;
   DoctorData _doctorData = DoctorData();
   List<String> data = [];
+  List images = [];
+  List videos = [];
+  List files = [];
 
   @override
   void initState() {
@@ -203,6 +208,7 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                               Container(
                                 margin: EdgeInsets.all(15),
                                 child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     IconButton(
                                       icon: Icon(Icons.date_range, size: 30),
@@ -217,13 +223,82 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                                 ),
                               ),
                               Container(
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                    IconButton(
+                                        icon: Icon(
+                                          Icons.camera_alt,
+                                          size: 30,
+                                        ),
+                                        onPressed: () async {
+                                          final result = await FilePicker
+                                              .platform
+                                              .pickFiles(
+                                                  allowMultiple: true,
+                                                  type: FileType.custom,
+                                                  allowedExtensions: [
+                                                'jpg',
+                                                'jpeg',
+                                                'png'
+                                              ]);
+                                          if (result != null) {
+                                            images = await _patientData
+                                                .prepareFiles(result.paths);
+                                          } else {
+                                            print("Error");
+                                          }
+                                        }),
+                                    IconButton(
+                                        icon: Icon(Icons.video_call, size: 35),
+                                        onPressed: () async {
+                                          final result = await FilePicker
+                                              .platform
+                                              .pickFiles(
+                                                  allowMultiple: true,
+                                                  type: FileType.custom,
+                                                  allowedExtensions: [
+                                                'mp4',
+                                                'avi',
+                                                'mkv'
+                                              ]);
+                                          if (result != null) {
+                                            videos = await _patientData
+                                                .prepareFiles(result.paths);
+                                          } else {
+                                            print("Error");
+                                          }
+                                        }),
+                                    IconButton(
+                                        icon: Icon(Icons.attach_file, size: 32),
+                                        onPressed: () async {
+                                          final result = await FilePicker
+                                              .platform
+                                              .pickFiles(
+                                                  allowMultiple: true,
+                                                  type: FileType.custom,
+                                                  allowedExtensions: [
+                                                'pdf',
+                                                'doc',
+                                              ]);
+                                          if (result != null) {
+                                            files = await _patientData
+                                                .prepareFiles(result.paths);
+                                          } else {
+                                            print("Error");
+                                          }
+                                        }),
+                                  ])),
+                              Text(
+                                "Media files should be less than 5MB",
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              Container(
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: <Widget>[
-                                    Icon(Icons.camera_alt, size: 30),
-                                    Icon(Icons.video_call, size: 35),
-                                    Icon(Icons.attach_file, size: 32),
                                     ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                             primary: Colors.deepPurple),
@@ -281,6 +356,8 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                             doctor: document.data()['doctor'],
                             place: document.data()['place'],
                             date: document.data()['date'],
+                            recordId: document.id,
+                            patientId: patientId,
                           );
                         }).toList(),
                       );

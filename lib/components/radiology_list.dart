@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:careconnect/services/patientdata.dart';
 
 class RadiologyList extends StatefulWidget {
   final String title;
@@ -6,13 +7,28 @@ class RadiologyList extends StatefulWidget {
   final String doctor;
   final String date;
   final String place;
+  final String patientId;
+  final String recordId;
   RadiologyList(
-      {Key key, this.title, this.result, this.doctor, this.date, this.place})
+      {Key key,
+      this.title,
+      this.result,
+      this.doctor,
+      this.date,
+      this.place,
+      this.patientId,
+      this.recordId})
       : super(key: key);
 
   @override
   _RadiologyListState createState() => _RadiologyListState(
-      this.title, this.result, this.doctor, this.date, this.place);
+      this.title,
+      this.result,
+      this.doctor,
+      this.date,
+      this.place,
+      this.patientId,
+      this.recordId);
 }
 
 class _RadiologyListState extends State<RadiologyList> {
@@ -21,13 +37,17 @@ class _RadiologyListState extends State<RadiologyList> {
   final String doctor;
   final String date;
   final String place;
-  _RadiologyListState(
-      this.title, this.result, this.doctor, this.date, this.place);
+  final String patientId;
+  final String recordId;
+  PatientData _patientData = PatientData();
+
+  _RadiologyListState(this.title, this.result, this.doctor, this.date,
+      this.place, this.patientId, this.recordId);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: MediaQuery.of(context).size.height * 0.2,
+        height: MediaQuery.of(context).size.height * 0.25,
         decoration: BoxDecoration(border: Border.all(width: 0.5)),
         padding: EdgeInsets.all(5),
         margin: EdgeInsets.all(5),
@@ -40,13 +60,13 @@ class _RadiologyListState extends State<RadiologyList> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text("Result:$result", style: TextStyle(fontSize: 20)),
+                Text("Result: $result", style: TextStyle(fontSize: 20)),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text("Place:$place", style: TextStyle(fontSize: 20))
+                Text("Place: $place", style: TextStyle(fontSize: 20))
               ],
             ),
             Row(
@@ -58,7 +78,20 @@ class _RadiologyListState extends State<RadiologyList> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text("Date: $date", style: TextStyle(fontSize: 20)),
+                Text("$date", style: TextStyle(fontSize: 20)),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                IconButton(
+                  onPressed: () async {
+                    await _patientData.deleteAnyPatientRecord(
+                        patientId, recordId, "radiology");
+                  },
+                  icon: Icon(Icons.delete),
+                  color: Colors.deepPurple,
+                )
               ],
             )
           ],

@@ -261,10 +261,13 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                         children:
                             snapshot.data.docs.map((DocumentSnapshot document) {
                           return MedicalVisitList(
-                              visitType: document.data()['visitType'],
-                              doctor: document.data()['doctor'],
-                              place: document.data()['place'],
-                              date: document.data()['date']);
+                            visitType: document.data()['visitType'],
+                            doctor: document.data()['doctor'],
+                            place: document.data()['place'],
+                            date: document.data()['date'],
+                            recordId: document.id,
+                            patientId: patientId,
+                          );
                         }).toList(),
                       );
                     },

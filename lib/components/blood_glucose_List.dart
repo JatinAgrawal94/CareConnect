@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:careconnect/services/patientdata.dart';
 
 class BloodGlucoseList extends StatelessWidget {
   final String type;
@@ -6,10 +7,20 @@ class BloodGlucoseList extends StatelessWidget {
   final String time;
   final String result;
   final String resultUnit;
-  const BloodGlucoseList(
-      {Key key, this.type, this.result, this.date, this.time, this.resultUnit})
-      : super(key: key);
+  final String patientId;
+  final String recordId;
 
+  BloodGlucoseList(
+      {Key key,
+      this.type,
+      this.result,
+      this.date,
+      this.time,
+      this.resultUnit,
+      this.patientId,
+      this.recordId})
+      : super(key: key);
+  PatientData _patientData = PatientData();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,30 +32,39 @@ class BloodGlucoseList extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: 50,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text("$result $resultUnit",
-                            style: TextStyle(fontSize: 18)),
-                        Text("Type:$type", style: TextStyle(fontSize: 18))
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Icon(Icons.date_range_outlined),
-                        Text("$date", style: TextStyle(fontSize: 18)),
-                        Icon(Icons.timer),
-                        Text("$time", style: TextStyle(fontSize: 18))
-                      ],
-                    ),
-                  ],
-                )),
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: 50,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text("$result $resultUnit",
+                          style: TextStyle(fontSize: 18)),
+                      Text("$date", style: TextStyle(fontSize: 18)),
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text("Type:$type", style: TextStyle(fontSize: 18)),
+                      Text("$time", style: TextStyle(fontSize: 18))
+                    ],
+                  ),
+                  Column(children: <Widget>[
+                    IconButton(
+                      onPressed: () async {
+                        await _patientData.deleteAnyPatientRecord(
+                            patientId, recordId, "bloodglucose");
+                      },
+                      icon: Icon(Icons.delete),
+                      color: Colors.deepPurple,
+                    )
+                  ])
+                ],
+              ),
+            ),
           ],
         ));
   }

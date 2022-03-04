@@ -179,8 +179,11 @@ class _VaccineScreenState extends State<VaccineScreen> {
                         children:
                             snapshot.data.docs.map((DocumentSnapshot document) {
                           return VaccineList(
-                              vaccine: document.data()['vaccine'],
-                              date: document.data()['date']);
+                            vaccine: document.data()['vaccine'],
+                            date: document.data()['date'],
+                            patientId: patientId,
+                            recordId: document.id,
+                          );
                         }).toList(),
                       );
                     },

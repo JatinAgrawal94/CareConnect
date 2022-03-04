@@ -128,16 +128,7 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                                     fontSize: 15,
                                     timeInSecForIosWeb: 1);
                                 Navigator.pop(context);
-                              } else {
-                                Fluttertoast.showToast(
-                                    msg: "Error",
-                                    toastLength: Toast.LENGTH_LONG,
-                                    gravity: ToastGravity.SNACKBAR,
-                                    backgroundColor: Colors.grey,
-                                    textColor: Colors.white,
-                                    fontSize: 15,
-                                    timeInSecForIosWeb: 1);
-                              }
+                              } else {}
                             },
                             child: Text("Save", style: TextStyle(fontSize: 20)))
                       ],
@@ -162,6 +153,8 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                         return FamilyList(
                           name: document.data()['name'],
                           description: document.data()['description'],
+                          recordId: document.id,
+                          patientId: patientId,
                         );
                       }).toList(),
                     );

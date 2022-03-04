@@ -1,7 +1,5 @@
 import 'package:careconnect/services/patientdata.dart';
 import 'package:flutter/material.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:url_launcher/url_launcher.dart';
 
 class AppointmentList extends StatefulWidget {
@@ -16,34 +14,36 @@ class AppointmentList extends StatefulWidget {
   final String patientemail;
   final String appointmenttype;
   final String zoomlink;
-  AppointmentList(
-      {Key key,
-      this.date,
-      this.timing,
-      this.visittype,
-      this.reason,
-      this.doctor,
-      this.doctoremail,
-      this.paymentstatus,
-      this.paymentamount,
-      this.appointmenttype,
-      this.patientemail,
-      this.zoomlink})
-      : super(key: key);
+
+  AppointmentList({
+    Key key,
+    this.date,
+    this.timing,
+    this.visittype,
+    this.reason,
+    this.doctor,
+    this.doctoremail,
+    this.paymentstatus,
+    this.paymentamount,
+    this.appointmenttype,
+    this.patientemail,
+    this.zoomlink,
+  }) : super(key: key);
 
   @override
   _AppointmentListState createState() => _AppointmentListState(
-      this.date,
-      this.timing,
-      this.visittype,
-      this.reason,
-      this.doctor,
-      this.doctoremail,
-      this.paymentstatus,
-      this.paymentamount,
-      this.appointmenttype,
-      this.patientemail,
-      this.zoomlink);
+        this.date,
+        this.timing,
+        this.visittype,
+        this.reason,
+        this.doctor,
+        this.doctoremail,
+        this.paymentstatus,
+        this.paymentamount,
+        this.appointmenttype,
+        this.patientemail,
+        this.zoomlink,
+      );
 }
 
 class _AppointmentListState extends State<AppointmentList> {
@@ -60,17 +60,18 @@ class _AppointmentListState extends State<AppointmentList> {
   final String zoomlink;
 
   _AppointmentListState(
-      this.date,
-      this.timing,
-      this.visittype,
-      this.reason,
-      this.doctor,
-      this.doctoremail,
-      this.paymentstatus,
-      this.paymentamount,
-      this.appointmenttype,
-      this.patientemail,
-      this.zoomlink);
+    this.date,
+    this.timing,
+    this.visittype,
+    this.reason,
+    this.doctor,
+    this.doctoremail,
+    this.paymentstatus,
+    this.paymentamount,
+    this.appointmenttype,
+    this.patientemail,
+    this.zoomlink,
+  );
 
   PatientData _patientData = PatientData();
   List data = [];
@@ -207,7 +208,8 @@ class _AppointmentListState extends State<AppointmentList> {
                             },
                           ),
                         )
-                      : Container()
+                      : Container(),
+                  IconButton(onPressed: () {}, icon: Icon(Icons.delete_rounded))
                 ],
               ),
             )

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:careconnect/services/patientdata.dart';
 
 class SurgeryList extends StatefulWidget {
   final String title;
@@ -6,13 +7,22 @@ class SurgeryList extends StatefulWidget {
   final String doctor;
   final String date;
   final String place;
+  final String patientId;
+  final String recordId;
   SurgeryList(
-      {Key key, this.title, this.result, this.doctor, this.date, this.place})
+      {Key key,
+      this.title,
+      this.result,
+      this.doctor,
+      this.date,
+      this.place,
+      this.patientId,
+      this.recordId})
       : super(key: key);
 
   @override
-  _SurgeryListState createState() => _SurgeryListState(
-      this.title, this.result, this.doctor, this.date, this.place);
+  _SurgeryListState createState() => _SurgeryListState(this.title, this.result,
+      this.doctor, this.date, this.place, this.patientId, this.recordId);
 }
 
 class _SurgeryListState extends State<SurgeryList> {
@@ -21,14 +31,16 @@ class _SurgeryListState extends State<SurgeryList> {
   final String doctor;
   final String date;
   final String place;
-
-  _SurgeryListState(
-      this.title, this.result, this.doctor, this.date, this.place);
+  final String patientId;
+  final String recordId;
+  PatientData _patientData = PatientData();
+  _SurgeryListState(this.title, this.result, this.doctor, this.date, this.place,
+      this.patientId, this.recordId);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: MediaQuery.of(context).size.height * 0.2,
+        height: MediaQuery.of(context).size.height * 0.25,
         decoration: BoxDecoration(border: Border.all(width: 0.5)),
         padding: EdgeInsets.all(5),
         margin: EdgeInsets.all(5),
@@ -60,6 +72,19 @@ class _SurgeryListState extends State<SurgeryList> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text("Date: $date", style: TextStyle(fontSize: 20)),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                IconButton(
+                  onPressed: () async {
+                    await _patientData.deleteAnyPatientRecord(
+                        patientId, recordId, "surgery");
+                  },
+                  icon: Icon(Icons.delete),
+                  color: Colors.deepPurple,
+                )
               ],
             )
           ],

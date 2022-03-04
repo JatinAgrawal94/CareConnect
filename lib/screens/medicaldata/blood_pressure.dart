@@ -214,7 +214,9 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                                 _setTime(context);
                               }),
                           Text(
-                              "${selectedtime.hour.toString()}:${selectedtime.minute.toString()}",
+                              "${selectedtime.hour > 12 ? ((selectedtime.hour - 12).toString()) : (selectedtime.hour)}:${selectedtime.minute < 10 ? ("0${selectedtime.minute}") : (selectedtime.minute)}" +
+                                  "  " +
+                                  "${selectedtime.hour > 12 ? ("PM") : ("AM")}",
                               style: TextStyle(fontSize: 20))
                         ],
                       )),
@@ -230,7 +232,9 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                             'date':
                                 "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
                             'time':
-                                "${selectedtime.hour.toString()}:${selectedtime.minute.toString()}",
+                                "${selectedtime.hour > 12 ? ((selectedtime.hour - 12).toString()) : (selectedtime.hour)}:${selectedtime.minute < 10 ? ("0${selectedtime.minute}") : (selectedtime.minute)}" +
+                                    "  " +
+                                    "${selectedtime.hour > 12 ? ("PM") : ("AM")}",
                           });
                           Fluttertoast.showToast(
                               msg: "Data Saved",
@@ -241,16 +245,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                               fontSize: 15,
                               timeInSecForIosWeb: 1);
                           Navigator.pop(context);
-                        } else {
-                          Fluttertoast.showToast(
-                              msg: "Error",
-                              toastLength: Toast.LENGTH_LONG,
-                              gravity: ToastGravity.SNACKBAR,
-                              backgroundColor: Colors.grey,
-                              textColor: Colors.white,
-                              fontSize: 15,
-                              timeInSecForIosWeb: 1);
-                        }
+                        } else {}
                       },
                       child: Text("Save", style: TextStyle(fontSize: 20)))
                 ]),

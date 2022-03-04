@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:careconnect/services/patientdata.dart';
 
 class BloodPressureList extends StatefulWidget {
   final String systolic;
@@ -6,18 +7,29 @@ class BloodPressureList extends StatefulWidget {
   final String pulse;
   final String date;
   final String time;
+  final String patientId;
+  final String recordId;
+
   BloodPressureList(
       {Key key,
       this.systolic,
       this.diastolic,
       this.pulse,
       this.date,
-      this.time})
+      this.time,
+      this.patientId,
+      this.recordId})
       : super(key: key);
 
   @override
   _BloodPressureListState createState() => _BloodPressureListState(
-      this.systolic, this.diastolic, this.pulse, this.date, this.time);
+      this.systolic,
+      this.diastolic,
+      this.pulse,
+      this.date,
+      this.time,
+      this.patientId,
+      this.recordId);
 }
 
 class _BloodPressureListState extends State<BloodPressureList> {
@@ -26,8 +38,12 @@ class _BloodPressureListState extends State<BloodPressureList> {
   final String pulse;
   final String date;
   final String time;
-  _BloodPressureListState(
-      this.systolic, this.diastolic, this.pulse, this.date, this.time);
+  final String patientId;
+  final String recordId;
+  final PatientData _patientData = PatientData();
+
+  _BloodPressureListState(this.systolic, this.diastolic, this.pulse, this.date,
+      this.time, this.patientId, this.recordId);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -64,6 +80,15 @@ class _BloodPressureListState extends State<BloodPressureList> {
               ],
             ),
           ),
+          Container(
+            child: IconButton(
+                icon: Icon(Icons.delete),
+                color: Colors.deepPurple,
+                onPressed: () async {
+                  await _patientData.deleteAnyPatientRecord(
+                      patientId, recordId, "bloodpressure");
+                }),
+          )
         ],
       ),
     );

@@ -4,6 +4,7 @@ import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 
 class NotesScreen extends StatefulWidget {
   final String patientId;
@@ -14,6 +15,7 @@ class NotesScreen extends StatefulWidget {
 }
 
 class _NotesScreenState extends State<NotesScreen> {
+  String category = "notes";
   final String patientId;
   String title;
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
@@ -21,7 +23,9 @@ class _NotesScreenState extends State<NotesScreen> {
   _NotesScreenState(this.patientId);
   PatientData _patientData = PatientData();
   CollectionReference notes;
-
+  List images = [];
+  List videos = [];
+  List files = [];
   @override
   void initState() {
     super.initState();
@@ -100,43 +104,93 @@ class _NotesScreenState extends State<NotesScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: <Widget>[
-                                  Icon(Icons.camera_alt_rounded, size: 40),
-                                  Icon(Icons.video_call_outlined, size: 40),
-                                  Icon(Icons.attach_file_outlined, size: 40),
-                                  ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          primary: Colors.deepPurple),
+                                  IconButton(
+                                      icon: Icon(
+                                        Icons.camera_alt,
+                                        size: 30,
+                                      ),
                                       onPressed: () async {
-                                        if (formkey.currentState.validate()) {
-                                          await _patientData.addNotes(
-                                              patientId, {
-                                            'title': title,
-                                            'description': description
-                                          });
-                                          Fluttertoast.showToast(
-                                              msg: "Data Saved",
-                                              toastLength: Toast.LENGTH_LONG,
-                                              gravity: ToastGravity.SNACKBAR,
-                                              backgroundColor: Colors.grey,
-                                              textColor: Colors.white,
-                                              fontSize: 15,
-                                              timeInSecForIosWeb: 1);
-                                          Navigator.pop(context);
+                                        final result = await FilePicker.platform
+                                            .pickFiles(
+                                                allowMultiple: true,
+                                                type: FileType.custom,
+                                                allowedExtensions: [
+                                              'jpg',
+                                              'jpeg',
+                                              'png'
+                                            ]);
+                                        if (result != null) {
+                                          images = await _patientData
+                                              .prepareFiles(result.paths);
                                         } else {
-                                          Fluttertoast.showToast(
-                                              msg: "Error",
-                                              toastLength: Toast.LENGTH_LONG,
-                                              gravity: ToastGravity.SNACKBAR,
-                                              backgroundColor: Colors.grey,
-                                              textColor: Colors.white,
-                                              fontSize: 15,
-                                              timeInSecForIosWeb: 1);
+                                          print("Error");
                                         }
-                                      },
-                                      child: Text("Save",
-                                          style: TextStyle(fontSize: 20))),
+                                      }),
+                                  IconButton(
+                                      icon: Icon(Icons.video_call, size: 35),
+                                      onPressed: () async {
+                                        final result = await FilePicker.platform
+                                            .pickFiles(
+                                                allowMultiple: true,
+                                                type: FileType.custom,
+                                                allowedExtensions: [
+                                              'mp4',
+                                              'avi',
+                                              'mkv'
+                                            ]);
+                                        if (result != null) {
+                                          videos = await _patientData
+                                              .prepareFiles(result.paths);
+                                        } else {
+                                          print("Error");
+                                        }
+                                      }),
+                                  IconButton(
+                                      icon: Icon(Icons.attach_file, size: 32),
+                                      onPressed: () async {
+                                        final result = await FilePicker.platform
+                                            .pickFiles(
+                                                allowMultiple: true,
+                                                type: FileType.custom,
+                                                allowedExtensions: [
+                                              'pdf',
+                                              'doc',
+                                            ]);
+                                        if (result != null) {
+                                          files = await _patientData
+                                              .prepareFiles(result.paths);
+                                        } else {
+                                          print("Error");
+                                        }
+                                      }),
                                 ]),
-                          )
+                          ),
+                          Text(
+                            "Media files should be less than 5MB",
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.deepPurple),
+                              onPressed: () async {
+                                if (formkey.currentState.validate()) {
+                                  await _patientData.addNotes(patientId, {
+                                    'title': title,
+                                    'description': description
+                                  });
+                                  Fluttertoast.showToast(
+                                      msg: "Data Saved",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.SNACKBAR,
+                                      backgroundColor: Colors.grey,
+                                      textColor: Colors.white,
+                                      fontSize: 15,
+                                      timeInSecForIosWeb: 1);
+                                  Navigator.pop(context);
+                                } else {}
+                              },
+                              child:
+                                  Text("Save", style: TextStyle(fontSize: 20))),
                         ],
                       ))),
               Container(
@@ -157,8 +211,11 @@ class _NotesScreenState extends State<NotesScreen> {
                         children:
                             snapshot.data.docs.map((DocumentSnapshot document) {
                           return NotesList(
-                              title: document.data()['title'],
-                              description: document.data()['description']);
+                            title: document.data()['title'],
+                            description: document.data()['description'],
+                            patientId: patientId,
+                            recordId: document.id,
+                          );
                         }).toList(),
                       );
                     },

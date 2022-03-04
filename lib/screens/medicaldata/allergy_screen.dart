@@ -191,7 +191,9 @@ class _AllergyScreenState extends State<AllergyScreen> {
                         snapshot.data.docs.map((DocumentSnapshot document) {
                       return AllergyList(
                           type: document.data()['type'],
-                          date: document.data()['date']);
+                          date: document.data()['date'],
+                          patientId: patientId,
+                          recordId: document.id);
                     }).toList(),
                   );
                 },

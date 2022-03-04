@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:careconnect/services/patientdata.dart';
 
 class ExaminationList extends StatefulWidget {
   final String temperature;
@@ -10,6 +11,8 @@ class ExaminationList extends StatefulWidget {
   final String doctor;
   final String place;
   final String date;
+  final String patientId;
+  final String recordId;
   ExaminationList(
       {Key key,
       this.temperature,
@@ -20,7 +23,9 @@ class ExaminationList extends StatefulWidget {
       this.notes,
       this.doctor,
       this.date,
-      this.place})
+      this.place,
+      this.patientId,
+      this.recordId})
       : super(key: key);
 
   @override
@@ -33,7 +38,9 @@ class ExaminationList extends StatefulWidget {
       this.notes,
       this.doctor,
       this.date,
-      this.place);
+      this.place,
+      this.patientId,
+      this.recordId);
 }
 
 class _ExaminationListState extends State<ExaminationList> {
@@ -46,6 +53,9 @@ class _ExaminationListState extends State<ExaminationList> {
   final String doctor;
   final String place;
   final String date;
+  final String patientId;
+  final String recordId;
+  final PatientData _patientData = PatientData();
 
   _ExaminationListState(
       this.temperature,
@@ -56,7 +66,9 @@ class _ExaminationListState extends State<ExaminationList> {
       this.notes,
       this.doctor,
       this.date,
-      this.place);
+      this.place,
+      this.patientId,
+      this.recordId);
 
   @override
   Widget build(BuildContext context) {
@@ -167,6 +179,18 @@ class _ExaminationListState extends State<ExaminationList> {
                     Text("$place", style: TextStyle(fontSize: 20))
                   ],
                 )),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                IconButton(
+                    onPressed: () async {
+                      await _patientData.deleteAnyPatientRecord(
+                          patientId, recordId, "examination");
+                    },
+                    icon: Icon(Icons.delete),
+                    color: Colors.deepPurple)
+              ],
+            )
           ],
         ));
   }

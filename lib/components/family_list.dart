@@ -1,18 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:careconnect/services/patientdata.dart';
 
 class FamilyList extends StatefulWidget {
   final String name;
   final String description;
-  FamilyList({Key key, this.name, this.description}) : super(key: key);
+  final String patientId;
+  final String recordId;
+  FamilyList(
+      {Key key, this.name, this.description, this.patientId, this.recordId})
+      : super(key: key);
 
   @override
-  _FamilyListState createState() => _FamilyListState(name, description);
+  _FamilyListState createState() => _FamilyListState(
+      this.name, this.description, this.patientId, this.recordId);
 }
 
 class _FamilyListState extends State<FamilyList> {
   String name;
   String description;
-  _FamilyListState(this.name, this.description);
+  final String patientId;
+  final String recordId;
+  PatientData _patientData = PatientData();
+
+  _FamilyListState(this.name, this.description, this.patientId, this.recordId);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,6 +40,18 @@ class _FamilyListState extends State<FamilyList> {
               Text("Description: $description", style: TextStyle(fontSize: 20)),
             ],
           ),
+          Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                IconButton(
+                  onPressed: () async {
+                    await _patientData.deleteAnyPatientRecord(
+                        patientId, recordId, "familyhistory");
+                  },
+                  icon: Icon(Icons.delete),
+                  color: Colors.deepPurple,
+                )
+              ])
         ],
       ),
     );

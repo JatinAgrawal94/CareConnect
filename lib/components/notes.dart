@@ -1,19 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:careconnect/services/patientdata.dart';
 
 class NotesList extends StatefulWidget {
   final String title;
   final String description;
-  NotesList({Key key, this.title, this.description}) : super(key: key);
+  final String patientId;
+  final String recordId;
+  NotesList(
+      {Key key, this.title, this.description, this.patientId, this.recordId})
+      : super(key: key);
 
   @override
-  _NotesListState createState() =>
-      _NotesListState(this.title, this.description);
+  _NotesListState createState() => _NotesListState(
+      this.title, this.description, this.patientId, this.recordId);
 }
 
 class _NotesListState extends State<NotesList> {
   final String title;
   final String description;
-  _NotesListState(this.title, this.description);
+  final String patientId;
+  final String recordId;
+  final PatientData _patientData = PatientData();
+
+  _NotesListState(this.title, this.description, this.patientId, this.recordId);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,7 +30,7 @@ class _NotesListState extends State<NotesList> {
       padding: EdgeInsets.all(5),
       margin: EdgeInsets.all(5),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Icon(
             Icons.note_add_sharp,
@@ -35,6 +44,18 @@ class _NotesListState extends State<NotesList> {
                 Text("$description", style: TextStyle(fontSize: 20)),
               ],
             ),
+          ),
+          Column(
+            children: <Widget>[
+              IconButton(
+                onPressed: () async {
+                  await _patientData.deleteAnyPatientRecord(
+                      patientId, recordId, "notes");
+                },
+                icon: Icon(Icons.delete),
+                color: Colors.deepPurple,
+              )
+            ],
           )
         ],
       ),

@@ -5,6 +5,7 @@ import 'package:careconnect/services/doctordata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 
 class PrescriptionScreen extends StatefulWidget {
   final String patientId;
@@ -16,6 +17,7 @@ class PrescriptionScreen extends StatefulWidget {
 
 class _PrescriptionScreenState extends State<PrescriptionScreen> {
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
+  String category = "prescription";
   final String patientId;
   String drug;
   String dose;
@@ -30,6 +32,9 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   PatientData _patientData = PatientData();
   DoctorData _doctorData = DoctorData();
   CollectionReference prescription;
+  List images = [];
+  List videos = [];
+  List files = [];
 
   @override
   void initState() {
@@ -271,51 +276,97 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: <Widget>[
-                                Icon(Icons.camera_alt, size: 30),
-                                Icon(Icons.video_call_rounded, size: 30),
-                                Icon(Icons.attach_file_outlined, size: 30),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      primary: Colors.deepPurple),
-                                  onPressed: () async {
-                                    if (drug != null &&
-                                        dose != null &&
-                                        doctor != null) {
-                                      await _patientData
-                                          .addPrescription(patientId, {
-                                        'drug': drug,
-                                        'dose': dose,
-                                        'doctor': doctor,
-                                        'date':
-                                            "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                        'timings': timings
-                                      });
-                                      Fluttertoast.showToast(
-                                          msg: "Data Saved",
-                                          toastLength: Toast.LENGTH_LONG,
-                                          gravity: ToastGravity.SNACKBAR,
-                                          backgroundColor: Colors.grey,
-                                          textColor: Colors.white,
-                                          fontSize: 15,
-                                          timeInSecForIosWeb: 1);
-                                      Navigator.pop(context);
-                                    } else {
-                                      Fluttertoast.showToast(
-                                          msg: "Field Empty!",
-                                          toastLength: Toast.LENGTH_LONG,
-                                          gravity: ToastGravity.SNACKBAR,
-                                          backgroundColor: Colors.grey,
-                                          textColor: Colors.white,
-                                          fontSize: 15,
-                                          timeInSecForIosWeb: 1);
-                                    }
-                                  },
-                                  child: Text(
-                                    "Save",
-                                    style: TextStyle(fontSize: 20),
-                                  ),
-                                ),
+                                IconButton(
+                                    onPressed: () async {
+                                      final result = await FilePicker.platform
+                                          .pickFiles(
+                                              allowMultiple: true,
+                                              type: FileType.custom,
+                                              allowedExtensions: [
+                                            'jpg',
+                                            'jpeg',
+                                            'png'
+                                          ]);
+                                      if (result != null) {
+                                        images = await _patientData
+                                            .prepareFiles(result.paths);
+                                      } else {
+                                        print("Error");
+                                      }
+                                    },
+                                    icon: Icon(Icons.camera_alt, size: 30)),
+                                IconButton(
+                                    onPressed: () async {
+                                      final result = await FilePicker.platform
+                                          .pickFiles(
+                                              allowMultiple: true,
+                                              type: FileType.custom,
+                                              allowedExtensions: [
+                                            'mp4',
+                                            'avi',
+                                            'mkv'
+                                          ]);
+                                      if (result != null) {
+                                        videos = await _patientData
+                                            .prepareFiles(result.paths);
+                                      } else {
+                                        print("Error");
+                                      }
+                                    },
+                                    icon: Icon(Icons.video_call_rounded,
+                                        size: 35)),
+                                IconButton(
+                                    icon: Icon(Icons.attach_file, size: 32),
+                                    onPressed: () async {
+                                      final result = await FilePicker.platform
+                                          .pickFiles(
+                                              allowMultiple: true,
+                                              type: FileType.custom,
+                                              allowedExtensions: [
+                                            'pdf',
+                                            'doc',
+                                          ]);
+                                      if (result != null) {
+                                        files = await _patientData
+                                            .prepareFiles(result.paths);
+                                      } else {
+                                        print("Error");
+                                      }
+                                    }),
                               ]),
+                        ),
+                        Text(
+                          "Media files should be less than 5MB",
+                          style: TextStyle(fontSize: 15),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.deepPurple),
+                          onPressed: () async {
+                            if (formkey.currentState.validate()) {
+                              await _patientData.addPrescription(patientId, {
+                                'drug': drug,
+                                'dose': dose,
+                                'doctor': doctor,
+                                'date':
+                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                'timings': timings
+                              });
+                              Fluttertoast.showToast(
+                                  msg: "Data Saved",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.SNACKBAR,
+                                  backgroundColor: Colors.grey,
+                                  textColor: Colors.white,
+                                  fontSize: 15,
+                                  timeInSecForIosWeb: 1);
+                              Navigator.pop(context);
+                            } else {}
+                          },
+                          child: Text(
+                            "Save",
+                            style: TextStyle(fontSize: 20),
+                          ),
                         ),
                         Expanded(
                           child: ListView.builder(

@@ -295,6 +295,8 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                         date: document.data()['date'],
                         time: document.data()['time'],
                         resultUnit: document.data()['resultUnit'],
+                        patientId: patientId,
+                        recordId: document.id,
                       );
                     }).toList(),
                   );

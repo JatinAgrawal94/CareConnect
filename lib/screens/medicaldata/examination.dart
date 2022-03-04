@@ -24,7 +24,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
   final String patientId;
   final String userId;
 
-  String category = "EX";
+  String category = "examination";
   _ExaminationScreenState(this.patientId, this.userId);
   PatientData _patientData = PatientData();
   DoctorData _doctorData = DoctorData();
@@ -551,15 +551,18 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                       children:
                           snapshot.data.docs.map((DocumentSnapshot document) {
                         return ExaminationList(
-                            temperature: document.data()['temperature'],
-                            weight: document.data()['temperature'],
-                            height: document.data()['height'],
-                            symptoms: document.data()['symptoms'],
-                            diagnosis: document.data()['diagnosis'],
-                            notes: document.data()['notes'],
-                            doctor: document.data()['doctor'],
-                            date: document.data()['date'],
-                            place: document.data()['place']);
+                          temperature: document.data()['temperature'],
+                          weight: document.data()['temperature'],
+                          height: document.data()['height'],
+                          symptoms: document.data()['symptoms'],
+                          diagnosis: document.data()['diagnosis'],
+                          notes: document.data()['notes'],
+                          doctor: document.data()['doctor'],
+                          date: document.data()['date'],
+                          place: document.data()['place'],
+                          recordId: document.id,
+                          patientId: patientId,
+                        );
                       }).toList(),
                     );
                   },
