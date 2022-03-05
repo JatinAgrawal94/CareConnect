@@ -215,6 +215,16 @@ class _PatientFormState extends State<PatientForm> {
                                       ),
                               )),
                             )),
+                        ElevatedButton(
+                            onPressed: () async {
+                              await patientData.deleteProfileImageURL(userId);
+                              setState(() {
+                                _image = null;
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.deepPurple),
+                            child: Text("Remove Profile Photo"))
                       ],
                     ),
 // --------------------------form begins here---------------------------------------//
@@ -465,7 +475,7 @@ class _PatientFormState extends State<PatientForm> {
                                           });
                                         },
                                         validator: (value) {
-                                          if(value.length<10){
+                                          if (value.length < 10) {
                                             return "Enter 10 digit contact number";
                                           }
                                           if (value.isEmpty) {

@@ -538,6 +538,18 @@ class PatientData {
     }
   }
 
+  Future deleteProfileImageURL(String patientId) async {
+    try {
+      await firebase_storage.FirebaseStorage.instance
+          .ref('profile_images/$patientId.png')
+          .delete();
+      return 1;
+    } catch (e) {
+      print("Error deleting Image");
+      return 0;
+    }
+  }
+
   Future addPatient(data) async {
     CollectionReference patient =
         FirebaseFirestore.instance.collection('Patient');

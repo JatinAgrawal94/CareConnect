@@ -220,6 +220,16 @@ class _DoctorFormState extends State<DoctorForm> {
                                       ),
                               )),
                             )),
+                        ElevatedButton(
+                            onPressed: () async {
+                              await _doctorData.deleteProfileImageURL(userId);
+                              setState(() {
+                                _image = null;
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.deepPurple),
+                            child: Text("Remove Profile Photo"))
                       ],
                     ),
 // --------------------------form begins here---------------------------------------//

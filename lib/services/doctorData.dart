@@ -88,6 +88,19 @@ class DoctorData {
     }
   }
 
+  Future deleteProfileImageURL(String doctorId) async {
+    try {
+      await firebase_storage.FirebaseStorage.instance
+          .ref('profile_images/$doctorId.png')
+          .delete();
+      return 1;
+    } catch (e) {
+      print(e);
+      print("Error deleting Image");
+      return 0;
+    }
+  }
+
   Future<void> uploadFile(File filePath, String filename) async {
     try {
       await firebase_storage.FirebaseStorage.instance

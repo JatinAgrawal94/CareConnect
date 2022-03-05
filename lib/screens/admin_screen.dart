@@ -1,6 +1,6 @@
+import 'package:careconnect/components/doctorlisttile.dart';
 import 'package:careconnect/components/loading.dart';
-import 'package:careconnect/screens/doctor_info.dart';
-import 'package:careconnect/components/medical_info.dart';
+import 'package:careconnect/components/patientlisttile.dart';
 import 'package:careconnect/screens/userdataforms/admin_profile.dart';
 import 'package:careconnect/screens/userdataforms/doctor_add_form.dart';
 import 'package:careconnect/screens/userdataforms/patient_add_form.dart';
@@ -26,8 +26,6 @@ class _AdminHomeState extends State<AdminHome> {
       FirebaseFirestore.instance.collection('Patient');
   CollectionReference doctorList =
       FirebaseFirestore.instance.collection('Doctor');
-  static String patientDocumentId;
-  static String doctorDocumentId;
   static String adminDocumentId;
 
   @override
@@ -137,32 +135,19 @@ class _AdminHomeState extends State<AdminHome> {
                         return new ListView(
                             children: snapshot.data.docs
                                 .map((DocumentSnapshot document) {
-                          return Container(
-                            child: ListTile(
-                              leading: Icon(Icons.person, size: 40.0),
-                              title: new Text(
-                                document.data()['name'],
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              subtitle: new Text(
-                                  "Patient Id: " + document.data()['userid']),
-                              trailing: Icon(Icons.info),
-                              onTap: () {
-                                setState(() {
-                                  patientDocumentId = document.id;
-                                });
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => MedicalScreen(
-                                            patientId: patientDocumentId,
-                                            userId:
-                                                document.data()['userid'])));
-                              },
-                            ),
-                            decoration:
-                                BoxDecoration(border: Border.all(width: 0.3)),
-                          );
+                          // String image;
+                          // _patientdata
+                          //     .getProfileImageURL(document.data()['userid'])
+                          //     .then((value) {
+                          //   setState(() {
+                          //     image = value;
+                          //   });
+                          // });
+                          //  send userid,name,documentid
+                          return PatientListTile(
+                              documentId: document.id,
+                              userId: document.data()['userid'],
+                              name: document.data()['name']);
                         }).toList());
                       }),
                 ),
@@ -182,32 +167,10 @@ class _AdminHomeState extends State<AdminHome> {
                         return new ListView(
                             children: snapshot.data.docs
                                 .map((DocumentSnapshot document) {
-                          return Container(
-                            child: ListTile(
-                              leading: Icon(Icons.person, size: 40.0),
-                              title: new Text(
-                                document.data()['name'],
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              subtitle: new Text(
-                                  "Doctor Id: " + document.data()['userid']),
-                              trailing: Icon(Icons.info),
-                              onTap: () {
-                                doctorDocumentId = document.id;
-                                Navigator.push(
-                                    context,
-                                    // MaterialPageRoute(
-                                    //     builder: (context) => DoctorProfile(
-                                    //         doctorId: doctorDocumentId)));
-                                    MaterialPageRoute(
-                                        builder: (context) => DoctorInfo(
-                                              documentId: doctorDocumentId,
-                                            )));
-                              },
-                            ),
-                            decoration:
-                                BoxDecoration(border: Border.all(width: 0.3)),
-                          );
+                          return DoctorListTile(
+                              documentId: document.id,
+                              name: document.data()['name'],
+                              userId: document.data()['userid']);
                         }).toList());
                       }),
                 )
