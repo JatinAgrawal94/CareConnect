@@ -227,6 +227,7 @@ class DoctorData {
     List data = [];
     var date = [];
     var doctoremail = " ";
+    List documentId = [];
     var info = await getDoctorInfo(doctorId);
     doctoremail = info['email'];
     await FirebaseFirestore.instance
@@ -235,15 +236,23 @@ class DoctorData {
         .get()
         .then((QuerySnapshot snapshot) {
       snapshot.docs.forEach((element) {
-        data.add({'date': element['date'], 'timing': element['timing']});
+        data.add({
+          'date': element['date'],
+          'timing': element['timing'],
+          'documentId': element.id
+        });
       });
     });
     data.forEach((item) {
       date.add(item['date']);
     });
+    data.forEach((item) {
+      documentId.add(item['documentId']);
+    });
+
     var dateOccurence = count(date);
     var timing = data[0]['timing'];
-    return [date, dateOccurence, timing, doctoremail];
+    return [date, dateOccurence, timing, doctoremail, documentId];
   }
 
   Future getPatientsBasedOnDateAndDoctor(
@@ -264,6 +273,7 @@ class DoctorData {
           'paymentstatus': element['paymentstatus'],
           'paymentamount': element['paymentamount'],
           'appointmenttype': element['appointmenttype'],
+          'docId': element.id
         });
       });
     });
@@ -322,4 +332,11 @@ class DoctorData {
       return 1;
     }
   }
+
+  // Future deleteAppointment(String documentId) async {
+  //   FirebaseFirestore.instance
+  //       .collection('Appointment')
+  //       .where('doctoremail', isEqualTo: doctoremail)
+  //       .where('date', isEqualTo: date);
+  // }
 }

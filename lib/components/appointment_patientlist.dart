@@ -269,10 +269,11 @@ class _AppointmentPatientListState extends State<AppointmentPatientList> {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder:
-                                                    (BuildContext context) =>
-                                                        AboutScreen(
-                                                            patientId: value)));
+                                                builder: (BuildContext
+                                                        context) =>
+                                                    AboutScreen(
+                                                        patientId: value[
+                                                            'documentId'])));
                                       });
                                     },
                                   ),
@@ -289,8 +290,9 @@ class _AppointmentPatientListState extends State<AppointmentPatientList> {
                                       var docId = await _patientData.getDocsId(
                                           data[index]['patientemail']);
                                       var info = await _patientData
-                                          .getPatientInfo(docId);
+                                          .getPatientInfo(docId['documentId']);
                                       var tele = info['phoneno'];
+
                                       await launch("tel:$tele");
                                     },
                                     icon: Icon(Icons.call),

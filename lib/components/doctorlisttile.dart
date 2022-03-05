@@ -1,4 +1,4 @@
-import 'package:careconnect/screens/doctor_info.dart';
+import 'package:careconnect/screens/doctor_medical_screen.dart';
 import 'package:careconnect/services/doctordata.dart';
 import 'package:flutter/material.dart';
 

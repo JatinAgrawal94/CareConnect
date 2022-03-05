@@ -23,6 +23,7 @@ class _DoctorAppointmentState extends State<DoctorAppointment> {
   var dateOccurence = {};
   var timing = "Time";
   var doctoremail;
+  List documentId = [];
 
   @override
   void initState() {
@@ -33,10 +34,8 @@ class _DoctorAppointmentState extends State<DoctorAppointment> {
         dateOccurence = value[1];
         timing = value[2];
         doctoremail = value[3];
+        documentId = value[4];
       });
-    });
-    setState(() {
-      appointment = FirebaseFirestore.instance.collection('Appointment');
     });
   }
 
@@ -76,9 +75,11 @@ class _DoctorAppointmentState extends State<DoctorAppointment> {
                         child: Column(
                       children: List.generate(date.length, (index) {
                         return DoctorAppointmentComponent(
-                            date: date[index],
-                            noOfpatients:
-                                dateOccurence[date[index]].toString());
+                          date: date[index],
+                          noOfpatients: dateOccurence[date[index]].toString(),
+                          doctoremail: doctoremail,
+                          documentId: documentId[index],
+                        );
                       }),
                     ))
                   ],
