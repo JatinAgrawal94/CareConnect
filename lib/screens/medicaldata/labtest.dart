@@ -1,5 +1,6 @@
 import 'package:careconnect/components/labtest_list.dart';
 import 'package:careconnect/components/loading.dart';
+import 'package:careconnect/components/photogrid.dart';
 import 'package:careconnect/services/doctorData.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
@@ -374,6 +375,39 @@ class _LabTestScreenState extends State<LabTestScreen> {
                           },
                           child: Text("Save"),
                         ),
+                        RawMaterialButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        PhotoGrid(
+                                            image: images,
+                                            video: videos,
+                                            file: files)));
+                          },
+                          fillColor: Colors.deepPurple,
+                          splashColor: Colors.white,
+                          child: Container(
+                              width: MediaQuery.of(context).size.width * 0.2,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "View",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_right,
+                                    color: Colors.white,
+                                  )
+                                ],
+                              )),
+                        )
                       ],
                     )),
               ),

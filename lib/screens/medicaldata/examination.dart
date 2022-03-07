@@ -1,5 +1,7 @@
+import 'package:careconnect/components/displayvideo.dart';
 import 'package:careconnect/components/examinationList.dart';
 import 'package:careconnect/components/loading.dart';
+import 'package:careconnect/components/photogrid.dart';
 import 'package:careconnect/services/doctorData.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
@@ -7,6 +9,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
+
+import 'package:video_player/video_player.dart';
 
 class ExaminationScreen extends StatefulWidget {
   final String patientId;
@@ -477,10 +481,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                             .pickFiles(
                                                 allowMultiple: true,
                                                 type: FileType.custom,
-                                                allowedExtensions: [
-                                              'pdf',
-                                              'doc',
-                                            ]);
+                                                allowedExtensions: ['pdf']);
                                         if (result != null) {
                                           files = await _patientData
                                               .prepareFiles(result.paths);
@@ -532,6 +533,41 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                   child: Text("Save",
                                       style: TextStyle(
                                           fontSize: 20, color: Colors.white))),
+                              RawMaterialButton(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5)),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              PhotoGrid(
+                                                  image: images,
+                                                  video: videos,
+                                                  file: files)));
+                                },
+                                fillColor: Colors.deepPurple,
+                                splashColor: Colors.white,
+                                child: Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.2,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "View",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_right,
+                                          color: Colors.white,
+                                        )
+                                      ],
+                                    )),
+                              )
                             ],
                           )))),
               Container(

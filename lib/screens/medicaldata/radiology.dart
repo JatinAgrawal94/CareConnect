@@ -1,3 +1,4 @@
+import 'package:careconnect/components/photogrid.dart';
 import 'package:careconnect/components/radiology_list.dart';
 import 'package:careconnect/services/doctorData.dart';
 import 'package:flutter/material.dart';
@@ -327,7 +328,42 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                                         child: Text(
                                           "Save",
                                           style: TextStyle(fontSize: 20),
-                                        ))
+                                        )),
+                                    RawMaterialButton(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                      onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        PhotoGrid(
+                                                            image: images,
+                                                            video: videos,
+                                                            file: files)));
+                                      },
+                                      fillColor: Colors.deepPurple,
+                                      splashColor: Colors.white,
+                                      child: Container(
+                                          child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "View",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_right,
+                                            color: Colors.white,
+                                          )
+                                        ],
+                                      )),
+                                    )
                                   ],
                                 ),
                               )

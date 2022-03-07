@@ -16,6 +16,7 @@ class VaccineScreen extends StatefulWidget {
 class _VaccineScreenState extends State<VaccineScreen> {
   final String patientId;
   String vaccine;
+  String place;
   DateTime selecteddate = DateTime.now();
   _VaccineScreenState(this.patientId);
   PatientData _patientData = PatientData();
@@ -75,92 +76,131 @@ class _VaccineScreenState extends State<VaccineScreen> {
           body: TabBarView(
             children: [
               Container(
-                  child: Column(
-                children: <Widget>[
-                  Container(
-                      padding: EdgeInsets.all(5),
-                      child: Row(
+                  child: Form(
+                      key: formkey,
+                      child: Column(
                         children: <Widget>[
-                          Text(
-                            "Title",
-                            style: TextStyle(fontSize: 20),
+                          Container(
+                              padding: EdgeInsets.all(5),
+                              child: Row(
+                                children: <Widget>[
+                                  Text(
+                                    "Title",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.fromLTRB(15, 0, 5, 0),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.7,
+                                    child: TextFormField(
+                                      cursorColor: Colors.deepPurple,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          vaccine = value;
+                                        });
+                                      },
+                                      validator: (value) {
+                                        if (value.isEmpty) {
+                                          return "Field can't be empty";
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                      keyboardType: TextInputType.text,
+                                      decoration: InputDecoration(
+                                          hintText: "Title",
+                                          focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Colors.deepPurple))),
+                                    ),
+                                  ),
+                                ],
+                              )),
+                          Container(
+                              padding: EdgeInsets.all(5),
+                              child: Row(
+                                children: <Widget>[
+                                  Text(
+                                    "Place",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.fromLTRB(15, 0, 5, 0),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.7,
+                                    child: TextFormField(
+                                      cursorColor: Colors.deepPurple,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          place = value;
+                                        });
+                                      },
+                                      validator: (value) {
+                                        if (value.isEmpty) {
+                                          return "Field can't be empty";
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                      keyboardType: TextInputType.text,
+                                      decoration: InputDecoration(
+                                          hintText: "Place",
+                                          focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Colors.deepPurple))),
+                                    ),
+                                  ),
+                                ],
+                              )),
+                          Container(
+                            margin: EdgeInsets.all(15),
+                            child: Row(
+                              children: <Widget>[
+                                IconButton(
+                                  icon: Icon(Icons.date_range, size: 30),
+                                  onPressed: () {
+                                    _setDate(context);
+                                  },
+                                ),
+                                Text(
+                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                    style: TextStyle(fontSize: 20)),
+                              ],
+                            ),
                           ),
                           Container(
-                              margin: EdgeInsets.fromLTRB(15, 0, 5, 0),
-                              width: MediaQuery.of(context).size.width * 0.7,
-                              child: Form(
-                                key: formkey,
-                                child: TextFormField(
-                                  cursorColor: Colors.deepPurple,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      vaccine = value;
-                                    });
-                                  },
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return "Field can't be empty";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  keyboardType: TextInputType.text,
-                                  decoration: InputDecoration(
-                                      hintText: "Title",
-                                      focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                              width: 1,
-                                              color: Colors.deepPurple))),
-                                ),
-                              )),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.deepPurple),
+                              onPressed: () async {
+                                if (formkey.currentState.validate()) {
+                                  await _patientData.addVaccine(patientId, {
+                                    'vaccine': vaccine,
+                                    'place': place,
+                                    'date':
+                                        "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                  });
+                                  Fluttertoast.showToast(
+                                      msg: "Data Saved",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.SNACKBAR,
+                                      backgroundColor: Colors.grey,
+                                      textColor: Colors.white,
+                                      fontSize: 15,
+                                      timeInSecForIosWeb: 1);
+                                  Navigator.pop(context);
+                                } else {}
+                              },
+                              child: Text(
+                                "Save",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          )
                         ],
-                      )),
-                  Container(
-                    margin: EdgeInsets.all(15),
-                    child: Row(
-                      children: <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.date_range, size: 30),
-                          onPressed: () {
-                            _setDate(context);
-                          },
-                        ),
-                        Text(
-                            "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                            style: TextStyle(fontSize: 20)),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    child: ElevatedButton(
-                      style:
-                          ElevatedButton.styleFrom(primary: Colors.deepPurple),
-                      onPressed: () async {
-                        if (formkey.currentState.validate()) {
-                          await _patientData.addVaccine(patientId, {
-                            'vaccine': vaccine,
-                            'date':
-                                "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
-                          });
-                          Fluttertoast.showToast(
-                              msg: "Data Saved",
-                              toastLength: Toast.LENGTH_LONG,
-                              gravity: ToastGravity.SNACKBAR,
-                              backgroundColor: Colors.grey,
-                              textColor: Colors.white,
-                              fontSize: 15,
-                              timeInSecForIosWeb: 1);
-                          Navigator.pop(context);
-                        } else {}
-                      },
-                      child: Text(
-                        "Save",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                  )
-                ],
-              )),
+                      ))),
               Container(
                   padding: EdgeInsets.all(5),
                   child: StreamBuilder<QuerySnapshot>(

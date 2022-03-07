@@ -25,10 +25,18 @@ class _PatientListTileState extends State<PatientListTile> {
   void initState() {
     super.initState();
     _patientData.getProfileImageURL(userId).then((value) {
-      setState(() {
-        image = value;
-      });
+      if (this.mounted) {
+        setState(() {
+          image = value;
+        });
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override

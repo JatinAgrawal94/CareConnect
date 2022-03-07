@@ -1,3 +1,4 @@
+import 'package:careconnect/components/photogrid.dart';
 import 'package:careconnect/components/prescription_list.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
@@ -119,8 +120,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
           ),
           body: TabBarView(
             children: [
-              Container(
-                padding: EdgeInsets.all(5),
+              SingleChildScrollView(
                 child: Form(
                     key: formkey,
                     child: Container(
@@ -227,6 +227,40 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                   ))),
                             ])),
                         Container(
+                            padding: EdgeInsets.all(5),
+                            child: Row(children: <Widget>[
+                              Text(
+                                "Place",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.5,
+                                child: TextFormField(
+                                  cursorColor: Colors.deepPurple,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      place = value;
+                                    });
+                                  },
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return "Field can't be empty";
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                  keyboardType: TextInputType.text,
+                                  style: TextStyle(fontSize: 20),
+                                  decoration: InputDecoration(
+                                      hintText: "Place",
+                                      focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1,
+                                              color: Colors.deepPurple))),
+                                ),
+                              ),
+                            ])),
+                        Container(
                             margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -262,10 +296,21 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                 IconButton(
                                     onPressed: () {
                                       setState(() {
-                                        timings.add(
-                                            "${selectedtime.hour > 12 ? ((selectedtime.hour - 12).toString()) : (selectedtime.hour)}:${selectedtime.minute < 10 ? ("0${selectedtime.minute}") : (selectedtime.minute)}" +
-                                                "  " +
-                                                "${selectedtime.hour > 12 ? ("PM") : ("AM")}");
+                                        if (timings.length < 3) {
+                                          timings.add(
+                                              "${selectedtime.hour > 12 ? ((selectedtime.hour - 12).toString()) : (selectedtime.hour)}:${selectedtime.minute < 10 ? ("0${selectedtime.minute}") : (selectedtime.minute)}" +
+                                                  "  " +
+                                                  "${selectedtime.hour > 12 ? ("PM") : ("AM")}");
+                                        } else {
+                                          Fluttertoast.showToast(
+                                              msg: "Max 3 Reminders",
+                                              toastLength: Toast.LENGTH_LONG,
+                                              gravity: ToastGravity.SNACKBAR,
+                                              backgroundColor: Colors.grey,
+                                              textColor: Colors.white,
+                                              fontSize: 15,
+                                              timeInSecForIosWeb: 1);
+                                        }
                                       });
                                     },
                                     icon: Icon(Icons.add_circle,
@@ -339,38 +384,85 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                           "Media files should be less than 5MB",
                           style: TextStyle(fontSize: 15),
                         ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              primary: Colors.deepPurple),
-                          onPressed: () async {
-                            if (formkey.currentState.validate()) {
-                              await _patientData.addPrescription(patientId, {
-                                'drug': drug,
-                                'dose': dose,
-                                'doctor': doctor,
-                                'date':
-                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                'timings': timings
-                              });
-                              Fluttertoast.showToast(
-                                  msg: "Data Saved",
-                                  toastLength: Toast.LENGTH_LONG,
-                                  gravity: ToastGravity.SNACKBAR,
-                                  backgroundColor: Colors.grey,
-                                  textColor: Colors.white,
-                                  fontSize: 15,
-                                  timeInSecForIosWeb: 1);
-                              Navigator.pop(context);
-                            } else {}
-                          },
-                          child: Text(
-                            "Save",
-                            style: TextStyle(fontSize: 20),
+                        Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.deepPurple),
+                                onPressed: () async {
+                                  if (formkey.currentState.validate()) {
+                                    await _patientData
+                                        .addPrescription(patientId, {
+                                      'drug': drug,
+                                      'dose': dose,
+                                      'doctor': doctor,
+                                      'place': place,
+                                      'date':
+                                          "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                      'timings': timings
+                                    });
+                                    Fluttertoast.showToast(
+                                        msg: "Data Saved",
+                                        toastLength: Toast.LENGTH_LONG,
+                                        gravity: ToastGravity.SNACKBAR,
+                                        backgroundColor: Colors.grey,
+                                        textColor: Colors.white,
+                                        fontSize: 15,
+                                        timeInSecForIosWeb: 1);
+                                    Navigator.pop(context);
+                                  } else {}
+                                },
+                                child: Text(
+                                  "Save",
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                              ),
+                              RawMaterialButton(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5)),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              PhotoGrid(
+                                                  image: images,
+                                                  video: videos,
+                                                  file: files)));
+                                },
+                                fillColor: Colors.deepPurple,
+                                splashColor: Colors.white,
+                                child: Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.2,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "View",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_right,
+                                          color: Colors.white,
+                                        )
+                                      ],
+                                    )),
+                              )
+                            ],
                           ),
                         ),
-                        Expanded(
+                        Container(
+                          // height: MediaQuery.of(context).size.height * 0.3,
                           child: ListView.builder(
+                            shrinkWrap: true,
                             itemCount: timings.length,
+                            physics: NeverScrollableScrollPhysics(),
                             itemBuilder: (BuildContext context, int index) {
                               return Container(
                                   padding: EdgeInsets.fromLTRB(15, 0, 0, 0),

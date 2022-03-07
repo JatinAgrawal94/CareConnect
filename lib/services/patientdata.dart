@@ -19,6 +19,7 @@ import 'package:careconnect/screens/medicaldata/prescription.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:image_picker/image_picker.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class PatientData {
   // keys to map correct data on aboutpage.
@@ -197,7 +198,11 @@ class PatientData {
   Future addVaccine(String patientId, data) async {
     CollectionReference patient =
         FirebaseFirestore.instance.collection('Patient/$patientId/vaccine');
-    await patient.add({'vaccine': data['vaccine'], 'date': data['date']});
+    await patient.add({
+      'vaccine': data['vaccine'],
+      'date': data['date'],
+      'place': data['place']
+    });
   }
 
   Future addNotes(String patientId, data) async {
@@ -314,6 +319,7 @@ class PatientData {
       'doctor': data['doctor'],
       'date': data['date'],
       'timing': data['timings'],
+      'place': data['place'],
       'delete': 0
     });
   }
@@ -629,6 +635,19 @@ class PatientData {
     return userId;
   }
 
-  // delete patient records functions
-  //
+  Future getVideoThumbnail(video) async {
+    List thumb = [];
+    var test;
+    for (var i = 0; i < video.length; i++) {
+      test = await VideoThumbnail.thumbnailData(
+        video: video[i]['filename'].path,
+        imageFormat: ImageFormat.JPEG,
+        maxWidth:
+            128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+        quality: 25,
+      );
+      thumb.add(test);
+    }
+    return thumb;
+  }
 }

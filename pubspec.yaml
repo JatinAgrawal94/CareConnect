@@ -54,6 +54,10 @@ dependencies:
   shared_preferences: ^2.0.12
   firebase_messaging: ^8.0.0-dev.15
   flutter_local_notifications: ^4.0.1+2
+  photo_view: ^0.13.0
+  video_player: ^2.2.19
+  video_thumbnail: ^0.4.6
+  flutter_pdfview: ^1.2.2
   
 
 
