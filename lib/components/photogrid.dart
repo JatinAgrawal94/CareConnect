@@ -3,8 +3,6 @@ import 'package:careconnect/components/displayphoto.dart';
 import 'package:careconnect/components/displayvideo.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
-
 class PhotoGrid extends StatefulWidget {
   final List image;
   final List video;

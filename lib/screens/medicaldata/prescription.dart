@@ -10,16 +10,20 @@ import 'package:file_picker/file_picker.dart';
 
 class PrescriptionScreen extends StatefulWidget {
   final String patientId;
-  PrescriptionScreen({Key key, @required this.patientId}) : super(key: key);
+  final String userId;
+  PrescriptionScreen({Key key, @required this.patientId, this.userId})
+      : super(key: key);
 
   @override
-  _PrescriptionScreenState createState() => _PrescriptionScreenState(patientId);
+  _PrescriptionScreenState createState() =>
+      _PrescriptionScreenState(patientId, this.userId);
 }
 
 class _PrescriptionScreenState extends State<PrescriptionScreen> {
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   String category = "prescription";
   final String patientId;
+  final String userId;
   String drug;
   String dose;
   String doctor;
@@ -29,13 +33,14 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   TimeOfDay selectedtime = TimeOfDay.now();
   DateTime selecteddate = DateTime.now();
   List<String> data = [];
-  _PrescriptionScreenState(this.patientId);
+  _PrescriptionScreenState(this.patientId, this.userId);
   PatientData _patientData = PatientData();
   DoctorData _doctorData = DoctorData();
   CollectionReference prescription;
   List images = [];
   List videos = [];
   List files = [];
+  var names = {'images': [], 'videos': [], 'files': []};
 
   @override
   void initState() {
@@ -234,6 +239,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                 style: TextStyle(fontSize: 20),
                               ),
                               Container(
+                                margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
                                 width: MediaQuery.of(context).size.width * 0.5,
                                 child: TextFormField(
                                   cursorColor: Colors.deepPurple,
@@ -335,6 +341,12 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                       if (result != null) {
                                         images = await _patientData
                                             .prepareFiles(result.paths);
+                                        for (var i = 0;
+                                            i < images.length;
+                                            i++) {
+                                          names['images']
+                                              .add(images[i]['name']);
+                                        }
                                       } else {
                                         print("Error");
                                       }
@@ -354,6 +366,12 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                       if (result != null) {
                                         videos = await _patientData
                                             .prepareFiles(result.paths);
+                                        for (var i = 0;
+                                            i < videos.length;
+                                            i++) {
+                                          names['videos']
+                                              .add(videos[i]['name']);
+                                        }
                                       } else {
                                         print("Error");
                                       }
@@ -369,11 +387,13 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                               type: FileType.custom,
                                               allowedExtensions: [
                                             'pdf',
-                                            'doc',
                                           ]);
                                       if (result != null) {
                                         files = await _patientData
                                             .prepareFiles(result.paths);
+                                        for (var i = 0; i < files.length; i++) {
+                                          names['files'].add(files[i]['name']);
+                                        }
                                       } else {
                                         print("Error");
                                       }
@@ -401,8 +421,14 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                       'place': place,
                                       'date':
                                           "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                      'timings': timings
+                                      'timings': timings,
+                                      'media': names
                                     });
+                                    _patientData.uploadMediaFiles({
+                                      'image': images,
+                                      'video': videos,
+                                      'file': files
+                                    }, category, userId);
                                     Fluttertoast.showToast(
                                         msg: "Data Saved",
                                         toastLength: Toast.LENGTH_LONG,

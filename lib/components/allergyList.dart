@@ -6,7 +6,7 @@ class AllergyList extends StatelessWidget {
   final String date;
   final String patientId;
   final String recordId;
-  AllergyList({Key key, this.type, this.date , this.patientId, this.recordId})
+  AllergyList({Key key, this.type, this.date, this.patientId, this.recordId})
       : super(key: key);
   final PatientData _patientData = PatientData();
 
@@ -21,30 +21,27 @@ class AllergyList extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
                   "Type: $type",
                   style: TextStyle(fontSize: 18),
                 ),
                 Text(
-                  "Date:$date",
-                  textAlign: TextAlign.left,
+                  "Date: $date",
                   style: TextStyle(fontSize: 18),
                 )
               ]),
-          Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                IconButton(
-                  onPressed: () async {
-                    await _patientData.deleteAnyPatientRecord(
-                        patientId, recordId, "allergy");
-                  },
-                  icon: Icon(Icons.delete),
-                  color: Colors.deepPurple,
-                )
-              ])
+          Column(crossAxisAlignment: CrossAxisAlignment.end, children: <Widget>[
+            IconButton(
+              onPressed: () async {
+                await _patientData.deleteAnyPatientRecord(
+                    patientId, recordId, "allergy");
+              },
+              icon: Icon(Icons.delete),
+              color: Colors.deepPurple,
+            )
+          ])
         ],
       ),
     );

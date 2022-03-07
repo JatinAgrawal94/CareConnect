@@ -1,4 +1,3 @@
-import 'package:careconnect/components/displayvideo.dart';
 import 'package:careconnect/components/examinationList.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/components/photogrid.dart';
@@ -8,9 +7,6 @@ import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
-import 'dart:io';
-
-import 'package:video_player/video_player.dart';
 
 class ExaminationScreen extends StatefulWidget {
   final String patientId;
@@ -46,6 +42,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
   List images = [];
   List videos = [];
   List files = [];
+  var names = {'images': [], 'videos': [], 'files': []};
 
   @override
   void initState() {
@@ -451,6 +448,12 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                         if (result != null) {
                                           images = await _patientData
                                               .prepareFiles(result.paths);
+                                          for (var i = 0;
+                                              i < images.length;
+                                              i++) {
+                                            names['images']
+                                                .add(images[i]['name']);
+                                          }
                                         } else {
                                           print("Error");
                                         }
@@ -470,6 +473,12 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                         if (result != null) {
                                           videos = await _patientData
                                               .prepareFiles(result.paths);
+                                          for (var i = 0;
+                                              i < videos.length;
+                                              i++) {
+                                            names['videos']
+                                                .add(videos[i]['name']);
+                                          }
                                         } else {
                                           print("Error");
                                         }
@@ -485,6 +494,12 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                         if (result != null) {
                                           files = await _patientData
                                               .prepareFiles(result.paths);
+                                          for (var i = 0;
+                                              i < files.length;
+                                              i++) {
+                                            names['files']
+                                                .add(files[i]['name']);
+                                          }
                                         } else {
                                           print("Error");
                                         }
@@ -509,6 +524,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                         'place': place,
                                         'date':
                                             "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                        "media": names
                                       });
 
                                       _patientData.uploadMediaFiles({

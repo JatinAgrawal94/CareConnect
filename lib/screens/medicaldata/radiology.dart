@@ -10,21 +10,25 @@ import 'package:file_picker/file_picker.dart';
 
 class RadiologyScreen extends StatefulWidget {
   final String patientId;
-  RadiologyScreen({Key key, @required this.patientId}) : super(key: key);
+  final String userId;
+  RadiologyScreen({Key key, @required this.patientId, this.userId})
+      : super(key: key);
 
   @override
-  _RadiologyScreenState createState() => _RadiologyScreenState(patientId);
+  _RadiologyScreenState createState() =>
+      _RadiologyScreenState(patientId, this.userId);
 }
 
 class _RadiologyScreenState extends State<RadiologyScreen> {
   String category = "radiology";
   final String patientId;
+  final String userId;
   String title;
   String result;
   String doctor;
   String place;
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
-  _RadiologyScreenState(this.patientId);
+  _RadiologyScreenState(this.patientId, this.userId);
   DateTime selecteddate = DateTime.now();
   PatientData _patientData = PatientData();
   CollectionReference radiology;
@@ -33,6 +37,7 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
   List images = [];
   List videos = [];
   List files = [];
+  var names = {'images': [], 'videos': [], 'files': []};
 
   @override
   void initState() {
@@ -247,6 +252,12 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                                           if (result != null) {
                                             images = await _patientData
                                                 .prepareFiles(result.paths);
+                                            for (var i = 0;
+                                                i < images.length;
+                                                i++) {
+                                              names['images']
+                                                  .add(images[i]['name']);
+                                            }
                                           } else {
                                             print("Error");
                                           }
@@ -267,6 +278,12 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                                           if (result != null) {
                                             videos = await _patientData
                                                 .prepareFiles(result.paths);
+                                            for (var i = 0;
+                                                i < videos.length;
+                                                i++) {
+                                              names['videos']
+                                                  .add(videos[i]['name']);
+                                            }
                                           } else {
                                             print("Error");
                                           }
@@ -281,11 +298,16 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                                                   type: FileType.custom,
                                                   allowedExtensions: [
                                                 'pdf',
-                                                'doc',
                                               ]);
                                           if (result != null) {
                                             files = await _patientData
                                                 .prepareFiles(result.paths);
+                                            for (var i = 0;
+                                                i < files.length;
+                                                i++) {
+                                              names['files']
+                                                  .add(files[i]['name']);
+                                            }
                                           } else {
                                             print("Error");
                                           }
@@ -312,8 +334,14 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                                               'doctor': doctor,
                                               'place': place,
                                               'date':
-                                                  "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                                  "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                              "media": names
                                             });
+                                            _patientData.uploadMediaFiles({
+                                              'image': images,
+                                              'video': videos,
+                                              'file': files
+                                            }, category, userId);
                                             Fluttertoast.showToast(
                                                 msg: "Data Saved",
                                                 toastLength: Toast.LENGTH_LONG,

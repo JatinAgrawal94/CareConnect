@@ -10,10 +10,13 @@ import 'package:file_picker/file_picker.dart';
 
 class PathologyScreen extends StatefulWidget {
   final String patientId;
-  PathologyScreen({Key key, @required this.patientId}) : super(key: key);
+  final String userId;
+  PathologyScreen({Key key, @required this.patientId, this.userId})
+      : super(key: key);
 
   @override
-  _PathologyScreenState createState() => _PathologyScreenState(patientId);
+  _PathologyScreenState createState() =>
+      _PathologyScreenState(patientId, this.userId);
 }
 
 // Medical Visit feature is for outside appointments outside careconnect which need to be entered by patient
@@ -22,12 +25,13 @@ class PathologyScreen extends StatefulWidget {
 class _PathologyScreenState extends State<PathologyScreen> {
   String category = "pathology";
   final String patientId;
+  final String userId;
   String title = "";
   String result = "";
   String doctor;
   String place = "";
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
-  _PathologyScreenState(this.patientId);
+  _PathologyScreenState(this.patientId, this.userId);
   PatientData _patientData = PatientData();
   CollectionReference pathology;
   DateTime selecteddate = DateTime.now();
@@ -36,6 +40,7 @@ class _PathologyScreenState extends State<PathologyScreen> {
   List images = [];
   List videos = [];
   List files = [];
+  var names = {'images': [], 'videos': [], 'files': []};
 
   @override
   void initState() {
@@ -289,6 +294,9 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                     if (result != null) {
                                       images = await _patientData
                                           .prepareFiles(result.paths);
+                                      for (var i = 0; i < images.length; i++) {
+                                        names['images'].add(images[i]['name']);
+                                      }
                                     } else {
                                       print("Error");
                                     }
@@ -308,6 +316,9 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                     if (result != null) {
                                       videos = await _patientData
                                           .prepareFiles(result.paths);
+                                      for (var i = 0; i < videos.length; i++) {
+                                        names['videos'].add(videos[i]['name']);
+                                      }
                                     } else {
                                       print("Error");
                                     }
@@ -328,6 +339,9 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                     if (result != null) {
                                       files = await _patientData
                                           .prepareFiles(result.paths);
+                                      for (var i = 0; i < files.length; i++) {
+                                        names['files'].add(files[i]['name']);
+                                      }
                                     } else {
                                       print("Error");
                                     }
@@ -350,8 +364,14 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                   'doctor': doctor,
                                   'date':
                                       "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                  'place': place
+                                  'place': place,
+                                  "media": names
                                 });
+                                _patientData.uploadMediaFiles({
+                                  'image': images,
+                                  'video': videos,
+                                  'file': files
+                                }, category, userId);
                                 Fluttertoast.showToast(
                                     msg: "Data Saved",
                                     toastLength: Toast.LENGTH_LONG,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 
+// ignore: must_be_immutable
 class BloodGlucoseList extends StatelessWidget {
   final String type;
   final String date;

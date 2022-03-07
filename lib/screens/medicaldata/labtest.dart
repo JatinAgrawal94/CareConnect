@@ -7,19 +7,22 @@ import 'package:careconnect/services/patientdata.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:file_picker/file_picker.dart';
-import 'dart:io';
 
 class LabTestScreen extends StatefulWidget {
   final String patientId;
-  LabTestScreen({Key key, @required this.patientId}) : super(key: key);
+  final String userId;
+  LabTestScreen({Key key, @required this.patientId, this.userId})
+      : super(key: key);
 
   @override
-  _LabTestScreenState createState() => _LabTestScreenState(patientId);
+  _LabTestScreenState createState() =>
+      _LabTestScreenState(patientId, this.userId);
 }
 
 class _LabTestScreenState extends State<LabTestScreen> {
   String category = "labtest";
   final String patientId;
+  final String userId;
   String test = '';
   String result = '';
   String normal = '';
@@ -29,8 +32,8 @@ class _LabTestScreenState extends State<LabTestScreen> {
   List images = [];
   List videos = [];
   List files = [];
-
-  _LabTestScreenState(this.patientId);
+  var names = {'images': [], 'videos': [], 'files': []};
+  _LabTestScreenState(this.patientId, this.userId);
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   PatientData _patientData = PatientData();
   DoctorData _doctorData = DoctorData();
@@ -96,7 +99,8 @@ class _LabTestScreenState extends State<LabTestScreen> {
           ),
           body: TabBarView(
             children: [
-              Container(
+              SingleChildScrollView(
+                  child: Container(
                 padding: EdgeInsets.all(10),
                 child: Form(
                     key: formkey,
@@ -298,6 +302,9 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                     if (result != null) {
                                       images = await _patientData
                                           .prepareFiles(result.paths);
+                                      for (var i = 0; i < images.length; i++) {
+                                        names['images'].add(images[i]['name']);
+                                      }
                                     } else {
                                       print("Error");
                                     }
@@ -317,6 +324,9 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                     if (result != null) {
                                       videos = await _patientData
                                           .prepareFiles(result.paths);
+                                      for (var i = 0; i < videos.length; i++) {
+                                        names['videos'].add(videos[i]['name']);
+                                      }
                                     } else {
                                       print("Error");
                                     }
@@ -330,13 +340,13 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                         .pickFiles(
                                             allowMultiple: true,
                                             type: FileType.custom,
-                                            allowedExtensions: [
-                                          'pdf',
-                                          'doc',
-                                        ]);
+                                            allowedExtensions: ['pdf']);
                                     if (result != null) {
                                       files = await _patientData
                                           .prepareFiles(result.paths);
+                                      for (var i = 0; i < files.length; i++) {
+                                        names['files'].add(files[i]['name']);
+                                      }
                                     } else {
                                       print("Error");
                                     }
@@ -360,8 +370,14 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                 'doctor': doctor,
                                 'place': place,
                                 'date':
-                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                "media": names
                               });
+                              _patientData.uploadMediaFiles({
+                                'image': images,
+                                'video': videos,
+                                'file': files
+                              }, category, userId);
                               Fluttertoast.showToast(
                                   msg: "Data Saved",
                                   toastLength: Toast.LENGTH_LONG,
@@ -410,7 +426,7 @@ class _LabTestScreenState extends State<LabTestScreen> {
                         )
                       ],
                     )),
-              ),
+              )),
               Container(
                 child: StreamBuilder<QuerySnapshot>(
                   stream: labtest.snapshots(),

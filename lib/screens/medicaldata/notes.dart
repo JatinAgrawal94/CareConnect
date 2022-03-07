@@ -9,24 +9,29 @@ import 'package:file_picker/file_picker.dart';
 
 class NotesScreen extends StatefulWidget {
   final String patientId;
-  NotesScreen({Key key, @required this.patientId}) : super(key: key);
+  final String userId;
+  NotesScreen({Key key, @required this.patientId, this.userId})
+      : super(key: key);
 
   @override
-  _NotesScreenState createState() => _NotesScreenState(patientId);
+  _NotesScreenState createState() => _NotesScreenState(patientId, this.userId);
 }
 
 class _NotesScreenState extends State<NotesScreen> {
   String category = "notes";
   final String patientId;
+  final String userId;
   String title;
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   String description;
-  _NotesScreenState(this.patientId);
+  _NotesScreenState(this.patientId, this.userId);
   PatientData _patientData = PatientData();
   CollectionReference notes;
   List images = [];
   List videos = [];
   List files = [];
+  var names = {'images': [], 'videos': [], 'files': []};
+
   @override
   void initState() {
     super.initState();
@@ -123,6 +128,12 @@ class _NotesScreenState extends State<NotesScreen> {
                                         if (result != null) {
                                           images = await _patientData
                                               .prepareFiles(result.paths);
+                                          for (var i = 0;
+                                              i < images.length;
+                                              i++) {
+                                            names['images']
+                                                .add(images[i]['name']);
+                                          }
                                         } else {
                                           print("Error");
                                         }
@@ -142,6 +153,12 @@ class _NotesScreenState extends State<NotesScreen> {
                                         if (result != null) {
                                           videos = await _patientData
                                               .prepareFiles(result.paths);
+                                          for (var i = 0;
+                                              i < videos.length;
+                                              i++) {
+                                            names['videos']
+                                                .add(videos[i]['name']);
+                                          }
                                         } else {
                                           print("Error");
                                         }
@@ -155,11 +172,16 @@ class _NotesScreenState extends State<NotesScreen> {
                                                 type: FileType.custom,
                                                 allowedExtensions: [
                                               'pdf',
-                                              'doc',
                                             ]);
                                         if (result != null) {
                                           files = await _patientData
                                               .prepareFiles(result.paths);
+                                          for (var i = 0;
+                                              i < files.length;
+                                              i++) {
+                                            names['files']
+                                                .add(files[i]['name']);
+                                          }
                                         } else {
                                           print("Error");
                                         }
@@ -177,8 +199,15 @@ class _NotesScreenState extends State<NotesScreen> {
                                 if (formkey.currentState.validate()) {
                                   await _patientData.addNotes(patientId, {
                                     'title': title,
-                                    'description': description
+                                    'description': description,
+                                    'media': names
                                   });
+
+                                  _patientData.uploadMediaFiles({
+                                    'image': images,
+                                    'video': videos,
+                                    'file': files
+                                  }, category, userId);
                                   Fluttertoast.showToast(
                                       msg: "Data Saved",
                                       toastLength: Toast.LENGTH_LONG,

@@ -64,19 +64,22 @@ class PatientData {
     } else if (index == 5) {
       return FamilyHistoryScreen(patientId: patientId);
     } else if (index == 6) {
-      return LabTestScreen(patientId: patientId);
+      return LabTestScreen(patientId: patientId, userId: userId);
     } else if (index == 7) {
       return MedicalVisitScreen(patientId: patientId);
     } else if (index == 8) {
-      return NotesScreen(patientId: patientId);
+      return NotesScreen(patientId: patientId, userId: userId);
     } else if (index == 9) {
-      return PathologyScreen(patientId: patientId);
+      return PathologyScreen(patientId: patientId, userId: userId);
     } else if (index == 10) {
-      return PrescriptionScreen(patientId: patientId);
+      return PrescriptionScreen(patientId: patientId, userId: userId);
     } else if (index == 11) {
-      return RadiologyScreen(patientId: patientId);
+      return RadiologyScreen(
+        patientId: patientId,
+        userId: userId,
+      );
     } else if (index == 12) {
-      return SurgeryScreen(patientId: patientId);
+      return SurgeryScreen(patientId: patientId, userId: userId);
     } else if (index == 13) {
       return VaccineScreen(patientId: patientId);
     } else {
@@ -185,14 +188,18 @@ class PatientData {
   Future addAllergyData(String patientId, data) async {
     CollectionReference patient =
         FirebaseFirestore.instance.collection('Patient/$patientId/allergy');
-    await patient.add({'type': data['type'], 'date': data['date']});
+    await patient
+        .add({'type': data['type'], 'date': data['date'], 'delete': 0});
   }
 
   Future addFamilyHistory(String patientId, data) async {
     CollectionReference patient = FirebaseFirestore.instance
         .collection('Patient/$patientId/familyhistory');
-    await patient
-        .add({'name': data['name'], 'description': data['description']});
+    await patient.add({
+      'name': data['name'],
+      'description': data['description'],
+      'delete': 0
+    });
   }
 
   Future addVaccine(String patientId, data) async {
@@ -201,15 +208,20 @@ class PatientData {
     await patient.add({
       'vaccine': data['vaccine'],
       'date': data['date'],
-      'place': data['place']
+      'place': data['place'],
+      'delete': 0
     });
   }
 
   Future addNotes(String patientId, data) async {
     CollectionReference patient =
         FirebaseFirestore.instance.collection('Patient/$patientId/notes');
-    await patient
-        .add({'title': data['title'], 'description': data['description']});
+    await patient.add({
+      'title': data['title'],
+      'description': data['description'],
+      'media': data['media'],
+      'delete': 0
+    });
   }
 
   Future addPathologyData(String patientId, data) async {
@@ -220,7 +232,9 @@ class PatientData {
       'result': data['result'],
       'doctor': data['doctor'],
       'date': data['date'],
-      'place': data['place']
+      'place': data['place'],
+      'media': data['media'],
+      'delete': 0
     });
   }
 
@@ -239,6 +253,7 @@ class PatientData {
       'appointmenttype': data['appointmenttype'],
       'paymentstatus': data['paymentstatus'],
       'paymentamount': data['paymentamount'],
+      'delete': 0
     };
 
     if (data['appointmenttype'] == 'Online') {
@@ -265,7 +280,8 @@ class PatientData {
         'appointmenttype': data['appointmenttype'],
         'paymentstatus': data['paymentstatus'],
         'paymentamount': data['paymentamount'],
-        'zoom': zoom
+        'zoom': zoom,
+        'delete': 0
       });
     } else {
       CollectionReference appointment =
@@ -282,7 +298,9 @@ class PatientData {
       'result': data['result'],
       'doctor': data['doctor'],
       'date': data['date'],
-      'place': data['place']
+      'place': data['place'],
+      'media': data['media'],
+      'delete': 0
     });
   }
 
@@ -294,7 +312,9 @@ class PatientData {
       'result': data['result'],
       'doctor': data['doctor'],
       'date': data['date'],
-      'place': data['place']
+      'place': data['place'],
+      'media': data['media'],
+      'delete': 0
     });
   }
 
@@ -306,7 +326,8 @@ class PatientData {
       'result': data['result'],
       'resultUnit': data['resultUnit'],
       'date': data['date'],
-      'time': data['time']
+      'time': data['time'],
+      'delete': 0
     });
   }
 
@@ -320,6 +341,7 @@ class PatientData {
       'date': data['date'],
       'timing': data['timings'],
       'place': data['place'],
+      'media': data['media'],
       'delete': 0
     });
   }
@@ -342,6 +364,7 @@ class PatientData {
       'doctor': data['doctor'],
       'place': data['place'],
       'date': data['date'],
+      'delete': 0
     });
   }
 
@@ -355,6 +378,8 @@ class PatientData {
       'doctor': data['doctor'],
       'place': data['place'],
       'date': data['date'],
+      'media': data['media'],
+      'delete': 0
     });
   }
 
@@ -366,7 +391,8 @@ class PatientData {
       'diastolic': data['diastolic'],
       'pulse': data['pulse'],
       'date': data['date'],
-      'time': data['time']
+      'time': data['time'],
+      'delete': 0
     });
   }
 
@@ -383,6 +409,8 @@ class PatientData {
       'doctor': data['doctor'],
       'place': data['place'],
       'date': data['date'],
+      'media': data['media'],
+      'delete': 0
     });
   }
 
@@ -464,48 +492,44 @@ class PatientData {
     }
   }
 
-  Future<void> uploadPatientVideo(
-      File filepath, String name, String category, String userId) async {
-    try {
-      String t = 'Patient/$userId/$category/videos/$name';
-      await firebase_storage.FirebaseStorage.instance.ref(t).putFile(filepath);
-      print("File Uploaded Successfully");
-    } on firebase_core.FirebaseException catch (e) {
-      print("This is an exception");
-      print(e);
-    }
+Future<void> uploadPatientVideo(
+    File filepath, String name, String category, String userId) async {
+  try {
+    String t = 'Patient/$userId/$category/videos/$name';
+    await firebase_storage.FirebaseStorage.instance.ref(t).putFile(filepath);
+    print("File Uploaded Successfully");
+  } on firebase_core.FirebaseException catch (e) {
+    print("This is an exception");
+    print(e);
   }
+}
 
-  Future<void> uploadPatientFile(
-      File filepath, String name, String category, String userId) async {
-    try {
-      await firebase_storage.FirebaseStorage.instance
-          .ref('Patient/$userId/$category/files/$name')
-          .putFile(filepath);
-      print("File Uploaded Successfully");
-    } on firebase_core.FirebaseException catch (e) {
-      print(e);
-    }
+Future<void> uploadPatientFile(
+    File filepath, String name, String category, String userId) async {
+  try {
+    await firebase_storage.FirebaseStorage.instance
+        .ref('Patient/$userId/$category/files/$name')
+        .putFile(filepath);
+    print("File Uploaded Successfully");
+  } on firebase_core.FirebaseException catch (e) {
+    print(e);
   }
+}
 
-  _imgfromCamera() async {
+_imgfromCamera() async {
     ImagePicker picker = ImagePicker();
     final pickerfile =
         await picker.getImage(source: ImageSource.camera, imageQuality: 50);
     PatientData.media = pickerfile;
-  }
+}
 
-  _imgfromgallery() async {
+_imgfromgallery() async {
     ImagePicker picker = ImagePicker();
 
     final galleryimage =
         await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
     PatientData.media = galleryimage;
-  }
-
-  // _pickMultipleFiles() async{
-
-  // }
+}
 
   void showpicker(context) {
     PatientData patient = PatientData();

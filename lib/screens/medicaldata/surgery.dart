@@ -10,21 +10,24 @@ import 'package:file_picker/file_picker.dart';
 
 class SurgeryScreen extends StatefulWidget {
   final String patientId;
-
-  SurgeryScreen({Key key, @required this.patientId}) : super(key: key);
+  final String userId;
+  SurgeryScreen({Key key, @required this.patientId, this.userId})
+      : super(key: key);
 
   @override
-  _SurgeryScreenState createState() => _SurgeryScreenState(patientId);
+  _SurgeryScreenState createState() =>
+      _SurgeryScreenState(patientId, this.userId);
 }
 
 class _SurgeryScreenState extends State<SurgeryScreen> {
   String category = "surgery";
+  final String userId;
   final String patientId;
   String title;
   String result;
   String doctor;
   String place;
-  _SurgeryScreenState(this.patientId);
+  _SurgeryScreenState(this.patientId, this.userId);
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   PatientData _patientData = PatientData();
   DateTime selecteddate = DateTime.now();
@@ -34,6 +37,7 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
   List images = [];
   List videos = [];
   List files = [];
+  var names = {'images': [], 'videos': [], 'files': []};
 
   @override
   void initState() {
@@ -238,6 +242,12 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                           if (result != null) {
                                             images = await _patientData
                                                 .prepareFiles(result.paths);
+                                            for (var i = 0;
+                                                i < images.length;
+                                                i++) {
+                                              names['images']
+                                                  .add(images[i]['name']);
+                                            }
                                           } else {
                                             print("Error");
                                           }
@@ -258,6 +268,12 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                           if (result != null) {
                                             videos = await _patientData
                                                 .prepareFiles(result.paths);
+                                            for (var i = 0;
+                                                i < videos.length;
+                                                i++) {
+                                              names['videos']
+                                                  .add(videos[i]['name']);
+                                            }
                                           } else {
                                             print("Error");
                                           }
@@ -274,11 +290,16 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                                   type: FileType.custom,
                                                   allowedExtensions: [
                                                 'pdf',
-                                                'doc',
                                               ]);
                                           if (result != null) {
                                             files = await _patientData
                                                 .prepareFiles(result.paths);
+                                            for (var i = 0;
+                                                i < files.length;
+                                                i++) {
+                                              names['files']
+                                                  .add(files[i]['name']);
+                                            }
                                           } else {
                                             print("Error");
                                           }
@@ -302,8 +323,14 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                         'doctor': doctor,
                                         'place': place,
                                         'date':
-                                            "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                            "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                        'media': names
                                       });
+                                      _patientData.uploadMediaFiles({
+                                        'image': images,
+                                        'video': videos,
+                                        'file': files
+                                      }, category, userId);
                                       Fluttertoast.showToast(
                                           msg: "Data Saved",
                                           toastLength: Toast.LENGTH_LONG,

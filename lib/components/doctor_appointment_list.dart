@@ -1,5 +1,4 @@
 import 'package:careconnect/components/appointment_patientlist.dart';
-import 'package:careconnect/services/doctorData.dart';
 import 'package:flutter/material.dart';
 
 class DoctorAppointmentComponent extends StatefulWidget {
@@ -27,7 +26,7 @@ class _DoctorAppointmentComponentState
   String noOfpatients;
   String doctoremail;
   final String documentId;
-  DoctorData _doctorData = DoctorData();
+  
   _DoctorAppointmentComponentState(
       this.date, this.noOfpatients, this.doctoremail, this.documentId);
   @override
