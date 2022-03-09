@@ -323,8 +323,8 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                                               'video': videos,
                                               'file': files
                                             }, category, userId);
-                                            await _patientData
-                                                .addRadiologyData(patientId, {
+                                            await _patientData.addMedicalData(
+                                                patientId, 'radiology', {
                                               'title': title,
                                               'result': result,
                                               'doctor': doctor,

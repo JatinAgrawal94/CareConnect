@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:careconnect/screens/medicaldata/Appointment.dart';
 import 'package:careconnect/screens/medicaldata/about_screen.dart';
@@ -20,6 +21,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:image_picker/image_picker.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:http/http.dart' as http;
 
 class PatientData {
   // keys to map correct data on aboutpage.
@@ -114,42 +116,17 @@ class PatientData {
         .update({'noofpatients': noofpatients});
   }
 
-  Future getPatientInfo(dynamic patientid) async {
-    var data = Map<String, dynamic>();
-    await FirebaseFirestore.instance
-        .collection('Patient')
-        .doc(patientid)
-        .get()
-        .then((DocumentSnapshot snapshot) {
-      data = snapshot.data();
-    });
-    return data;
-  }
-
-  Future getPatientIdByEmail(String email) async {
-    List data = [];
-    await FirebaseFirestore.instance
-        .collection('Patient')
-        .where('email', isEqualTo: email)
-        .get()
-        .then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) {
-        data.add({'userid': element['userid'], 'phone': element['phoneno']});
-      });
-    });
-    return data;
-  }
-
-  Future getDoctorInfo(dynamic doctorid) async {
-    var data = Map<String, dynamic>();
-    await FirebaseFirestore.instance
-        .collection('Patient')
-        .doc(doctorid)
-        .get()
-        .then((DocumentSnapshot snapshot) {
-      data = snapshot.data();
-    });
-    return data;
+  Future getPatientInfo(dynamic documentid) async {
+    try {
+      var url = Uri.parse(
+          'https://careconnect-api.herokuapp.com/patient/info?documentid=$documentid');
+      var response = await http.get(url);
+      var data = jsonDecode(response.body);
+      return data;
+    } catch (err) {
+      print(err);
+      return null;
+    }
   }
 
 // update patientinfo
@@ -186,57 +163,15 @@ class PatientData {
     return test;
   }
 
-  Future addAllergyData(String patientId, data) async {
-    CollectionReference patient =
-        FirebaseFirestore.instance.collection('Patient/$patientId/allergy');
-    await patient
-        .add({'type': data['type'], 'date': data['date'], 'delete': 0});
-  }
-
-  Future addFamilyHistory(String patientId, data) async {
-    CollectionReference patient = FirebaseFirestore.instance
-        .collection('Patient/$patientId/familyhistory');
-    await patient.add({
-      'name': data['name'],
-      'description': data['description'],
-      'delete': 0
-    });
-  }
-
-  Future addVaccine(String patientId, data) async {
-    CollectionReference patient =
-        FirebaseFirestore.instance.collection('Patient/$patientId/vaccine');
-    await patient.add({
-      'vaccine': data['vaccine'],
-      'date': data['date'],
-      'place': data['place'],
-      'delete': 0
-    });
-  }
-
-  Future addNotes(String patientId, data) async {
-    CollectionReference patient =
-        FirebaseFirestore.instance.collection('Patient/$patientId/notes');
-    await patient.add({
-      'title': data['title'],
-      'description': data['description'],
-      'media': data['media'],
-      'delete': 0
-    });
-  }
-
-  Future addPathologyData(String patientId, data) async {
-    CollectionReference patient =
-        FirebaseFirestore.instance.collection('Patient/$patientId/pathology');
-    await patient.add({
-      'title': data['title'],
-      'result': data['result'],
-      'doctor': data['doctor'],
-      'date': data['date'],
-      'place': data['place'],
-      'media': data['media'],
-      'delete': 0
-    });
+  Future addMedicalData(String patientId, String category, data) async {
+    try {
+      var url = Uri.parse(
+          'https://careconnect-api.herokuapp.com/patient/$category/create');
+      await http
+          .post(url, body: {"patientId": patientId, "data": jsonEncode(data)});
+    } catch (err) {
+      print(err);
+    }
   }
 
   Future addAppointment(String patientId, data) async {
@@ -291,62 +226,6 @@ class PatientData {
     }
   }
 
-  Future addRadiologyData(String patientId, data) async {
-    CollectionReference patient =
-        FirebaseFirestore.instance.collection('Patient/$patientId/radiology');
-    await patient.add({
-      'title': data['title'],
-      'result': data['result'],
-      'doctor': data['doctor'],
-      'date': data['date'],
-      'place': data['place'],
-      'media': data['media'],
-      'delete': 0
-    });
-  }
-
-  Future addSurgeryData(String patientId, data) async {
-    CollectionReference patient =
-        FirebaseFirestore.instance.collection('Patient/$patientId/surgery');
-    await patient.add({
-      'title': data['title'],
-      'result': data['result'],
-      'doctor': data['doctor'],
-      'date': data['date'],
-      'place': data['place'],
-      'media': data['media'],
-      'delete': 0
-    });
-  }
-
-  Future addBloodGlucose(String patientId, data) async {
-    CollectionReference patient = FirebaseFirestore.instance
-        .collection('Patient/$patientId/bloodglucose');
-    await patient.add({
-      'type': data['type'],
-      'result': data['result'],
-      'resultUnit': data['resultUnit'],
-      'date': data['date'],
-      'time': data['time'],
-      'delete': 0
-    });
-  }
-
-  Future addPrescription(String patientId, data) async {
-    CollectionReference patient = FirebaseFirestore.instance
-        .collection('Patient/$patientId/prescription');
-    await patient.add({
-      'drug': data['drug'],
-      'dose': data['dose'],
-      'doctor': data['doctor'],
-      'date': data['date'],
-      'timing': data['timings'],
-      'place': data['place'],
-      'media': data['media'],
-      'delete': 0
-    });
-  }
-
   Future deleteAnyPatientRecord(patientId, recordId, category) async {
     // patient documentId, prescription docuementId
     FirebaseFirestore.instance
@@ -355,64 +234,6 @@ class PatientData {
         .delete()
         .then((value) => print("$category record Deleted"))
         .catchError((error) => print("Failed to delete prescription: $error"));
-  }
-
-  Future addMedicalVisit(String patientId, data) async {
-    CollectionReference patient = FirebaseFirestore.instance
-        .collection('Patient/$patientId/medicalvisit');
-    await patient.add({
-      'visitType': data['visitType'],
-      'doctor': data['doctor'],
-      'place': data['place'],
-      'date': data['date'],
-      'delete': 0
-    });
-  }
-
-  Future addLabTest(String patientId, data) async {
-    CollectionReference patient =
-        FirebaseFirestore.instance.collection('Patient/$patientId/labtest');
-    await patient.add({
-      'test': data['test'],
-      'result': data['result'],
-      'normal': data['normal'],
-      'doctor': data['doctor'],
-      'place': data['place'],
-      'date': data['date'],
-      'media': data['media'],
-      'delete': 0
-    });
-  }
-
-  Future addBloodPressure(String patientId, data) async {
-    CollectionReference patient = FirebaseFirestore.instance
-        .collection('Patient/$patientId/bloodpressure');
-    await patient.add({
-      'systolic': data['systolic'],
-      'diastolic': data['diastolic'],
-      'pulse': data['pulse'],
-      'date': data['date'],
-      'time': data['time'],
-      'delete': 0
-    });
-  }
-
-  Future addExamination(String patientId, data) async {
-    CollectionReference patient =
-        FirebaseFirestore.instance.collection('Patient/$patientId/examination');
-    await patient.add({
-      'temperature': data['temperature'],
-      'weight': data['weight'],
-      'height': data['height'],
-      'symptoms': data['symptoms'],
-      'diagnosis': data['diagnosis'],
-      'notes': data['notes'],
-      'doctor': data['doctor'],
-      'place': data['place'],
-      'date': data['date'],
-      'media': data['media'],
-      'delete': 0
-    });
   }
 
   Future uploadFile(File filePath, String filename) async {
@@ -495,7 +316,6 @@ class PatientData {
       }
       for (var i = 0; i < a.length; i++) {
         url = await getMediaURL(userId, category, 'images', a[i]['name']);
-        print(url);
         images.add({'name': a[i]['name'], 'url': url});
       }
     }
@@ -523,20 +343,8 @@ class PatientData {
         files.add({'name': a[i]['name'], 'url': url});
       }
     }
-
     var media = {'images': images, 'videos': videos, 'files': files};
     return media;
-    // saveMediaURL(patientId, category, categoryDocumentId, filename);
-  }
-
-  Future saveMediaURL(
-      String patientId, String category, String categoryDocumentId) async {
-    await FirebaseFirestore.instance
-        .collection('Patient/$patientId/$category')
-        .doc(categoryDocumentId)
-        .update({
-      'media': {'images'}
-    });
   }
 
   Future<void> uploadPatientVideo(
@@ -617,7 +425,7 @@ class PatientData {
           'insuranceno': data['insuranceno'],
           'address': data['address'],
           'userid': data['userid'],
-          'profileImageURL':data['profileImageURL']
+          'profileImageURL': data['profileImageURL']
         })
         .then((value) {})
         .catchError((error) {});
@@ -627,19 +435,15 @@ class PatientData {
   }
 
   Future getDocsId(String email) async {
-    var id;
-    var userId;
-    await FirebaseFirestore.instance
-        .collection('Patient')
-        .where('email', isEqualTo: email)
-        .get()
-        .then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) {
-        id = element.id;
-        userId = element['userid'];
-      });
-    });
-    return {"documentId": id, "userId": userId};
+    var url = Uri.parse(
+        'https://careconnect-api.herokuapp.com/patient/getdocsid?email=$email');
+    var response = await http.get(url);
+    var data = jsonDecode(response.body)[0];
+    return {
+      "documentId": data['documentid'],
+      "userId": data['userid'],
+      "phoneno": data['phoneno']
+    };
   }
 
 // yet to be configured not ready to be used

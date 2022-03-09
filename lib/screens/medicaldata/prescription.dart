@@ -412,8 +412,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                       'video': videos,
                                       'file': files
                                     }, category, userId);
-                                    await _patientData
-                                        .addPrescription(patientId, {
+                                    await _patientData.addMedicalData(
+                                        patientId, 'prescription', {
                                       'drug': drug,
                                       'dose': dose,
                                       'doctor': doctor,

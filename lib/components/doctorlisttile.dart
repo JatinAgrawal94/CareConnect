@@ -1,5 +1,4 @@
 import 'package:careconnect/screens/doctor_medical_screen.dart';
-import 'package:careconnect/services/doctordata.dart';
 import 'package:flutter/material.dart';
 
 class DoctorListTile extends StatefulWidget {
@@ -17,7 +16,6 @@ class DoctorListTile extends StatefulWidget {
 }
 
 class _DoctorListTileState extends State<DoctorListTile> {
-  DoctorData _doctorData = DoctorData();
   String name;
   String userId;
   String documentId;

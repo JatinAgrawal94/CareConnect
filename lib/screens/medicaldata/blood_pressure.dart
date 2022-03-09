@@ -225,7 +225,8 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                           ElevatedButton.styleFrom(primary: Colors.deepPurple),
                       onPressed: () async {
                         if (formkey.currentState.validate()) {
-                          _patientData.addBloodPressure(patientId, {
+                          _patientData
+                              .addMedicalData(patientId, "bloodpressure", {
                             'systolic': systolic,
                             "diastolic": diastolic,
                             "pulse": pulse,

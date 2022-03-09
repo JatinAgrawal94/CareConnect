@@ -328,8 +328,8 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                         'file': files
                                       }, category, userId);
 
-                                      await _patientData
-                                          .addSurgeryData(patientId, {
+                                      await _patientData.addMedicalData(
+                                          patientId, 'surgery', {
                                         'title': title,
                                         'result': result,
                                         'doctor': doctor,

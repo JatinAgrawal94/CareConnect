@@ -362,7 +362,8 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                   'video': videos,
                                   'file': files
                                 }, category, userId);
-                                await _patientData.addPathologyData(patientId, {
+                                await _patientData
+                                    .addMedicalData(patientId, "pathology", {
                                   'title': title,
                                   'result': result,
                                   'doctor': doctor,

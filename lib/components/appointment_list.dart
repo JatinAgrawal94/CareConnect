@@ -78,11 +78,9 @@ class _AppointmentListState extends State<AppointmentList> {
   @override
   void initState() {
     super.initState();
-    _patientData.getPatientIdByEmail(patientemail).then((value) {
-      value.forEach((item) => {
-            setState(() => {
-                  data.add({'userid': item['userid'], 'phone': item['phone']})
-                })
+    _patientData.getDocsId(patientemail).then((value) {
+      setState(() => {
+            data.add({'userid': value['userId'], 'phone': value['phoneno']})
           });
     });
   }

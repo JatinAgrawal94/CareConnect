@@ -529,7 +529,8 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                         'file': files
                                       }, category, userId);
 
-                                      _patientData.addExamination(patientId, {
+                                      _patientData.addMedicalData(
+                                          patientId, 'examination', {
                                         'temperature': temperature,
                                         'weight': weight,
                                         'height': height,

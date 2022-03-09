@@ -367,7 +367,8 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                 'video': videos,
                                 'file': files
                               }, category, userId);
-                              await _patientData.addLabTest(patientId, {
+                              await _patientData
+                                  .addMedicalData(patientId, 'labtest', {
                                 'test': test,
                                 'result': result,
                                 'normal': normal,

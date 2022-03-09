@@ -194,7 +194,8 @@ class _NotesScreenState extends State<NotesScreen> {
                                     'file': files
                                   }, category, userId);
 
-                                  await _patientData.addNotes(patientId, {
+                                  await _patientData.addMedicalData(
+                                      patientId, "notes", {
                                     'title': title,
                                     'description': description,
                                     'media': data

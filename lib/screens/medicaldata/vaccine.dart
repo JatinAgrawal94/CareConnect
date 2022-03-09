@@ -176,7 +176,8 @@ class _VaccineScreenState extends State<VaccineScreen> {
                                   primary: Colors.deepPurple),
                               onPressed: () async {
                                 if (formkey.currentState.validate()) {
-                                  await _patientData.addVaccine(patientId, {
+                                  await _patientData
+                                      .addMedicalData(patientId, "vaccine", {
                                     'vaccine': vaccine,
                                     'place': place,
                                     'date':

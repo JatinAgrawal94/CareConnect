@@ -147,7 +147,7 @@ class _AllergyScreenState extends State<AllergyScreen> {
                                 onPressed: () async {
                                   if (formkey.currentState.validate()) {
                                     await _patientData
-                                        .addAllergyData(patientId, {
+                                        .addMedicalData(patientId, "allergy", {
                                       'type': type,
                                       'date':
                                           "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"

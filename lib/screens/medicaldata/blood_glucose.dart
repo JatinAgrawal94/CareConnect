@@ -240,7 +240,8 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                             primary: Colors.deepPurple),
                         onPressed: () async {
                           if (formkey.currentState.validate()) {
-                            _patientData.addBloodGlucose(patientId, {
+                            _patientData
+                                .addMedicalData(patientId, "bloodglucose", {
                               'type': readingType == 0
                                   ? 'Fasting'
                                   : readingType == 1

@@ -210,8 +210,8 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                   primary: Colors.deepPurple),
                               onPressed: () async {
                                 if (formkey.currentState.validate()) {
-                                  await _patientData
-                                      .addMedicalVisit(patientId, {
+                                  await _patientData.addMedicalData(
+                                      patientId, "medicalvisit", {
                                     'date':
                                         "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
                                     'visitType':

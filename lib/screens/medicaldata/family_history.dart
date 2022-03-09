@@ -115,7 +115,8 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                                 primary: Colors.deepPurple),
                             onPressed: () async {
                               if (formkey.currentState.validate()) {
-                                await _patientData.addFamilyHistory(patientId, {
+                                await _patientData.addMedicalData(
+                                    patientId, "familyhistory", {
                                   'name': memberName,
                                   'description': description
                                 });
