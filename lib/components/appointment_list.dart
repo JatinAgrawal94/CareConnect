@@ -196,20 +196,14 @@ class _AppointmentListState extends State<AppointmentList> {
                               } else {
                                 print("Success");
                               }
-
-                              // return Fluttertoast.showToast(
-                              //     msg: "Chal Paisa Nikal !",
-                              //     toastLength: Toast.LENGTH_LONG,
-                              //     gravity: ToastGravity.SNACKBAR,
-                              //     backgroundColor: Colors.deepPurple,
-                              //     textColor: Colors.white,
-                              //     fontSize: 15,
-                              //     timeInSecForIosWeb: 1);
                             },
                           ),
                         )
                       : Container(),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.delete_rounded))
+                  IconButton(
+                      onPressed: () {},
+                      icon:
+                          Icon(Icons.delete_rounded, color: Colors.deepPurple))
                 ],
               ),
             )

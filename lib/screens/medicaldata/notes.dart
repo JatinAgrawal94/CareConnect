@@ -30,7 +30,6 @@ class _NotesScreenState extends State<NotesScreen> {
   List images = [];
   List videos = [];
   List files = [];
-  var names = {'images': [], 'videos': [], 'files': []};
 
   @override
   void initState() {
@@ -128,12 +127,6 @@ class _NotesScreenState extends State<NotesScreen> {
                                         if (result != null) {
                                           images = await _patientData
                                               .prepareFiles(result.paths);
-                                          for (var i = 0;
-                                              i < images.length;
-                                              i++) {
-                                            names['images']
-                                                .add(images[i]['name']);
-                                          }
                                         } else {
                                           print("Error");
                                         }
@@ -153,12 +146,6 @@ class _NotesScreenState extends State<NotesScreen> {
                                         if (result != null) {
                                           videos = await _patientData
                                               .prepareFiles(result.paths);
-                                          for (var i = 0;
-                                              i < videos.length;
-                                              i++) {
-                                            names['videos']
-                                                .add(videos[i]['name']);
-                                          }
                                         } else {
                                           print("Error");
                                         }
@@ -176,12 +163,6 @@ class _NotesScreenState extends State<NotesScreen> {
                                         if (result != null) {
                                           files = await _patientData
                                               .prepareFiles(result.paths);
-                                          for (var i = 0;
-                                              i < files.length;
-                                              i++) {
-                                            names['files']
-                                                .add(files[i]['name']);
-                                          }
                                         } else {
                                           print("Error");
                                         }
@@ -197,17 +178,6 @@ class _NotesScreenState extends State<NotesScreen> {
                                   primary: Colors.deepPurple),
                               onPressed: () async {
                                 if (formkey.currentState.validate()) {
-                                  await _patientData.addNotes(patientId, {
-                                    'title': title,
-                                    'description': description,
-                                    'media': names
-                                  });
-
-                                  _patientData.uploadMediaFiles({
-                                    'image': images,
-                                    'video': videos,
-                                    'file': files
-                                  }, category, userId);
                                   Fluttertoast.showToast(
                                       msg: "Data Saved",
                                       toastLength: Toast.LENGTH_LONG,
@@ -217,6 +187,18 @@ class _NotesScreenState extends State<NotesScreen> {
                                       fontSize: 15,
                                       timeInSecForIosWeb: 1);
                                   Navigator.pop(context);
+                                  var data = await _patientData
+                                      .uploadMediaFiles({
+                                    'image': images,
+                                    'video': videos,
+                                    'file': files
+                                  }, category, userId);
+
+                                  await _patientData.addNotes(patientId, {
+                                    'title': title,
+                                    'description': description,
+                                    'media': data
+                                  });
                                 } else {}
                               },
                               child:
@@ -230,9 +212,11 @@ class _NotesScreenState extends State<NotesScreen> {
                                   MaterialPageRoute(
                                       builder: (BuildContext context) =>
                                           PhotoGrid(
-                                              image: images,
-                                              video: videos,
-                                              file: files)));
+                                            image: images,
+                                            video: videos,
+                                            file: files,
+                                            filetype: "new",
+                                          )));
                             },
                             fillColor: Colors.deepPurple,
                             splashColor: Colors.white,
@@ -274,11 +258,11 @@ class _NotesScreenState extends State<NotesScreen> {
                         children:
                             snapshot.data.docs.map((DocumentSnapshot document) {
                           return NotesList(
-                            title: document.data()['title'],
-                            description: document.data()['description'],
-                            patientId: patientId,
-                            recordId: document.id,
-                          );
+                              title: document.data()['title'],
+                              description: document.data()['description'],
+                              patientId: patientId,
+                              recordId: document.id,
+                              media: document.data()['media']);
                         }).toList(),
                       );
                     },

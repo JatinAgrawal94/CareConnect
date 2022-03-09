@@ -632,7 +632,24 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                         .validate()) {
                                       final result =
                                           await auth.registerUser(email);
+
                                       if (result['msg'] == 'user-created') {
+                                        Navigator.pop(context);
+                                        Fluttertoast.showToast(
+                                            msg: "Doctor Added",
+                                            toastLength: Toast.LENGTH_LONG,
+                                            gravity: ToastGravity.SNACKBAR,
+                                            backgroundColor: Colors.grey,
+                                            textColor: Colors.white,
+                                            fontSize: 15,
+                                            timeInSecForIosWeb: 1);
+                                        var profileImageURL;
+                                        if (_image != null) {
+                                          profileImageURL =
+                                              await doctorData.uploadFile(
+                                                  File(_image.path),
+                                                  _doctorUserId);
+                                        }
                                         await doctorData.addDoctor({
                                           'name': name,
                                           'email': email,
@@ -649,26 +666,13 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                           'doctype': doctype,
                                           'timing': appointmentTimings,
                                           'address': address,
-                                          'userid': 'D$_doctorUserId'
+                                          'userid': 'D$_doctorUserId',
+                                          'profileImageURL': profileImageURL
                                         });
                                         doctorData.increementNoOfDoctors(
                                             documentId, _doctorUserId);
-                                        if (_image != null) {
-                                          doctorData.uploadFile(
-                                              File(_image.path), _doctorUserId);
-                                        }
                                         await auth.sendMails(
                                             email, result['password']);
-                                        Navigator.pop(context);
-
-                                        return Fluttertoast.showToast(
-                                            msg: "Doctor Added",
-                                            toastLength: Toast.LENGTH_LONG,
-                                            gravity: ToastGravity.SNACKBAR,
-                                            backgroundColor: Colors.grey,
-                                            textColor: Colors.white,
-                                            fontSize: 15,
-                                            timeInSecForIosWeb: 1);
                                       } else {
                                         Fluttertoast.showToast(
                                             msg: result['msg'],

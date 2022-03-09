@@ -40,7 +40,6 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   List images = [];
   List videos = [];
   List files = [];
-  var names = {'images': [], 'videos': [], 'files': []};
 
   @override
   void initState() {
@@ -341,12 +340,6 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                       if (result != null) {
                                         images = await _patientData
                                             .prepareFiles(result.paths);
-                                        for (var i = 0;
-                                            i < images.length;
-                                            i++) {
-                                          names['images']
-                                              .add(images[i]['name']);
-                                        }
                                       } else {
                                         print("Error");
                                       }
@@ -366,12 +359,6 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                       if (result != null) {
                                         videos = await _patientData
                                             .prepareFiles(result.paths);
-                                        for (var i = 0;
-                                            i < videos.length;
-                                            i++) {
-                                          names['videos']
-                                              .add(videos[i]['name']);
-                                        }
                                       } else {
                                         print("Error");
                                       }
@@ -391,9 +378,6 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                       if (result != null) {
                                         files = await _patientData
                                             .prepareFiles(result.paths);
-                                        for (var i = 0; i < files.length; i++) {
-                                          names['files'].add(files[i]['name']);
-                                        }
                                       } else {
                                         print("Error");
                                       }
@@ -413,22 +397,6 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                     primary: Colors.deepPurple),
                                 onPressed: () async {
                                   if (formkey.currentState.validate()) {
-                                    await _patientData
-                                        .addPrescription(patientId, {
-                                      'drug': drug,
-                                      'dose': dose,
-                                      'doctor': doctor,
-                                      'place': place,
-                                      'date':
-                                          "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                      'timings': timings,
-                                      'media': names
-                                    });
-                                    _patientData.uploadMediaFiles({
-                                      'image': images,
-                                      'video': videos,
-                                      'file': files
-                                    }, category, userId);
                                     Fluttertoast.showToast(
                                         msg: "Data Saved",
                                         toastLength: Toast.LENGTH_LONG,
@@ -438,6 +406,23 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                         fontSize: 15,
                                         timeInSecForIosWeb: 1);
                                     Navigator.pop(context);
+                                    var data = await _patientData
+                                        .uploadMediaFiles({
+                                      'image': images,
+                                      'video': videos,
+                                      'file': files
+                                    }, category, userId);
+                                    await _patientData
+                                        .addPrescription(patientId, {
+                                      'drug': drug,
+                                      'dose': dose,
+                                      'doctor': doctor,
+                                      'place': place,
+                                      'date':
+                                          "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                      'timings': timings,
+                                      'media': data
+                                    });
                                   } else {}
                                 },
                                 child: Text(
@@ -456,7 +441,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                               PhotoGrid(
                                                   image: images,
                                                   video: videos,
-                                                  file: files)));
+                                                  file: files,
+                                                  filetype: "new")));
                                 },
                                 fillColor: Colors.deepPurple,
                                 splashColor: Colors.white,
@@ -543,7 +529,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                               date: document.data()['date'],
                               timing: document.data()['timing'],
                               patientId: patientId,
-                              prescriptionId: document.id);
+                              prescriptionId: document.id,
+                              media: document.data()['media']);
                         }).toList(),
                       );
                     },

@@ -4,25 +4,37 @@ import 'dart:io';
 
 class DisplayVideo extends StatefulWidget {
   final File video;
-  DisplayVideo({Key key, this.video}) : super(key: key);
+  final String videoURL;
+
+  DisplayVideo({Key key, this.video, this.videoURL}) : super(key: key);
 
   @override
-  State<DisplayVideo> createState() => _DisplayVideoState(this.video);
+  State<DisplayVideo> createState() => _DisplayVideoState(
+        this.video,
+        this.videoURL,
+      );
 }
 
 class _DisplayVideoState extends State<DisplayVideo> {
   VideoPlayerController _controller;
   final File video;
+  final String videoURL;
 
-  _DisplayVideoState(this.video);
-
+  _DisplayVideoState(this.video, this.videoURL);
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.file(video)
-      ..initialize().then((_) {
-        setState(() {}); //when your thumbnail will show.
-      });
+    if (videoURL == null) {
+      _controller = VideoPlayerController.file(video)
+        ..initialize().then((_) {
+          setState(() {}); //when your thumbnail will show.
+        });
+    } else {
+      _controller = VideoPlayerController.network(videoURL)
+        ..initialize().then((_) {
+          setState(() {}); //when your thumbnail will show.
+        });
+    }
   }
 
   @override

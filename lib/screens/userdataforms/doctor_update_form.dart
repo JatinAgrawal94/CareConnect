@@ -54,6 +54,7 @@ class _DoctorFormState extends State<DoctorForm> {
     _doctorData.getDoctorInfo(doctorId).then((value) {
       setState(() {
         doctorInfo = value;
+        imageURL = doctorInfo['profileImageURL'];
         userId = doctorInfo['userid'];
         name = doctorInfo['name'];
         email = doctorInfo['email'];
@@ -68,16 +69,10 @@ class _DoctorFormState extends State<DoctorForm> {
             : doctorInfo['gender'] == 'Female'
                 ? 1
                 : 2;
-        // selecteddate = DateTime.parse(convertDate(doctorInfo['dateofbirth']));
       });
       convertDate(doctorInfo['dateofbirth']).then((value) {
         setState(() {
           selecteddate = DateTime.parse(value);
-        });
-      });
-      _doctorData.getProfileImageURL(userId).then((value) {
-        setState(() {
-          imageURL = value;
         });
       });
     });
@@ -222,7 +217,8 @@ class _DoctorFormState extends State<DoctorForm> {
                             )),
                         ElevatedButton(
                             onPressed: () async {
-                              await _doctorData.deleteProfileImageURL(userId);
+                              await _doctorData.deleteProfileImageURL(
+                                  doctorId, userId);
                               setState(() {
                                 _image = null;
                               });
@@ -724,6 +720,24 @@ class _DoctorFormState extends State<DoctorForm> {
                                       onPressed: () async {
                                         if (doctorupdateformkey.currentState
                                             .validate()) {
+                                          Navigator.pop(context);
+                                          Fluttertoast.showToast(
+                                              msg: "Data Updated",
+                                              toastLength: Toast.LENGTH_LONG,
+                                              gravity: ToastGravity.SNACKBAR,
+                                              backgroundColor: Colors.grey,
+                                              textColor: Colors.white,
+                                              fontSize: 15,
+                                              timeInSecForIosWeb: 1);
+
+                                          Navigator.pop(context);
+                                          String profileImageURL;
+                                          if (_image != null) {
+                                            profileImageURL =
+                                                await _doctorData.updateFile(
+                                                    File(_image.path),
+                                                    '$userId');
+                                          }
                                           await _doctorData
                                               .updateDoctorinfo(doctorId, {
                                             'name': name,
@@ -740,22 +754,9 @@ class _DoctorFormState extends State<DoctorForm> {
                                             'designation': designation,
                                             'address': address,
                                             'doctype': doctype,
-                                            'zoom': zoom
+                                            'zoom': zoom,
+                                            'profileImageURL': profileImageURL
                                           });
-                                          if (_image != null) {
-                                            _doctorData.updateFile(
-                                                File(_image.path), '$userId');
-                                          }
-                                          Navigator.pop(context);
-                                          Navigator.pop(context);
-                                          return Fluttertoast.showToast(
-                                              msg: "Data Updated",
-                                              toastLength: Toast.LENGTH_LONG,
-                                              gravity: ToastGravity.SNACKBAR,
-                                              backgroundColor: Colors.grey,
-                                              textColor: Colors.white,
-                                              fontSize: 15,
-                                              timeInSecForIosWeb: 1);
                                         }
                                       },
                                       child: Text(

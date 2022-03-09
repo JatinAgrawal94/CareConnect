@@ -66,7 +66,8 @@ class DoctorData {
           'designation': data['designation'],
           'userid': data['userid'],
           'doctype': data['doctype'],
-          'zoom': " "
+          'zoom': " ",
+          'profileImageURL': data['profileImageURL']
         })
         .then((value) {})
         .catchError((error) {
@@ -88,38 +89,48 @@ class DoctorData {
     }
   }
 
-  Future deleteProfileImageURL(String doctorId) async {
+  Future deleteProfileImageURL(String doctorId, String userId) async {
     try {
       await firebase_storage.FirebaseStorage.instance
-          .ref('profile_images/$doctorId.png')
+          .ref('profile_images/$userId.png')
           .delete();
+      await FirebaseFirestore.instance
+          .collection('Doctor')
+          .doc(doctorId)
+          .update({"profileImageURL": null});
       return 1;
     } catch (e) {
-      print(e);
+      // print(e);
       print("Error deleting Image");
       return 0;
     }
   }
 
-  Future<void> uploadFile(File filePath, String filename) async {
+  Future uploadFile(File filePath, String filename) async {
     try {
       await firebase_storage.FirebaseStorage.instance
           .ref('profile_images/D$filename.png')
           .putFile(filePath);
+      String url = await getProfileImageURL(filename);
       print("File Uploaded Successfully");
+      return url;
     } on firebase_core.FirebaseException catch (e) {
       print(e);
+      return 0;
     }
   }
 
-  Future<void> updateFile(File filePath, String filename) async {
+  Future updateFile(File filePath, String filename) async {
     try {
       await firebase_storage.FirebaseStorage.instance
           .ref('profile_images/$filename.png')
           .putFile(filePath);
+      String url = await getProfileImageURL(filename);
       print("File Uploaded Successfully");
+      return url;
     } on firebase_core.FirebaseException catch (e) {
       print(e);
+      return 0;
     }
   }
 
@@ -137,7 +148,8 @@ class DoctorData {
           'contact': data['contact'],
           'designation': data['designation'],
           'address': data['address'],
-          'doctype': data['doctype']
+          'doctype': data['doctype'],
+          'profileImageURL': data['profileImageURL']
         })
         .then((value) {})
         .catchError((error) {});

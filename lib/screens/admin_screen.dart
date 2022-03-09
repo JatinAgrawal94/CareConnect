@@ -135,19 +135,12 @@ class _AdminHomeState extends State<AdminHome> {
                         return new ListView(
                             children: snapshot.data.docs
                                 .map((DocumentSnapshot document) {
-                          // String image;
-                          // _patientdata
-                          //     .getProfileImageURL(document.data()['userid'])
-                          //     .then((value) {
-                          //   setState(() {
-                          //     image = value;
-                          //   });
-                          // });
-                          //  send userid,name,documentid
                           return PatientListTile(
                               documentId: document.id,
                               userId: document.data()['userid'],
-                              name: document.data()['name']);
+                              name: document.data()['name'],
+                              profileImageURL:
+                                  document.data()['profileImageURL']);
                         }).toList());
                       }),
                 ),

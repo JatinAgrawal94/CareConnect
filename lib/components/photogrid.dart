@@ -3,15 +3,26 @@ import 'package:careconnect/components/displayphoto.dart';
 import 'package:careconnect/components/displayvideo.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 class PhotoGrid extends StatefulWidget {
   final List image;
   final List video;
   final List file;
-  PhotoGrid({Key key, this.image, this.video, this.file}) : super(key: key);
+  // filetype is record and new
+  final filetype;
+
+  PhotoGrid({
+    Key key,
+    this.image,
+    this.video,
+    this.file,
+    this.filetype,
+  }) : super(key: key);
 
   @override
   State<PhotoGrid> createState() =>
-      _PhotoGridState(this.image, this.video, this.file);
+      _PhotoGridState(this.image, this.video, this.file, this.filetype);
 }
 
 class _PhotoGridState extends State<PhotoGrid> {
@@ -19,7 +30,14 @@ class _PhotoGridState extends State<PhotoGrid> {
   List video = [];
   List file = [];
   List videoThumbnails = [];
-  _PhotoGridState(this.image, this.video, this.file);
+  final String filetype;
+
+  _PhotoGridState(
+    this.image,
+    this.video,
+    this.file,
+    this.filetype,
+  );
   PatientData _patientData = PatientData();
   @override
   void initState() {
@@ -64,13 +82,20 @@ class _PhotoGridState extends State<PhotoGrid> {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => DisplayPhoto(
-                                            image: image[index]['filename'],
-                                            name: image[index]['name'],
-                                          )));
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                if (filetype == "new") {
+                                  return DisplayPhoto(
+                                    image: image[index]['filename'],
+                                    name: image[index]['name'],
+                                  );
+                                } else {
+                                  return DisplayPhoto(
+                                    imageURL: image[index]['url'],
+                                    name: image[index]['name'],
+                                  );
+                                }
+                              }));
                             },
                             child: Container(
                                 height: 200,
@@ -80,11 +105,14 @@ class _PhotoGridState extends State<PhotoGrid> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: [
-                                    Image.file(
-                                      image[index]['filename'],
-                                      width: 100,
-                                      height: 100,
-                                    ),
+                                    filetype == 'new'
+                                        ? Image.file(
+                                            image[index]['filename'],
+                                            width: 100,
+                                            height: 100,
+                                          )
+                                        : Image.network(image[index]['url'],
+                                            width: 100, height: 100),
                                     Expanded(
                                         child: Text(image[index]['name'],
                                             maxLines: 3,
@@ -113,16 +141,22 @@ class _PhotoGridState extends State<PhotoGrid> {
                           crossAxisSpacing: 0,
                           mainAxisSpacing: 0,
                           crossAxisCount: 3),
-                      itemCount: videoThumbnails.length,
+                      itemCount: video.length,
                       itemBuilder: (context, index) {
                         return GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => DisplayVideo(
-                                            video: video[index]['filename'],
-                                          )));
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                if (filetype == 'new') {
+                                  return DisplayVideo(
+                                    video: video[index]['filename'],
+                                  );
+                                } else {
+                                  return DisplayVideo(
+                                    videoURL: video[index]['url'],
+                                  );
+                                }
+                              }));
                             },
                             child: Container(
                                 decoration:
@@ -131,8 +165,11 @@ class _PhotoGridState extends State<PhotoGrid> {
                                 height: 120,
                                 child: Column(
                                   children: [
-                                    Image.memory(videoThumbnails[index],
-                                        width: 100, height: 100),
+                                    filetype == 'new'
+                                        ? Image.memory(videoThumbnails[index],
+                                            width: 100, height: 100)
+                                        : Icon(Icons.play_circle_fill_rounded,
+                                            size: 100),
                                     Expanded(
                                         child: Text(video[index]['name'],
                                             maxLines: 2,
@@ -165,12 +202,19 @@ class _PhotoGridState extends State<PhotoGrid> {
                       itemBuilder: (context, index) {
                         return new GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => DisplayPdf(
-                                            file: file[index]['filename'],
-                                          )));
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                if (filetype == "new") {
+                                  return DisplayPdf(
+                                    file: file[index]['filename'],
+                                  );
+                                } else {
+                                  launch(file[index]['url']);
+                                  return DisplayPdf(
+                                    fileURL: file[index]['url'],
+                                  );
+                                }
+                              }));
                             },
                             child: Container(
                                 decoration:

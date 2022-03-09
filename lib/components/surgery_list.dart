@@ -1,3 +1,4 @@
+import 'package:careconnect/components/photogrid.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 
@@ -9,20 +10,30 @@ class SurgeryList extends StatefulWidget {
   final String place;
   final String patientId;
   final String recordId;
-  SurgeryList(
-      {Key key,
-      this.title,
-      this.result,
-      this.doctor,
-      this.date,
-      this.place,
-      this.patientId,
-      this.recordId})
-      : super(key: key);
+  final dynamic media;
+  SurgeryList({
+    Key key,
+    this.title,
+    this.result,
+    this.doctor,
+    this.date,
+    this.place,
+    this.patientId,
+    this.recordId,
+    this.media,
+  }) : super(key: key);
 
   @override
-  _SurgeryListState createState() => _SurgeryListState(this.title, this.result,
-      this.doctor, this.date, this.place, this.patientId, this.recordId);
+  _SurgeryListState createState() => _SurgeryListState(
+        this.title,
+        this.result,
+        this.doctor,
+        this.date,
+        this.place,
+        this.patientId,
+        this.recordId,
+        this.media,
+      );
 }
 
 class _SurgeryListState extends State<SurgeryList> {
@@ -33,9 +44,17 @@ class _SurgeryListState extends State<SurgeryList> {
   final String place;
   final String patientId;
   final String recordId;
+  final dynamic media;
+  String category = "surgery";
   PatientData _patientData = PatientData();
   _SurgeryListState(this.title, this.result, this.doctor, this.date, this.place,
-      this.patientId, this.recordId);
+      this.patientId, this.recordId, this.media);
+
+  @override
+  void initState() {
+    super.initState();
+    // _patientData.getMediaURL(userId, category, files);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +96,43 @@ class _SurgeryListState extends State<SurgeryList> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
+                (media['images'].length == 0 &&
+                        media['videos'].length == 0 &&
+                        media['files'].length == 0)
+                    ? Text("")
+                    : RawMaterialButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5)),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) => PhotoGrid(
+                                        image: media['images'],
+                                        video: media['videos'],
+                                        file: media['files'],
+                                        filetype: "record",
+                                      )));
+                        },
+                        fillColor: Colors.deepPurple,
+                        splashColor: Colors.white,
+                        child: Container(
+                            child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "View",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Icon(
+                              Icons.arrow_right,
+                              color: Colors.white,
+                            )
+                          ],
+                        )),
+                      ),
                 IconButton(
                   onPressed: () async {
                     await _patientData.deleteAnyPatientRecord(

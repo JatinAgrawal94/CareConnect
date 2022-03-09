@@ -538,6 +538,22 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                       final result =
                                           await auth.registerUser(email);
                                       if (result['msg'] == 'user-created') {
+                                        var profileURL;
+                                        Navigator.pop(context);
+                                        Fluttertoast.showToast(
+                                            msg: "Patient Added",
+                                            toastLength: Toast.LENGTH_LONG,
+                                            gravity: ToastGravity.SNACKBAR,
+                                            backgroundColor: Colors.grey,
+                                            textColor: Colors.white,
+                                            fontSize: 15,
+                                            timeInSecForIosWeb: 1);
+                                        if (_image != null) {
+                                          profileURL =
+                                              await patientData.uploadFile(
+                                                  File(_image.path),
+                                                  _patientId);
+                                        }
                                         await patientData.addPatient({
                                           'name': name,
                                           'email': email,
@@ -552,27 +568,14 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                           'phoneno': contact,
                                           'insuranceno': insuranceno,
                                           'address': address,
-                                          'userid': 'P$_patientId'
+                                          'userid': 'P$_patientId',
+                                          'profileImageURL': profileURL
                                         });
                                         patientData.increementNoOfPatients(
                                             documentId, _patientId);
 
-                                        if (_image != null) {
-                                          patientData.uploadFile(
-                                              File(_image.path), _patientId);
-                                        }
                                         await auth.sendMails(
                                             email, result['password']);
-                                        Navigator.pop(context);
-
-                                        return Fluttertoast.showToast(
-                                            msg: "Patient Added",
-                                            toastLength: Toast.LENGTH_LONG,
-                                            gravity: ToastGravity.SNACKBAR,
-                                            backgroundColor: Colors.grey,
-                                            textColor: Colors.white,
-                                            fontSize: 15,
-                                            timeInSecForIosWeb: 1);
                                       } else {
                                         Fluttertoast.showToast(
                                             msg: result['msg'],

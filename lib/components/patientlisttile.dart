@@ -6,12 +6,14 @@ class PatientListTile extends StatefulWidget {
   final String name;
   final String userId;
   final String documentId;
-  PatientListTile({Key key, this.name, this.userId, this.documentId})
+  final String profileImageURL;
+  PatientListTile(
+      {Key key, this.name, this.userId, this.documentId, this.profileImageURL})
       : super(key: key);
 
   @override
-  State<PatientListTile> createState() =>
-      _PatientListTileState(this.name, this.userId, this.documentId);
+  State<PatientListTile> createState() => _PatientListTileState(
+      this.name, this.userId, this.documentId, this.profileImageURL);
 }
 
 class _PatientListTileState extends State<PatientListTile> {
@@ -20,17 +22,19 @@ class _PatientListTileState extends State<PatientListTile> {
   String userId;
   String documentId;
   String image;
-  _PatientListTileState(this.name, this.userId, this.documentId);
+  String profileImageURL;
+  _PatientListTileState(
+      this.name, this.userId, this.documentId, this.profileImageURL);
   @override
   void initState() {
     super.initState();
-    _patientData.getProfileImageURL(userId).then((value) {
-      if (this.mounted) {
-        setState(() {
-          image = value;
-        });
-      }
-    });
+    // _patientData.getProfileImageURL(userId).then((value) {
+    //   if (this.mounted) {
+    //     setState(() {
+    //       image = value;
+    //     });
+    //   }
+    // });
   }
 
   @override
@@ -42,12 +46,12 @@ class _PatientListTileState extends State<PatientListTile> {
   Widget build(BuildContext context) {
     return Container(
       child: ListTile(
-        leading: image == null
+        leading: profileImageURL == null
             ? Icon(Icons.person, size: 40)
             : ClipRRect(
                 borderRadius: BorderRadius.circular(100),
                 child: Image.network(
-                  image,
+                  profileImageURL,
                   width: 55,
                   height: 55,
                   fit: BoxFit.fill,

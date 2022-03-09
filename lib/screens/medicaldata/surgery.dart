@@ -37,7 +37,6 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
   List images = [];
   List videos = [];
   List files = [];
-  var names = {'images': [], 'videos': [], 'files': []};
 
   @override
   void initState() {
@@ -157,30 +156,35 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                 ),
                               ),
                               Container(
-                                padding: EdgeInsets.all(5),
-                                child: TextFormField(
-                                  cursorColor: Colors.deepPurple,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      doctor = value;
-                                    });
-                                  },
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return "Field can't be empty";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  keyboardType: TextInputType.text,
-                                  decoration: InputDecoration(
-                                      hintText: "Doctor",
-                                      focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                              width: 1,
-                                              color: Colors.deepPurple))),
-                                ),
-                              ),
+                                  margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                  // width:MediaQuery.of(context).size.width * 0.5,
+                                  child: Container(
+                                      child: DropdownButtonFormField<String>(
+                                    value: doctor,
+                                    items: data.map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                      return DropdownMenuItem<String>(
+                                          child: Text(value,
+                                              style: TextStyle(fontSize: 15)),
+                                          value: value);
+                                    }).toList(),
+                                    hint: Text(
+                                      "Select doctor",
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                    onChanged: (String value) {
+                                      setState(() {
+                                        doctor = value;
+                                      });
+                                    },
+                                    validator: (doctor) {
+                                      if (doctor == null) {
+                                        return "Field can't be empty";
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                  ))),
                               Container(
                                 padding: EdgeInsets.all(5),
                                 child: TextFormField(
@@ -244,10 +248,7 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                                 .prepareFiles(result.paths);
                                             for (var i = 0;
                                                 i < images.length;
-                                                i++) {
-                                              names['images']
-                                                  .add(images[i]['name']);
-                                            }
+                                                i++) {}
                                           } else {
                                             print("Error");
                                           }
@@ -270,10 +271,7 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                                 .prepareFiles(result.paths);
                                             for (var i = 0;
                                                 i < videos.length;
-                                                i++) {
-                                              names['videos']
-                                                  .add(videos[i]['name']);
-                                            }
+                                                i++) {}
                                           } else {
                                             print("Error");
                                           }
@@ -296,10 +294,7 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                                 .prepareFiles(result.paths);
                                             for (var i = 0;
                                                 i < files.length;
-                                                i++) {
-                                              names['files']
-                                                  .add(files[i]['name']);
-                                            }
+                                                i++) {}
                                           } else {
                                             print("Error");
                                           }
@@ -316,21 +311,6 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                       primary: Colors.deepPurple),
                                   onPressed: () async {
                                     if (formkey.currentState.validate()) {
-                                      await _patientData
-                                          .addSurgeryData(patientId, {
-                                        'title': title,
-                                        'result': result,
-                                        'doctor': doctor,
-                                        'place': place,
-                                        'date':
-                                            "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                        'media': names
-                                      });
-                                      _patientData.uploadMediaFiles({
-                                        'image': images,
-                                        'video': videos,
-                                        'file': files
-                                      }, category, userId);
                                       Fluttertoast.showToast(
                                           msg: "Data Saved",
                                           toastLength: Toast.LENGTH_LONG,
@@ -340,6 +320,24 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                           fontSize: 15,
                                           timeInSecForIosWeb: 1);
                                       Navigator.pop(context);
+
+                                      var data = await _patientData
+                                          .uploadMediaFiles({
+                                        'image': images,
+                                        'video': videos,
+                                        'file': files
+                                      }, category, userId);
+
+                                      await _patientData
+                                          .addSurgeryData(patientId, {
+                                        'title': title,
+                                        'result': result,
+                                        'doctor': doctor,
+                                        'place': place,
+                                        'date':
+                                            "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                        'media': data
+                                      });
                                     } else {}
                                   },
                                   child: Text(
@@ -357,29 +355,27 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                               PhotoGrid(
                                                   image: images,
                                                   video: videos,
-                                                  file: files)));
+                                                  file: files,
+                                                  filetype: "new")));
                                 },
                                 fillColor: Colors.deepPurple,
                                 splashColor: Colors.white,
                                 child: Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.2,
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "View",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Icon(
-                                          Icons.arrow_right,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "View",
+                                      style: TextStyle(
                                           color: Colors.white,
-                                        )
-                                      ],
-                                    )),
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Icon(
+                                      Icons.arrow_right,
+                                      color: Colors.white,
+                                    )
+                                  ],
+                                )),
                               )
                             ],
                           )))),
@@ -407,7 +403,8 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                               place: document.data()['place'],
                               date: document.data()['date'],
                               patientId: patientId,
-                              recordId: document.id);
+                              recordId: document.id,
+                              media: document.data()['media']);
                         }).toList(),
                       );
                     },

@@ -166,7 +166,8 @@ class PatientData {
           'bloodgroup': data['bloodgroup'],
           'phoneno': data['phoneno'],
           'insuranceno': data['insuranceno'],
-          'address': data['address']
+          'address': data['address'],
+          'profileImageURL': data['profileImageURL']
         })
         .then((value) {})
         .catchError((error) {});
@@ -414,25 +415,39 @@ class PatientData {
     });
   }
 
-  Future<void> uploadFile(File filePath, String filename) async {
+  Future uploadFile(File filePath, String filename) async {
     try {
-      await firebase_storage.FirebaseStorage.instance
-          .ref('profile_images/P$filename.png')
-          .putFile(filePath);
-      print("File Uploaded Successfully");
+      if (filePath != null) {
+        await firebase_storage.FirebaseStorage.instance
+            .ref('profile_images/P$filename.png')
+            .putFile(filePath);
+        var url = await getProfileImageURL(filename);
+        print("File Uploaded Successfully");
+        return url;
+      } else {
+        return null;
+      }
     } on firebase_core.FirebaseException catch (e) {
       print(e);
+      return 0;
     }
   }
 
-  Future<void> updateFile(File filePath, String filename) async {
+  Future updateFile(File filePath, String filename) async {
     try {
-      await firebase_storage.FirebaseStorage.instance
-          .ref('profile_images/$filename.png')
-          .putFile(filePath);
-      print("File Uploaded Successfully");
+      if (filePath != null) {
+        await firebase_storage.FirebaseStorage.instance
+            .ref('profile_images/$filename.png')
+            .putFile(filePath);
+        var url = await getProfileImageURL(filename);
+        print("File Uploaded Successfully");
+        return url;
+      } else {
+        return null;
+      }
     } on firebase_core.FirebaseException catch (e) {
       print(e);
+      return 0;
     }
   }
 
@@ -467,11 +482,21 @@ class PatientData {
 
   Future uploadMediaFiles(test, category, userId) async {
     var a;
+    String url;
+    var images = [];
+    var videos = [];
+    var files = [];
+
     if (test['image'].length != 0) {
       a = test['image'];
       for (var i = 0; i < a.length; i++) {
         await uploadPatientPhoto(
             a[i]['filename'], a[i]['name'], category, userId);
+      }
+      for (var i = 0; i < a.length; i++) {
+        url = await getMediaURL(userId, category, 'images', a[i]['name']);
+        print(url);
+        images.add({'name': a[i]['name'], 'url': url});
       }
     }
 
@@ -481,6 +506,10 @@ class PatientData {
         await uploadPatientVideo(
             a[i]['filename'], a[i]['name'], category, userId);
       }
+      for (var i = 0; i < a.length; i++) {
+        url = await getMediaURL(userId, category, 'videos', a[i]['name']);
+        videos.add({'name': a[i]['name'], 'url': url});
+      }
     }
 
     if (test['file'].length != 0) {
@@ -489,72 +518,62 @@ class PatientData {
         await uploadPatientFile(
             a[i]['filename'], a[i]['name'], category, userId);
       }
+      for (var i = 0; i < a.length; i++) {
+        url = await getMediaURL(userId, category, 'files', a[i]['name']);
+        files.add({'name': a[i]['name'], 'url': url});
+      }
+    }
+
+    var media = {'images': images, 'videos': videos, 'files': files};
+    return media;
+    // saveMediaURL(patientId, category, categoryDocumentId, filename);
+  }
+
+  Future saveMediaURL(
+      String patientId, String category, String categoryDocumentId) async {
+    await FirebaseFirestore.instance
+        .collection('Patient/$patientId/$category')
+        .doc(categoryDocumentId)
+        .update({
+      'media': {'images'}
+    });
+  }
+
+  Future<void> uploadPatientVideo(
+      File filepath, String name, String category, String userId) async {
+    try {
+      String t = 'Patient/$userId/$category/videos/$name';
+      await firebase_storage.FirebaseStorage.instance.ref(t).putFile(filepath);
+      print("File Uploaded Successfully");
+    } on firebase_core.FirebaseException catch (e) {
+      print("This is an exception");
+      print(e);
     }
   }
 
-Future<void> uploadPatientVideo(
-    File filepath, String name, String category, String userId) async {
-  try {
-    String t = 'Patient/$userId/$category/videos/$name';
-    await firebase_storage.FirebaseStorage.instance.ref(t).putFile(filepath);
-    print("File Uploaded Successfully");
-  } on firebase_core.FirebaseException catch (e) {
-    print("This is an exception");
-    print(e);
+  Future<void> uploadPatientFile(
+      File filepath, String name, String category, String userId) async {
+    try {
+      await firebase_storage.FirebaseStorage.instance
+          .ref('Patient/$userId/$category/files/$name')
+          .putFile(filepath);
+      print("File Uploaded Successfully");
+    } on firebase_core.FirebaseException catch (e) {
+      print(e);
+    }
   }
-}
 
-Future<void> uploadPatientFile(
-    File filepath, String name, String category, String userId) async {
-  try {
-    await firebase_storage.FirebaseStorage.instance
-        .ref('Patient/$userId/$category/files/$name')
-        .putFile(filepath);
-    print("File Uploaded Successfully");
-  } on firebase_core.FirebaseException catch (e) {
-    print(e);
-  }
-}
-
-_imgfromCamera() async {
-    ImagePicker picker = ImagePicker();
-    final pickerfile =
-        await picker.getImage(source: ImageSource.camera, imageQuality: 50);
-    PatientData.media = pickerfile;
-}
-
-_imgfromgallery() async {
-    ImagePicker picker = ImagePicker();
-
-    final galleryimage =
-        await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
-    PatientData.media = galleryimage;
-}
-
-  void showpicker(context) {
-    PatientData patient = PatientData();
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return SafeArea(
-              child: Container(
-                  child: Wrap(children: <Widget>[
-            ListTile(
-                leading: Icon(Icons.photo_library),
-                title: Text("PhotoGallery"),
-                onTap: () async {
-                  patient._imgfromgallery();
-                  Navigator.of(context).pop();
-                }),
-            ListTile(
-                leading: Icon(Icons.photo_camera),
-                title: Text("Camera"),
-                onTap: () {
-                  patient._imgfromCamera();
-                  Navigator.of(context).pop();
-                }),
-          ])));
-        });
+  Future getMediaURL(
+      String userId, String category, String filetype, String filename) async {
+    // files
+    try {
+      String downloadURL = await firebase_storage.FirebaseStorage.instance
+          .ref('Patient/$userId/$category/$filetype/$filename')
+          .getDownloadURL();
+      return downloadURL;
+    } catch (err) {
+      return 0;
+    }
   }
 
   Future<String> getProfileImageURL(String userId) async {
@@ -568,11 +587,15 @@ _imgfromgallery() async {
     }
   }
 
-  Future deleteProfileImageURL(String patientId) async {
+  Future deleteProfileImageURL(String patientId, String userId) async {
     try {
       await firebase_storage.FirebaseStorage.instance
-          .ref('profile_images/$patientId.png')
+          .ref('profile_images/$userId.png')
           .delete();
+      await FirebaseFirestore.instance
+          .collection('Patient')
+          .doc(patientId)
+          .update({'profileImageURL': null});
       return 1;
     } catch (e) {
       print("Error deleting Image");
@@ -593,7 +616,8 @@ _imgfromgallery() async {
           'phoneno': data['phoneno'],
           'insuranceno': data['insuranceno'],
           'address': data['address'],
-          'userid': data['userid']
+          'userid': data['userid'],
+          'profileImageURL':data['profileImageURL']
         })
         .then((value) {})
         .catchError((error) {});

@@ -40,7 +40,6 @@ class _PathologyScreenState extends State<PathologyScreen> {
   List images = [];
   List videos = [];
   List files = [];
-  var names = {'images': [], 'videos': [], 'files': []};
 
   @override
   void initState() {
@@ -294,9 +293,6 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                     if (result != null) {
                                       images = await _patientData
                                           .prepareFiles(result.paths);
-                                      for (var i = 0; i < images.length; i++) {
-                                        names['images'].add(images[i]['name']);
-                                      }
                                     } else {
                                       print("Error");
                                     }
@@ -316,9 +312,6 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                     if (result != null) {
                                       videos = await _patientData
                                           .prepareFiles(result.paths);
-                                      for (var i = 0; i < videos.length; i++) {
-                                        names['videos'].add(videos[i]['name']);
-                                      }
                                     } else {
                                       print("Error");
                                     }
@@ -339,9 +332,6 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                     if (result != null) {
                                       files = await _patientData
                                           .prepareFiles(result.paths);
-                                      for (var i = 0; i < files.length; i++) {
-                                        names['files'].add(files[i]['name']);
-                                      }
                                     } else {
                                       print("Error");
                                     }
@@ -358,20 +348,6 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                 primary: Colors.deepPurple),
                             onPressed: () async {
                               if (formkey.currentState.validate()) {
-                                await _patientData.addPathologyData(patientId, {
-                                  'title': title,
-                                  'result': result,
-                                  'doctor': doctor,
-                                  'date':
-                                      "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                  'place': place,
-                                  "media": names
-                                });
-                                _patientData.uploadMediaFiles({
-                                  'image': images,
-                                  'video': videos,
-                                  'file': files
-                                }, category, userId);
                                 Fluttertoast.showToast(
                                     msg: "Data Saved",
                                     toastLength: Toast.LENGTH_LONG,
@@ -381,6 +357,20 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                     fontSize: 15,
                                     timeInSecForIosWeb: 1);
                                 Navigator.pop(context);
+                                var data = await _patientData.uploadMediaFiles({
+                                  'image': images,
+                                  'video': videos,
+                                  'file': files
+                                }, category, userId);
+                                await _patientData.addPathologyData(patientId, {
+                                  'title': title,
+                                  'result': result,
+                                  'doctor': doctor,
+                                  'date':
+                                      "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                  'place': place,
+                                  "media": data
+                                });
                               } else {}
                             },
                             child: Text(
@@ -398,7 +388,8 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                         PhotoGrid(
                                             image: images,
                                             video: videos,
-                                            file: files)));
+                                            file: files,
+                                            filetype: "new")));
                           },
                           fillColor: Colors.deepPurple,
                           splashColor: Colors.white,
@@ -441,13 +432,15 @@ class _PathologyScreenState extends State<PathologyScreen> {
                         children:
                             snapshot.data.docs.map((DocumentSnapshot document) {
                           return PathologyList(
-                              title: document.data()['title'],
-                              result: document.data()['result'],
-                              doctor: document.data()['doctor'],
-                              place: document.data()['place'],
-                              date: document.data()['date'],
-                              patientId: patientId,
-                              recordId: document.id);
+                            title: document.data()['title'],
+                            result: document.data()['result'],
+                            doctor: document.data()['doctor'],
+                            place: document.data()['place'],
+                            date: document.data()['date'],
+                            patientId: patientId,
+                            recordId: document.id,
+                            media: document.data()['media'],
+                          );
                         }).toList(),
                       );
                     },

@@ -21,7 +21,6 @@ class _PatientFormState extends State<PatientForm> {
   ImagePicker picker = ImagePicker();
   PickedFile _image;
   PatientData patientData = PatientData();
-  static String imageURL;
   static var patientInfo = Map<String, dynamic>();
 
   Future convertDate(String date) async {
@@ -44,13 +43,14 @@ class _PatientFormState extends State<PatientForm> {
   String address = " ";
   String name = " ";
   String email = " ";
-
+  String profileImageURL;
   @override
   void initState() {
     super.initState();
     patientData.getPatientInfo(patientId).then((value) {
       setState(() {
         patientInfo = value;
+        profileImageURL = patientInfo['profileImageURL'];
         userId = patientInfo['userid'];
         email = patientInfo['email'];
         name = patientInfo['name'];
@@ -67,11 +67,6 @@ class _PatientFormState extends State<PatientForm> {
       convertDate(patientInfo['dateofbirth']).then((value) {
         setState(() {
           selecteddate = DateTime.parse(value);
-        });
-      });
-      patientData.getProfileImageURL(userId).then((value) {
-        setState(() {
-          imageURL = value;
         });
       });
     });
@@ -197,12 +192,12 @@ class _PatientFormState extends State<PatientForm> {
                                                 BorderRadius.circular(100)),
                                         width: 140,
                                         height: 140,
-                                        child: imageURL != null
+                                        child: profileImageURL != null
                                             ? ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(100),
                                                 child: Image.network(
-                                                  imageURL,
+                                                  profileImageURL,
                                                   width: 140,
                                                   height: 140,
                                                   fit: BoxFit.fill,
@@ -217,7 +212,8 @@ class _PatientFormState extends State<PatientForm> {
                             )),
                         ElevatedButton(
                             onPressed: () async {
-                              await patientData.deleteProfileImageURL(userId);
+                              await patientData.deleteProfileImageURL(
+                                  patientId, userId);
                               setState(() {
                                 _image = null;
                               });
@@ -617,6 +613,23 @@ class _PatientFormState extends State<PatientForm> {
                                       onPressed: () async {
                                         if (patientupdateformkey.currentState
                                             .validate()) {
+                                          Navigator.pop(context);
+                                          Fluttertoast.showToast(
+                                              msg: "Data Updated",
+                                              toastLength: Toast.LENGTH_LONG,
+                                              gravity: ToastGravity.SNACKBAR,
+                                              backgroundColor: Colors.grey,
+                                              textColor: Colors.white,
+                                              fontSize: 15,
+                                              timeInSecForIosWeb: 1);
+                                          Navigator.pop(context);
+                                          var profileImageURL;
+                                          if (_image != null) {
+                                            profileImageURL =
+                                                await patientData.updateFile(
+                                                    File(_image.path),
+                                                    '$userId');
+                                          }
                                           await patientData
                                               .updatePatientinfo(patientId, {
                                             'name': name,
@@ -631,22 +644,9 @@ class _PatientFormState extends State<PatientForm> {
                                             'bloodgroup': bloodgroup,
                                             'phoneno': contact,
                                             'insuranceno': insuranceno,
-                                            'address': address
+                                            'address': address,
+                                            'profileImageURL': profileImageURL
                                           });
-                                          if (_image != null) {
-                                            patientData.updateFile(
-                                                File(_image.path), '$userId');
-                                          }
-                                          Navigator.pop(context);
-                                          Navigator.pop(context);
-                                          return Fluttertoast.showToast(
-                                              msg: "Data Updated",
-                                              toastLength: Toast.LENGTH_LONG,
-                                              gravity: ToastGravity.SNACKBAR,
-                                              backgroundColor: Colors.grey,
-                                              textColor: Colors.white,
-                                              fontSize: 15,
-                                              timeInSecForIosWeb: 1);
                                         }
                                       },
                                       child: Text(

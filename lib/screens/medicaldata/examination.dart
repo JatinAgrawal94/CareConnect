@@ -513,6 +513,22 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                               ElevatedButton(
                                   onPressed: () async {
                                     if (formkey.currentState.validate()) {
+                                      Fluttertoast.showToast(
+                                          msg: "Data Saved",
+                                          toastLength: Toast.LENGTH_LONG,
+                                          gravity: ToastGravity.SNACKBAR,
+                                          backgroundColor: Colors.grey,
+                                          textColor: Colors.white,
+                                          fontSize: 15,
+                                          timeInSecForIosWeb: 1);
+                                      Navigator.pop(context);
+                                      var data = await _patientData
+                                          .uploadMediaFiles({
+                                        'image': images,
+                                        'video': videos,
+                                        'file': files
+                                      }, category, userId);
+
                                       _patientData.addExamination(patientId, {
                                         'temperature': temperature,
                                         'weight': weight,
@@ -524,24 +540,8 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                         'place': place,
                                         'date':
                                             "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                        "media": names
+                                        "media": data
                                       });
-
-                                      _patientData.uploadMediaFiles({
-                                        'image': images,
-                                        'video': videos,
-                                        'file': files
-                                      }, category, userId);
-
-                                      Fluttertoast.showToast(
-                                          msg: "Data Saved",
-                                          toastLength: Toast.LENGTH_LONG,
-                                          gravity: ToastGravity.SNACKBAR,
-                                          backgroundColor: Colors.grey,
-                                          textColor: Colors.white,
-                                          fontSize: 15,
-                                          timeInSecForIosWeb: 1);
-                                      Navigator.pop(context);
                                     } else {}
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -560,7 +560,8 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                               PhotoGrid(
                                                   image: images,
                                                   video: videos,
-                                                  file: files)));
+                                                  file: files,
+                                                  filetype: "new")));
                                 },
                                 fillColor: Colors.deepPurple,
                                 splashColor: Colors.white,
@@ -603,18 +604,18 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                       children:
                           snapshot.data.docs.map((DocumentSnapshot document) {
                         return ExaminationList(
-                          temperature: document.data()['temperature'],
-                          weight: document.data()['temperature'],
-                          height: document.data()['height'],
-                          symptoms: document.data()['symptoms'],
-                          diagnosis: document.data()['diagnosis'],
-                          notes: document.data()['notes'],
-                          doctor: document.data()['doctor'],
-                          date: document.data()['date'],
-                          place: document.data()['place'],
-                          recordId: document.id,
-                          patientId: patientId,
-                        );
+                            temperature: document.data()['temperature'],
+                            weight: document.data()['temperature'],
+                            height: document.data()['height'],
+                            symptoms: document.data()['symptoms'],
+                            diagnosis: document.data()['diagnosis'],
+                            notes: document.data()['notes'],
+                            doctor: document.data()['doctor'],
+                            date: document.data()['date'],
+                            place: document.data()['place'],
+                            recordId: document.id,
+                            patientId: patientId,
+                            media: document.data()['media']);
                       }).toList(),
                     );
                   },

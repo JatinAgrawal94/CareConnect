@@ -40,12 +40,8 @@ class _AboutScreenState extends State<AboutScreen> {
     _patientData.getPatientInfo(this.patientId).then((value) {
       setState(() {
         patientInfo = value;
+        imageURL = patientInfo['profileImageURL'];
         userId = patientInfo['userid'];
-      });
-      _patientData.getProfileImageURL(userId).then((value) {
-        setState(() {
-          imageURL = value;
-        });
       });
     });
   }

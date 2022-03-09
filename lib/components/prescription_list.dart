@@ -1,3 +1,4 @@
+import 'package:careconnect/components/photogrid.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +10,7 @@ class PrescriptionList extends StatefulWidget {
   final timing;
   final String patientId;
   final String prescriptionId;
-
+  final dynamic media;
   PrescriptionList(
       {Key key,
       this.drug,
@@ -18,7 +19,8 @@ class PrescriptionList extends StatefulWidget {
       this.date,
       this.timing,
       this.patientId,
-      this.prescriptionId})
+      this.prescriptionId,
+      this.media})
       : super(key: key);
 
   @override
@@ -29,7 +31,8 @@ class PrescriptionList extends StatefulWidget {
       this.date,
       this.timing,
       this.patientId,
-      this.prescriptionId);
+      this.prescriptionId,
+      this.media);
 }
 
 class _PrescriptionListState extends State<PrescriptionList> {
@@ -37,12 +40,13 @@ class _PrescriptionListState extends State<PrescriptionList> {
   final String dose;
   final String doctor;
   final String date;
+  final dynamic media;
   final timing;
   final String patientId;
   final String prescriptionId;
   PatientData _patient = PatientData();
   _PrescriptionListState(this.drug, this.dose, this.doctor, this.date,
-      this.timing, this.patientId, this.prescriptionId);
+      this.timing, this.patientId, this.prescriptionId, this.media);
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +80,43 @@ class _PrescriptionListState extends State<PrescriptionList> {
                 "Timings:" + timing[0] + " - " + timing[1] + " - " + timing[2],
                 style: TextStyle(fontSize: 16),
               ),
+              (media['images'].length == 0 &&
+                      media['videos'].length == 0 &&
+                      media['files'].length == 0)
+                  ? Text("")
+                  : RawMaterialButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) => PhotoGrid(
+                                      image: media['images'],
+                                      video: media['videos'],
+                                      file: media['files'],
+                                      filetype: "record",
+                                    )));
+                      },
+                      fillColor: Colors.deepPurple,
+                      splashColor: Colors.white,
+                      child: Container(
+                          child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "View",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Icon(
+                            Icons.arrow_right,
+                            color: Colors.white,
+                          )
+                        ],
+                      )),
+                    ),
             ],
           ),
           Column(children: <Widget>[

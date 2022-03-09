@@ -1,3 +1,4 @@
+import 'package:careconnect/components/photogrid.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 
@@ -10,6 +11,7 @@ class LabTestList extends StatefulWidget {
   final String date;
   final String patientId;
   final String recordId;
+  final dynamic media;
   LabTestList(
       {Key key,
       this.test,
@@ -19,7 +21,8 @@ class LabTestList extends StatefulWidget {
       this.date,
       this.doctor,
       this.patientId,
-      this.recordId})
+      this.recordId,
+      this.media})
       : super(key: key);
 
   @override
@@ -31,7 +34,8 @@ class LabTestList extends StatefulWidget {
       this.date,
       this.doctor,
       this.patientId,
-      this.recordId);
+      this.recordId,
+      this.media);
 }
 
 class _LabTestListState extends State<LabTestList> {
@@ -42,11 +46,12 @@ class _LabTestListState extends State<LabTestList> {
   final String place;
   final String date;
   final String patientId;
+  final dynamic media;
   final String recordId;
   PatientData _patientData = PatientData();
 
   _LabTestListState(this.test, this.result, this.normal, this.place, this.date,
-      this.doctor, this.patientId, this.recordId);
+      this.doctor, this.patientId, this.recordId, this.media);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -71,6 +76,44 @@ class _LabTestListState extends State<LabTestList> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
+                          (media['images'].length == 0 &&
+                                  media['videos'].length == 0 &&
+                                  media['files'].length == 0)
+                              ? Text("")
+                              : RawMaterialButton(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5)),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                PhotoGrid(
+                                                  image: media['images'],
+                                                  video: media['videos'],
+                                                  file: media['files'],
+                                                  filetype: "record",
+                                                )));
+                                  },
+                                  fillColor: Colors.deepPurple,
+                                  splashColor: Colors.white,
+                                  child: Container(
+                                      child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "View",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Icon(
+                                        Icons.arrow_right,
+                                        color: Colors.white,
+                                      )
+                                    ],
+                                  )),
+                                ),
                           IconButton(
                             onPressed: () async {
                               await _patientData.deleteAnyPatientRecord(

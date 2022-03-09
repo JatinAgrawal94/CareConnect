@@ -6,12 +6,14 @@ class DoctorListTile extends StatefulWidget {
   final String name;
   final String userId;
   final String documentId;
-  DoctorListTile({Key key, this.name, this.userId, this.documentId})
+  final String profileImageURL;
+  DoctorListTile(
+      {Key key, this.name, this.userId, this.documentId, this.profileImageURL})
       : super(key: key);
 
   @override
-  State<DoctorListTile> createState() =>
-      _DoctorListTileState(this.name, this.userId, this.documentId);
+  State<DoctorListTile> createState() => _DoctorListTileState(
+      this.name, this.userId, this.documentId, this.profileImageURL);
 }
 
 class _DoctorListTileState extends State<DoctorListTile> {
@@ -20,27 +22,29 @@ class _DoctorListTileState extends State<DoctorListTile> {
   String userId;
   String documentId;
   String image;
-  _DoctorListTileState(this.name, this.userId, this.documentId);
+  final String profileImageURL;
+  _DoctorListTileState(
+      this.name, this.userId, this.documentId, this.profileImageURL);
   @override
   void initState() {
     super.initState();
-    _doctorData.getProfileImageURL(userId).then((value) {
-      setState(() {
-        image = value;
-      });
-    });
+    // _doctorData.getProfileImageURL(userId).then((value) {
+    //   setState(() {
+    //     image = value;
+    //   });
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: ListTile(
-        leading: image == null
+        leading: profileImageURL == null
             ? Icon(Icons.person, size: 40)
             : ClipRRect(
                 borderRadius: BorderRadius.circular(100),
                 child: Image.network(
-                  image,
+                  profileImageURL,
                   width: 55,
                   height: 55,
                   fit: BoxFit.fill,

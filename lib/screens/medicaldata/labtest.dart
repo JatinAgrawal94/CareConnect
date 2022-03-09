@@ -32,7 +32,6 @@ class _LabTestScreenState extends State<LabTestScreen> {
   List images = [];
   List videos = [];
   List files = [];
-  var names = {'images': [], 'videos': [], 'files': []};
   _LabTestScreenState(this.patientId, this.userId);
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   PatientData _patientData = PatientData();
@@ -302,9 +301,6 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                     if (result != null) {
                                       images = await _patientData
                                           .prepareFiles(result.paths);
-                                      for (var i = 0; i < images.length; i++) {
-                                        names['images'].add(images[i]['name']);
-                                      }
                                     } else {
                                       print("Error");
                                     }
@@ -324,9 +320,6 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                     if (result != null) {
                                       videos = await _patientData
                                           .prepareFiles(result.paths);
-                                      for (var i = 0; i < videos.length; i++) {
-                                        names['videos'].add(videos[i]['name']);
-                                      }
                                     } else {
                                       print("Error");
                                     }
@@ -344,9 +337,6 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                     if (result != null) {
                                       files = await _patientData
                                           .prepareFiles(result.paths);
-                                      for (var i = 0; i < files.length; i++) {
-                                        names['files'].add(files[i]['name']);
-                                      }
                                     } else {
                                       print("Error");
                                     }
@@ -363,21 +353,6 @@ class _LabTestScreenState extends State<LabTestScreen> {
                               primary: Colors.deepPurple),
                           onPressed: () async {
                             if (formkey.currentState.validate()) {
-                              await _patientData.addLabTest(patientId, {
-                                'test': test,
-                                'result': result,
-                                'normal': normal,
-                                'doctor': doctor,
-                                'place': place,
-                                'date':
-                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                "media": names
-                              });
-                              _patientData.uploadMediaFiles({
-                                'image': images,
-                                'video': videos,
-                                'file': files
-                              }, category, userId);
                               Fluttertoast.showToast(
                                   msg: "Data Saved",
                                   toastLength: Toast.LENGTH_LONG,
@@ -387,6 +362,21 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                   fontSize: 15,
                                   timeInSecForIosWeb: 1);
                               Navigator.pop(context);
+                              var data = await _patientData.uploadMediaFiles({
+                                'image': images,
+                                'video': videos,
+                                'file': files
+                              }, category, userId);
+                              await _patientData.addLabTest(patientId, {
+                                'test': test,
+                                'result': result,
+                                'normal': normal,
+                                'doctor': doctor,
+                                'place': place,
+                                'date':
+                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                "media": data
+                              });
                             } else {}
                           },
                           child: Text("Save"),
@@ -402,7 +392,8 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                         PhotoGrid(
                                             image: images,
                                             video: videos,
-                                            file: files)));
+                                            file: files,
+                                            filetype: "new")));
                           },
                           fillColor: Colors.deepPurple,
                           splashColor: Colors.white,
@@ -451,7 +442,8 @@ class _LabTestScreenState extends State<LabTestScreen> {
                             place: document.data()['place'],
                             date: document.data()['date'],
                             patientId: patientId,
-                            recordId: document.id);
+                            recordId: document.id,
+                            media: document.data()['media']);
                       }).toList(),
                     );
                   },
