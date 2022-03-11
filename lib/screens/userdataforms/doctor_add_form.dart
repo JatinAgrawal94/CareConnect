@@ -1,4 +1,5 @@
 import 'package:careconnect/services/auth.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,7 +20,7 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
   PickedFile _image;
   PatientData patientData = PatientData();
   DoctorData doctorData = DoctorData();
-  String _doctorUserId;
+  GeneralFunctions general = GeneralFunctions();
   String documentId = '';
   static String imageURL;
   static var patientInfo = Map<String, dynamic>();
@@ -37,18 +38,6 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
   String email = "";
   String doctype = "";
   String appointmentTimings = "";
-
-  @override
-  void initState() {
-    super.initState();
-    doctorData.getNoOfDoctors().then((value) {
-      setState(() {
-        _doctorUserId = value[0]['noofdoctors'];
-        _doctorUserId = (int.parse(_doctorUserId) + 1).toString();
-        documentId = value[0]['documentid'];
-      });
-    });
-  }
 
   _imgfromCamera() async {
     final pickerfile =
@@ -630,10 +619,12 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                   onPressed: () async {
                                     if (doctoraddformkey.currentState
                                         .validate()) {
-                                      final result =
-                                          await auth.registerUser(email);
+                                      final result = await auth.createNewUser(
+                                          email, 'doctor', contact);
 
-                                      if (result['msg'] == 'user-created') {
+                                      if (result['code'] ==
+                                              "auth/created-new-user" &&
+                                          result['message'] == 'User created') {
                                         Navigator.pop(context);
                                         Fluttertoast.showToast(
                                             msg: "Doctor Added",
@@ -646,11 +637,11 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                         var profileImageURL;
                                         if (_image != null) {
                                           profileImageURL =
-                                              await doctorData.uploadFile(
+                                              await general.uploadProfileImage(
                                                   File(_image.path),
-                                                  _doctorUserId);
+                                                  result['userid']);
                                         }
-                                        await doctorData.addDoctor({
+                                        await auth.addUser('Doctor',{
                                           'name': name,
                                           'email': email,
                                           'dateofbirth':
@@ -666,13 +657,9 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                           'doctype': doctype,
                                           'timing': appointmentTimings,
                                           'address': address,
-                                          'userid': 'D$_doctorUserId',
+                                          'userid': result['userid'],
                                           'profileImageURL': profileImageURL
                                         });
-                                        doctorData.increementNoOfDoctors(
-                                            documentId, _doctorUserId);
-                                        await auth.sendMails(
-                                            email, result['password']);
                                       } else {
                                         Fluttertoast.showToast(
                                             msg: result['msg'],

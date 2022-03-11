@@ -1,3 +1,4 @@
+import 'package:careconnect/services/general.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,7 +21,7 @@ class _PatientAddFormState extends State<PatientAddForm> {
   String _patientId;
   static String imageURL;
   static var patientInfo = Map<String, dynamic>();
-
+  GeneralFunctions general = GeneralFunctions();
   DateTime selecteddate = DateTime.now();
   String documentId = 's';
   int gender = patientInfo['gender'] == 'Male'
@@ -35,17 +36,6 @@ class _PatientAddFormState extends State<PatientAddForm> {
   String name = "";
   String email = "";
 
-  @override
-  void initState() {
-    super.initState();
-    patientData.getNoOfPatients().then((value) {
-      setState(() {
-        _patientId = value[0]['noofpatients'];
-        _patientId = (int.parse(_patientId) + 1).toString();
-        documentId = value[0]['documentid'];
-      });
-    });
-  }
 
   _imgfromCamera() async {
     final pickerfile =
@@ -535,9 +525,11 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                   onPressed: () async {
                                     if (patientaddformkey.currentState
                                         .validate()) {
-                                      final result =
-                                          await auth.registerUser(email);
-                                      if (result['msg'] == 'user-created') {
+                                      final result = await auth.createNewUser(
+                                          email, 'patient', contact);
+                                      if (result['code'] ==
+                                              "auth/created-new-user" &&
+                                          result['message'] == 'User created') {
                                         var profileURL;
                                         Navigator.pop(context);
                                         Fluttertoast.showToast(
@@ -550,11 +542,11 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                             timeInSecForIosWeb: 1);
                                         if (_image != null) {
                                           profileURL =
-                                              await patientData.uploadFile(
+                                              await general.uploadProfileImage(
                                                   File(_image.path),
-                                                  _patientId);
+                                                   result['userid']);
                                         }
-                                        await patientData.addPatient({
+                                        await auth.addUser('Patient', {
                                           'name': name,
                                           'email': email,
                                           'dateofbirth':
@@ -568,17 +560,12 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                           'phoneno': contact,
                                           'insuranceno': insuranceno,
                                           'address': address,
-                                          'userid': 'P$_patientId',
-                                          'profileImageURL': profileURL
+                                          'userid':result['userid'],
+                                          'profileImageURL': profileURL,
                                         });
-                                        patientData.increementNoOfPatients(
-                                            documentId, _patientId);
-
-                                        await auth.sendMails(
-                                            email, result['password']);
                                       } else {
                                         Fluttertoast.showToast(
-                                            msg: result['msg'],
+                                            msg: result['message'],
                                             toastLength: Toast.LENGTH_LONG,
                                             gravity: ToastGravity.SNACKBAR,
                                             backgroundColor: Colors.grey,

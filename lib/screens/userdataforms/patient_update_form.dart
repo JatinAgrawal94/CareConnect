@@ -1,4 +1,5 @@
 import 'package:careconnect/components/loading.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,6 +22,7 @@ class _PatientFormState extends State<PatientForm> {
   ImagePicker picker = ImagePicker();
   PickedFile _image;
   PatientData patientData = PatientData();
+  GeneralFunctions general = GeneralFunctions();
   static var patientInfo = Map<String, dynamic>();
 
   Future convertDate(String date) async {
@@ -47,7 +49,7 @@ class _PatientFormState extends State<PatientForm> {
   @override
   void initState() {
     super.initState();
-    patientData.getPatientInfo(patientId).then((value) {
+    general.getUserInfo(patientId, 'Patient').then((value) {
       setState(() {
         patientInfo = value;
         profileImageURL = patientInfo['profileImageURL'];
@@ -210,17 +212,20 @@ class _PatientFormState extends State<PatientForm> {
                                       ),
                               )),
                             )),
-                        ElevatedButton(
-                            onPressed: () async {
-                              await patientData.deleteProfileImageURL(
-                                  patientId, userId);
-                              setState(() {
-                                _image = null;
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                                primary: Colors.deepPurple),
-                            child: Text("Remove Profile Photo"))
+                        profileImageURL != null
+                            ? ElevatedButton(
+                                onPressed: () async {
+                                  await general.deleteProfileImageURL(
+                                      patientId, userId, 'Patient');
+                                  setState(() {
+                                    _image = null;
+                                    profileImageURL = null;
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.deepPurple),
+                                child: Text("Remove Profile Photo"))
+                            : Text("")
                       ],
                     ),
 // --------------------------form begins here---------------------------------------//
@@ -623,30 +628,35 @@ class _PatientFormState extends State<PatientForm> {
                                               fontSize: 15,
                                               timeInSecForIosWeb: 1);
                                           Navigator.pop(context);
-                                          var profileImageURL;
+                                          String newProfileURL;
                                           if (_image != null) {
-                                            profileImageURL =
-                                                await patientData.updateFile(
+                                            newProfileURL = await general
+                                                .uploadProfileImage(
                                                     File(_image.path),
                                                     '$userId');
                                           }
-                                          await patientData
-                                              .updatePatientinfo(patientId, {
-                                            'name': name,
-                                            'email': email,
-                                            'dateofbirth':
-                                                "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                            'gender': gender == 0
-                                                ? 'Male'
-                                                : gender == 1
-                                                    ? 'Female'
-                                                    : 'Other',
-                                            'bloodgroup': bloodgroup,
-                                            'phoneno': contact,
-                                            'insuranceno': insuranceno,
-                                            'address': address,
-                                            'profileImageURL': profileImageURL
-                                          });
+                                          await general.updateUserinfo(
+                                              patientId,
+                                              {
+                                                'name': name,
+                                                'email': email,
+                                                'dateofbirth':
+                                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                                'gender': gender == 0
+                                                    ? 'Male'
+                                                    : gender == 1
+                                                        ? 'Female'
+                                                        : 'Other',
+                                                'bloodgroup': bloodgroup,
+                                                'phoneno': contact,
+                                                'insuranceno': insuranceno,
+                                                'address': address,
+                                                'profileImageURL':
+                                                    newProfileURL == null
+                                                        ? profileImageURL
+                                                        : newProfileURL
+                                              },
+                                              'Patient');
                                         }
                                       },
                                       child: Text(

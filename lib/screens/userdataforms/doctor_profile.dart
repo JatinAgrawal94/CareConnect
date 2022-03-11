@@ -2,6 +2,7 @@ import 'package:careconnect/models/registereduser.dart';
 import 'package:careconnect/screens/userdataforms/doctor_update_form.dart';
 import 'package:careconnect/services/auth.dart';
 import 'package:careconnect/services/doctorData.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:careconnect/components/loading.dart';
@@ -18,6 +19,7 @@ class DoctorProfile extends StatefulWidget {
 class _DoctorProfileState extends State<DoctorProfile> {
   DoctorData _doctorData = DoctorData();
   AuthService auth = AuthService();
+  GeneralFunctions general = GeneralFunctions();
   final String doctorId;
   String userId;
   var user;
@@ -36,15 +38,11 @@ class _DoctorProfileState extends State<DoctorProfile> {
   @override
   void initState() {
     super.initState();
-    _doctorData.getDoctorInfo(doctorId).then((value) {
+    general.getUserInfo(doctorId, 'Doctor').then((value) {
       setState(() {
         doctorInfo = value;
         userId = doctorInfo['userid'];
-      });
-      _doctorData.getProfileImageURL(userId).then((value) {
-        setState(() {
-          imageURL = value;
-        });
+        imageURL = doctorInfo['profileImageURL'];
       });
     });
   }

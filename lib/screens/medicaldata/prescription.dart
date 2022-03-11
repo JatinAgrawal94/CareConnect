@@ -1,8 +1,8 @@
 import 'package:careconnect/components/photogrid.dart';
 import 'package:careconnect/components/prescription_list.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
-import 'package:careconnect/services/doctordata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,7 +35,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   List<String> data = [];
   _PrescriptionScreenState(this.patientId, this.userId);
   PatientData _patientData = PatientData();
-  DoctorData _doctorData = DoctorData();
+  GeneralFunctions general = GeneralFunctions();
   CollectionReference prescription;
   List images = [];
   List videos = [];
@@ -44,7 +44,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   @override
   void initState() {
     super.initState();
-    _doctorData.getAllDoctors().then((value) => {
+    general.getAllUser('doctor').then((value) => {
           value.forEach((item) {
             setState(() {
               data.add(item['name']);

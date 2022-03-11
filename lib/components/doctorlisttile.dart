@@ -23,15 +23,6 @@ class _DoctorListTileState extends State<DoctorListTile> {
   final String profileImageURL;
   _DoctorListTileState(
       this.name, this.userId, this.documentId, this.profileImageURL);
-  @override
-  void initState() {
-    super.initState();
-    // _doctorData.getProfileImageURL(userId).then((value) {
-    //   setState(() {
-    //     image = value;
-    //   });
-    // });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +51,7 @@ class _DoctorListTileState extends State<DoctorListTile> {
                   builder: (context) => DoctorInfo(documentId: documentId)));
         },
       ),
-      decoration: BoxDecoration(border: Border.all(width: 0.3)),
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 0.3))),
     );
   }
 }

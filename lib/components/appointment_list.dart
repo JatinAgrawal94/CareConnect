@@ -1,3 +1,4 @@
+import 'package:careconnect/services/general.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -73,12 +74,12 @@ class _AppointmentListState extends State<AppointmentList> {
     this.zoomlink,
   );
 
-  PatientData _patientData = PatientData();
+  GeneralFunctions general = GeneralFunctions();
   List data = [];
   @override
   void initState() {
     super.initState();
-    _patientData.getDocsId(patientemail).then((value) {
+    general.getDocsId(patientemail, 'Patient').then((value) {
       setState(() => {
             data.add({'userid': value['userId'], 'phone': value['phoneno']})
           });

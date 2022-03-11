@@ -5,9 +5,8 @@ import 'package:careconnect/screens/userdataforms/admin_profile.dart';
 import 'package:careconnect/screens/userdataforms/doctor_add_form.dart';
 import 'package:careconnect/screens/userdataforms/patient_add_form.dart';
 import 'package:careconnect/services/auth.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:careconnect/services/admin_data.dart';
 
 class AdminHome extends StatefulWidget {
   final String email;
@@ -21,20 +20,79 @@ class _AdminHomeState extends State<AdminHome> {
   String email;
   _AdminHomeState(this.email);
   AuthService auth = AuthService();
-  AdminData _adminData = AdminData();
-  CollectionReference patientList =
-      FirebaseFirestore.instance.collection('Patient');
-  CollectionReference doctorList =
-      FirebaseFirestore.instance.collection('Doctor');
+  GeneralFunctions general = GeneralFunctions();
   static String adminDocumentId;
-
+  List patients = [];
+  List doctors = [];
   @override
   void initState() {
     super.initState();
-    _adminData.getDocsId(email).then((value) {
+    general.getAllUser('patient').then((value) {
+      value.forEach((element) => {
+            setState(() {
+              patients.add({
+                'name': element['name'],
+                'profileImageURL': element['profileImageURL'],
+                'documentid': element['documentid'],
+                'userid': element['userid']
+              });
+            })
+          });
+    });
+    general.getAllUser('doctor').then((value) {
+      value.forEach((element) => {
+            setState(() {
+              doctors.add({
+                'name': element['name'],
+                'profileImageURL': element['profileImageURL'],
+                'documentid': element['documentid'],
+                'userid': element['userid']
+              });
+            })
+          });
+    });
+    general.getDocsId(email, 'Admin').then((value) {
       setState(() {
-        adminDocumentId = value;
+        adminDocumentId = value['documentId'];
       });
+    });
+  }
+
+  Future loadDoctors() async {
+    var data = await general.getAllUser('doctor');
+    var result = [];
+    setState(() {
+      this.doctors = null;
+      data.forEach((element) => {
+            setState(() {
+              result.add({
+                'name': element['name'],
+                'profileImageURL': element['profileImageURL'],
+                'documentid': element['documentid'],
+                'userid': element['userid']
+              });
+            })
+          });
+      this.doctors = result;
+    });
+  }
+
+  Future loadPatients() async {
+    var data = await general.getAllUser('patient');
+    var result = [];
+    setState(() {
+      this.patients = null;
+      data.forEach((element) => {
+            setState(() {
+              result.add({
+                'name': element['name'],
+                'profileImageURL': element['profileImageURL'],
+                'documentid': element['documentid'],
+                'userid': element['userid']
+              });
+            })
+          });
+      this.patients = result;
     });
   }
 
@@ -119,54 +177,38 @@ class _AdminHomeState extends State<AdminHome> {
             ),
             body: TabBarView(
               children: [
-                Container(
-                  child: StreamBuilder<QuerySnapshot>(
-                      stream: patientList.snapshots(),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if (snapshot.hasError) {
-                          return Text("Something went wrong");
-                        }
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return LoadingHeart();
-                        }
-
-                        return new ListView(
-                            children: snapshot.data.docs
-                                .map((DocumentSnapshot document) {
-                          return PatientListTile(
-                              documentId: document.id,
-                              userId: document.data()['userid'],
-                              name: document.data()['name'],
-                              profileImageURL:
-                                  document.data()['profileImageURL']);
-                        }).toList());
-                      }),
-                ),
-                Container(
-                  child: StreamBuilder<QuerySnapshot>(
-                      stream: doctorList.snapshots(),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if (snapshot.hasError) {
-                          return Text("Something went wrong");
-                        }
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return LoadingHeart();
-                        }
-
-                        return new ListView(
-                            children: snapshot.data.docs
-                                .map((DocumentSnapshot document) {
-                          return DoctorListTile(
-                              documentId: document.id,
-                              name: document.data()['name'],
-                              userId: document.data()['userid']);
-                        }).toList());
-                      }),
-                )
+                patients.length == 0
+                    ? LoadingHeart()
+                    : Container(
+                        child: RefreshIndicator(
+                            color: Colors.deepPurple,
+                            onRefresh: loadPatients,
+                            child: ListView.builder(
+                                itemCount: patients.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return PatientListTile(
+                                      documentId: patients[index]['documentid'],
+                                      name: patients[index]['name'],
+                                      profileImageURL: patients[index]
+                                          ['profileImageURL'],
+                                      userId: patients[index]['userid']);
+                                }))),
+                doctors.length == 0
+                    ? LoadingHeart()
+                    : Container(
+                        child: RefreshIndicator(
+                            color: Colors.deepPurple,
+                            onRefresh: loadDoctors,
+                            child: ListView.builder(
+                                itemCount: doctors.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return DoctorListTile(
+                                      documentId: doctors[index]['documentid'],
+                                      name: doctors[index]['name'],
+                                      profileImageURL: doctors[index]
+                                          ['profileImageURL'],
+                                      userId: doctors[index]['userid']);
+                                })))
               ],
             )));
   }

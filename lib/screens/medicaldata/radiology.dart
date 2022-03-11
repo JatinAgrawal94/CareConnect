@@ -1,6 +1,6 @@
 import 'package:careconnect/components/photogrid.dart';
 import 'package:careconnect/components/radiology_list.dart';
-import 'package:careconnect/services/doctorData.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:careconnect/components/loading.dart';
@@ -31,8 +31,8 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
   _RadiologyScreenState(this.patientId, this.userId);
   DateTime selecteddate = DateTime.now();
   PatientData _patientData = PatientData();
+  GeneralFunctions general = GeneralFunctions();
   CollectionReference radiology;
-  DoctorData _doctorData = DoctorData();
   List<String> data = [];
   List images = [];
   List videos = [];
@@ -41,7 +41,7 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
   @override
   void initState() {
     super.initState();
-    _doctorData.getAllDoctors().then((value) => {
+    general.getAllUser('doctor').then((value) => {
           value.forEach((item) {
             setState(() {
               data.add(item['name']);

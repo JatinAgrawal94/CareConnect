@@ -1,7 +1,7 @@
 import 'package:careconnect/components/labtest_list.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/components/photogrid.dart';
-import 'package:careconnect/services/doctorData.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,14 +35,14 @@ class _LabTestScreenState extends State<LabTestScreen> {
   _LabTestScreenState(this.patientId, this.userId);
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   PatientData _patientData = PatientData();
-  DoctorData _doctorData = DoctorData();
+  GeneralFunctions general = GeneralFunctions();
   CollectionReference labtest;
   DateTime selecteddate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    _doctorData.getAllDoctors().then((value) => {
+    general.getAllUser('doctor').then((value) => {
           value.forEach((item) {
             setState(() {
               data.add(item['name']);

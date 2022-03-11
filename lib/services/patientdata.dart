@@ -90,79 +90,6 @@ class PatientData {
   }
 
 // Reading Data for About Page,medicaldata/about_screen.dart
-//
-
-  Future getNoOfPatients() async {
-    List data = [];
-    await FirebaseFirestore.instance
-        .collection('stats')
-        .get()
-        .then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) {
-        data.add({
-          'noofpatients': element['noofpatients'],
-          'noofdoctors': element['noofdoctors'],
-          'documentid': element.id
-        });
-      });
-    });
-    return data;
-  }
-
-  Future increementNoOfPatients(documentid, noofpatients) async {
-    await FirebaseFirestore.instance
-        .collection('stats')
-        .doc(documentid)
-        .update({'noofpatients': noofpatients});
-  }
-
-  Future getPatientInfo(dynamic documentid) async {
-    try {
-      var url = Uri.parse(
-          'https://careconnect-api.herokuapp.com/patient/info?documentid=$documentid');
-      var response = await http.get(url);
-      var data = jsonDecode(response.body);
-      return data;
-    } catch (err) {
-      print(err);
-      return null;
-    }
-  }
-
-// update patientinfo
-  Future<void> updatePatientinfo(patientId, data) async {
-    CollectionReference patient =
-        FirebaseFirestore.instance.collection('Patient');
-    return await patient
-        .doc(patientId)
-        .update({
-          'name': data['name'],
-          'email': data['email'],
-          'dateofbirth': data['dateofbirth'],
-          'gender': data['gender'],
-          'bloodgroup': data['bloodgroup'],
-          'phoneno': data['phoneno'],
-          'insuranceno': data['insuranceno'],
-          'address': data['address'],
-          'profileImageURL': data['profileImageURL']
-        })
-        .then((value) {})
-        .catchError((error) {});
-  }
-
-  Future getAllergyData(String patientid) async {
-    List test = [];
-    await FirebaseFirestore.instance
-        .collection('Patient/$patientid/allergy')
-        .get()
-        .then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) {
-        test.add({'type': element['type'], 'date': element['date']});
-      });
-    });
-    return test;
-  }
-
   Future addMedicalData(String patientId, String category, data) async {
     try {
       var url = Uri.parse(
@@ -234,42 +161,6 @@ class PatientData {
         .delete()
         .then((value) => print("$category record Deleted"))
         .catchError((error) => print("Failed to delete prescription: $error"));
-  }
-
-  Future uploadFile(File filePath, String filename) async {
-    try {
-      if (filePath != null) {
-        await firebase_storage.FirebaseStorage.instance
-            .ref('profile_images/P$filename.png')
-            .putFile(filePath);
-        var url = await getProfileImageURL(filename);
-        print("File Uploaded Successfully");
-        return url;
-      } else {
-        return null;
-      }
-    } on firebase_core.FirebaseException catch (e) {
-      print(e);
-      return 0;
-    }
-  }
-
-  Future updateFile(File filePath, String filename) async {
-    try {
-      if (filePath != null) {
-        await firebase_storage.FirebaseStorage.instance
-            .ref('profile_images/$filename.png')
-            .putFile(filePath);
-        var url = await getProfileImageURL(filename);
-        print("File Uploaded Successfully");
-        return url;
-      } else {
-        return null;
-      }
-    } on firebase_core.FirebaseException catch (e) {
-      print(e);
-      return 0;
-    }
   }
 
   Future<void> uploadPatientPhoto(
@@ -384,68 +275,6 @@ class PatientData {
     }
   }
 
-  Future<String> getProfileImageURL(String userId) async {
-    try {
-      String downloadURL = await firebase_storage.FirebaseStorage.instance
-          .ref('profile_images/$userId.png')
-          .getDownloadURL();
-      return downloadURL;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  Future deleteProfileImageURL(String patientId, String userId) async {
-    try {
-      await firebase_storage.FirebaseStorage.instance
-          .ref('profile_images/$userId.png')
-          .delete();
-      await FirebaseFirestore.instance
-          .collection('Patient')
-          .doc(patientId)
-          .update({'profileImageURL': null});
-      return 1;
-    } catch (e) {
-      print("Error deleting Image");
-      return 0;
-    }
-  }
-
-  Future addPatient(data) async {
-    CollectionReference patient =
-        FirebaseFirestore.instance.collection('Patient');
-    await patient
-        .add({
-          'name': data['name'],
-          'email': data['email'],
-          'dateofbirth': data['dateofbirth'],
-          'gender': data['gender'],
-          'bloodgroup': data['bloodgroup'],
-          'phoneno': data['phoneno'],
-          'insuranceno': data['insuranceno'],
-          'address': data['address'],
-          'userid': data['userid'],
-          'profileImageURL': data['profileImageURL']
-        })
-        .then((value) {})
-        .catchError((error) {});
-
-    await FirebaseFirestore.instance.collection('users').add(
-        {'email': data['email'], 'role': 'patient', 'userid': data['userid']});
-  }
-
-  Future getDocsId(String email) async {
-    var url = Uri.parse(
-        'https://careconnect-api.herokuapp.com/patient/getdocsid?email=$email');
-    var response = await http.get(url);
-    var data = jsonDecode(response.body)[0];
-    return {
-      "documentId": data['documentid'],
-      "userId": data['userid'],
-      "phoneno": data['phoneno']
-    };
-  }
-
 // yet to be configured not ready to be used
   Future deletePatient(String patientId, String userId) async {
     var id;
@@ -471,20 +300,6 @@ class PatientData {
     user.doc(id).delete().then((value) {
       print("Patient Deleted");
     }).catchError((error) => print(error));
-  }
-
-  Future getPatientUserId(String patientId) async {
-    CollectionReference user = FirebaseFirestore.instance.collection('Patient');
-    String userId;
-    user
-        .where('userid', isEqualTo: userId)
-        .get()
-        .then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) {
-        userId = element['userid'];
-      });
-    });
-    return userId;
   }
 
   Future getVideoThumbnail(video) async {

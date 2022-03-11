@@ -39,11 +39,7 @@ class _AdminProfileState extends State<AdminProfile> {
       setState(() {
         adminInfo = value;
         userId = adminInfo['userid'];
-      });
-      _adminData.getProfileImageURL(userId).then((value) {
-        setState(() {
-          imageURL = value;
-        });
+        imageURL = adminInfo['profileImageURL'];
       });
     });
   }

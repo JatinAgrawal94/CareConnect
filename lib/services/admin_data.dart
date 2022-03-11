@@ -14,20 +14,6 @@ class AdminData {
     6: 'address'
   };
 
-  Future getDocsId(String email) async {
-    var id;
-    await FirebaseFirestore.instance
-        .collection('Admin')
-        .where('email', isEqualTo: email)
-        .get()
-        .then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) {
-        id = element.id;
-      });
-    });
-    return id;
-  }
-
   Future getAdminInfo(String adminId) async {
     var data = Map<String, dynamic>();
     await FirebaseFirestore.instance
@@ -38,40 +24,6 @@ class AdminData {
       data = snapshot.data();
     });
     return data;
-  }
-
-  Future<String> getProfileImageURL(String adminId) async {
-    try {
-      String downloadURL = await firebase_storage.FirebaseStorage.instance
-          .ref('profile_images/$adminId.png')
-          .getDownloadURL();
-      return downloadURL;
-    } catch (e) {
-      print("Error retrieving image");
-      return null;
-    }
-  }
-
-  Future<void> uploadFile(File filePath, String filename) async {
-    try {
-      await firebase_storage.FirebaseStorage.instance
-          .ref('profile_images/A$filename.png')
-          .putFile(filePath);
-      print("File Uploaded Successfully");
-    } on firebase_core.FirebaseException catch (e) {
-      print(e);
-    }
-  }
-
-  Future<void> updateFile(File filePath, String filename) async {
-    try {
-      await firebase_storage.FirebaseStorage.instance
-          .ref('profile_images/$filename.png')
-          .putFile(filePath);
-      print("File Uploaded Successfully");
-    } on firebase_core.FirebaseException catch (e) {
-      print(e);
-    }
   }
 
   Future<void> updateAdmininfo(adminId, data) async {
@@ -85,7 +37,8 @@ class AdminData {
           'gender': data['gender'],
           'bloodgroup': data['bloodgroup'],
           'contact': data['contact'],
-          'address': data['address']
+          'address': data['address'],
+          'profileImageURL': data['profileImageURL']
         })
         .then((value) {})
         .catchError((error) {});

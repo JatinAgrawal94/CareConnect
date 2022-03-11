@@ -1,4 +1,5 @@
 import 'package:careconnect/services/auth.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 
@@ -20,7 +21,7 @@ class _MedicalScreenState extends State<MedicalScreen> {
   bool patientScreen;
   final String userId;
   _MedicalScreenState(this.patientId, this.patientScreen, this.userId);
-
+  GeneralFunctions general = GeneralFunctions();
   PatientData _patientData = PatientData();
   AuthService auth = AuthService();
   String name = "Medical Data";
@@ -66,7 +67,7 @@ class _MedicalScreenState extends State<MedicalScreen> {
       patientScreen = patientScreen == null ? false : patientScreen;
     });
     if (patientScreen) {
-      _patientData.getPatientInfo(patientId).then((value) {
+      general.getUserInfo(patientId, 'Patient').then((value) {
         setState(() {
           name = value['name'];
         });

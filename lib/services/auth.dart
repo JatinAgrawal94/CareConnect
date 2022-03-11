@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:random_password_generator/random_password_generator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:careconnect/models/registereduser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mailgun/mailgun.dart';
+import 'package:http/http.dart' as http;
 
 class AuthService {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -20,7 +22,6 @@ class AuthService {
         .get()
         .then((value) {
       value.docs.forEach((element) {
-        // print(element['role']);
         data.add({'role': element['role']});
       });
     });
@@ -126,6 +127,27 @@ class AuthService {
       return {'msg': result};
     } else {
       return {'msg': result};
+    }
+  }
+
+  Future createNewUser(String email, String role, String phone) async {
+    role = role.toLowerCase();
+    var url =
+        Uri.parse('https://careconnect-api.herokuapp.com/$role/createuser');
+    var body = {'email': email, 'password': phone};
+    var response = await http.post(url, body: body);
+    return jsonDecode(response.body);
+  }
+
+  Future addUser(String collection, data) async {
+    try {
+      var role = collection.toLowerCase();
+      var url = Uri.parse('https://careconnect-api.herokuapp.com/$role/add');
+      var userData = jsonEncode(data);
+      await http.post(url, body: {'data': userData, 'collection': collection});
+    } catch (err) {
+      print(err);
+      return null;
     }
   }
 

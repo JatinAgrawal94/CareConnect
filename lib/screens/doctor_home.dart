@@ -3,10 +3,9 @@ import 'package:careconnect/components/medical_info.dart';
 import 'package:careconnect/screens/userdataforms/doctor_profile.dart';
 import 'package:careconnect/screens/userdataforms/patient_add_form.dart';
 import 'package:careconnect/services/auth.dart';
-import 'package:careconnect/services/doctorData.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:careconnect/services/patientdata.dart';
 
 class DoctorHome extends StatefulWidget {
   final String email;
@@ -20,8 +19,7 @@ class _DoctorHomeState extends State<DoctorHome> {
   String email;
   _DoctorHomeState(this.email);
   AuthService auth = AuthService();
-  PatientData patient = PatientData();
-  DoctorData doctor = DoctorData();
+  GeneralFunctions general = GeneralFunctions();
   static String patientId;
   CollectionReference patientList =
       FirebaseFirestore.instance.collection('Patient');
@@ -30,9 +28,9 @@ class _DoctorHomeState extends State<DoctorHome> {
   @override
   void initState() {
     super.initState();
-    doctor.getDocsId(email).then((value) {
+    general.getDocsId(email, 'Doctor').then((value) {
       setState(() {
-        documentId = value;
+        documentId = value['documentId'];
       });
     });
   }

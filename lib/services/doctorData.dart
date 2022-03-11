@@ -1,13 +1,12 @@
-import 'dart:io';
 import 'package:careconnect/screens/medicaldata/doctor_appointment.dart';
 import 'package:careconnect/screens/userdataforms/doctor_profile.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:firebase_core/firebase_core.dart' as firebase_core;
+import 'package:careconnect/services/general.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 class DoctorData {
   static String doctorId;
+  GeneralFunctions general = GeneralFunctions();
   final doctorInfoKeys = {
     0: 'name',
     1: 'userid',
@@ -22,163 +21,6 @@ class DoctorData {
     10: 'address'
   };
 
-  Future getAllDoctors() async {
-    List data = [];
-    await FirebaseFirestore.instance
-        .collection('Doctor')
-        .get()
-        .then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) {
-        data.add({
-          "name": element['name'],
-          'timing': element['timing'],
-          'email': element['email']
-        });
-      });
-    });
-    return data;
-  }
-
-  Future getDoctorInfo(String doctorid) async {
-    var data = Map<String, dynamic>();
-    await FirebaseFirestore.instance
-        .collection('Doctor')
-        .doc(doctorid)
-        .get()
-        .then((DocumentSnapshot snapshot) {
-      data = snapshot.data();
-    });
-    return data;
-  }
-
-  Future addDoctor(data) async {
-    CollectionReference doctor =
-        FirebaseFirestore.instance.collection('Doctor');
-    await doctor
-        .add({
-          'name': data['name'],
-          'email': data['email'],
-          'dateofbirth': data['dateofbirth'],
-          'gender': data['gender'],
-          'bloodgroup': data['bloodgroup'],
-          'contact': data['contact'],
-          'address': data['address'],
-          'designation': data['designation'],
-          'userid': data['userid'],
-          'doctype': data['doctype'],
-          'zoom': " ",
-          'profileImageURL': data['profileImageURL']
-        })
-        .then((value) {})
-        .catchError((error) {
-          print(error);
-        });
-    FirebaseFirestore.instance.collection('users').add(
-        {'email': data['email'], 'role': 'doctor', 'userid': data['userid']});
-  }
-
-  Future<String> getProfileImageURL(String doctorId) async {
-    try {
-      String downloadURL = await firebase_storage.FirebaseStorage.instance
-          .ref('profile_images/$doctorId.png')
-          .getDownloadURL();
-      return downloadURL;
-    } catch (e) {
-      print("Error retrieving image");
-      return null;
-    }
-  }
-
-  Future deleteProfileImageURL(String doctorId, String userId) async {
-    try {
-      await firebase_storage.FirebaseStorage.instance
-          .ref('profile_images/$userId.png')
-          .delete();
-      await FirebaseFirestore.instance
-          .collection('Doctor')
-          .doc(doctorId)
-          .update({"profileImageURL": null});
-      return 1;
-    } catch (e) {
-      // print(e);
-      print("Error deleting Image");
-      return 0;
-    }
-  }
-
-  Future uploadFile(File filePath, String filename) async {
-    try {
-      await firebase_storage.FirebaseStorage.instance
-          .ref('profile_images/D$filename.png')
-          .putFile(filePath);
-      String url = await getProfileImageURL(filename);
-      print("File Uploaded Successfully");
-      return url;
-    } on firebase_core.FirebaseException catch (e) {
-      print(e);
-      return 0;
-    }
-  }
-
-  Future updateFile(File filePath, String filename) async {
-    try {
-      await firebase_storage.FirebaseStorage.instance
-          .ref('profile_images/$filename.png')
-          .putFile(filePath);
-      String url = await getProfileImageURL(filename);
-      print("File Uploaded Successfully");
-      return url;
-    } on firebase_core.FirebaseException catch (e) {
-      print(e);
-      return 0;
-    }
-  }
-
-  Future<void> updateDoctorinfo(doctorId, data) async {
-    CollectionReference doctor =
-        FirebaseFirestore.instance.collection('Doctor');
-    return await doctor
-        .doc(doctorId)
-        .update({
-          'name': data['name'],
-          'email': data['email'],
-          'dateofbirth': data['dateofbirth'],
-          'gender': data['gender'],
-          'bloodgroup': data['bloodgroup'],
-          'contact': data['contact'],
-          'designation': data['designation'],
-          'address': data['address'],
-          'doctype': data['doctype'],
-          'profileImageURL': data['profileImageURL']
-        })
-        .then((value) {})
-        .catchError((error) {});
-  }
-
-  Future getNoOfDoctors() async {
-    List data = [];
-    await FirebaseFirestore.instance
-        .collection('stats')
-        .get()
-        .then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) {
-        data.add({
-          'noofpatients': element['noofpatients'],
-          'noofdoctors': element['noofdoctors'],
-          'documentid': element.id
-        });
-      });
-    });
-    return data;
-  }
-
-  Future increementNoOfDoctors(documentid, noofdoctors) async {
-    await FirebaseFirestore.instance
-        .collection('stats')
-        .doc(documentid)
-        .update({'noofdoctors': noofdoctors});
-  }
-
   String convertDate(String date) {
     var g = date.split('/').reversed.toList();
     if (int.parse(g[1]) / 10 < 1) {
@@ -189,20 +31,6 @@ class DoctorData {
       g[2] = "0" + g[2];
     }
     return g.join('-').toString();
-  }
-
-  Future getDocsId(String email) async {
-    var id;
-    await FirebaseFirestore.instance
-        .collection('Doctor')
-        .where('email', isEqualTo: email)
-        .get()
-        .then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) {
-        id = element.id;
-      });
-    });
-    return id;
   }
 
   Widget getScreen(int index, String doctorId) {
@@ -240,7 +68,7 @@ class DoctorData {
     var date = [];
     var doctoremail = " ";
     List documentId = [];
-    var info = await getDoctorInfo(doctorId);
+    var info = await general.getUserInfo(doctorId, 'Doctor');
     doctoremail = info['email'];
     await FirebaseFirestore.instance
         .collection('Appointment')
@@ -344,11 +172,4 @@ class DoctorData {
       return 1;
     }
   }
-
-  // Future deleteAppointment(String documentId) async {
-  //   FirebaseFirestore.instance
-  //       .collection('Appointment')
-  //       .where('doctoremail', isEqualTo: doctoremail)
-  //       .where('date', isEqualTo: date);
-  // }
 }

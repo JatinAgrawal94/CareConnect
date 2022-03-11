@@ -1,6 +1,7 @@
 import 'package:careconnect/models/registereduser.dart';
 import 'package:careconnect/screens/userdataforms/patient_update_form.dart';
 import 'package:careconnect/services/auth.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:careconnect/services/patientdata.dart';
@@ -22,6 +23,7 @@ class _AboutScreenState extends State<AboutScreen> {
   AuthService auth = AuthService();
   final String patientId;
   static String userId;
+  GeneralFunctions general = GeneralFunctions();
   static String imageURL;
   var user;
   var role;
@@ -37,7 +39,7 @@ class _AboutScreenState extends State<AboutScreen> {
   @override
   void initState() {
     super.initState();
-    _patientData.getPatientInfo(this.patientId).then((value) {
+    general.getUserInfo(this.patientId, 'Patient').then((value) {
       setState(() {
         patientInfo = value;
         imageURL = patientInfo['profileImageURL'];

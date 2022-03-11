@@ -1,6 +1,6 @@
 import 'package:careconnect/components/pathology_list.dart';
 import 'package:careconnect/components/photogrid.dart';
-import 'package:careconnect/services/doctorData.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -35,7 +35,7 @@ class _PathologyScreenState extends State<PathologyScreen> {
   PatientData _patientData = PatientData();
   CollectionReference pathology;
   DateTime selecteddate = DateTime.now();
-  DoctorData _doctorData = DoctorData();
+  GeneralFunctions general = GeneralFunctions();
   List<String> data = [];
   List images = [];
   List videos = [];
@@ -44,7 +44,7 @@ class _PathologyScreenState extends State<PathologyScreen> {
   @override
   void initState() {
     super.initState();
-    _doctorData.getAllDoctors().then((value) => {
+    general.getAllUser('doctor').then((value) => {
           value.forEach((item) {
             setState(() {
               data.add(item['name']);

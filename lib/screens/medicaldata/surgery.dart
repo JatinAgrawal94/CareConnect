@@ -1,6 +1,6 @@
 import 'package:careconnect/components/photogrid.dart';
 import 'package:careconnect/components/surgery_list.dart';
-import 'package:careconnect/services/doctorData.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:careconnect/components/loading.dart';
@@ -30,9 +30,9 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
   _SurgeryScreenState(this.patientId, this.userId);
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   PatientData _patientData = PatientData();
+  GeneralFunctions general = GeneralFunctions();
   DateTime selecteddate = DateTime.now();
   CollectionReference surgery;
-  DoctorData _doctorData = DoctorData();
   List<String> data = [];
   List images = [];
   List videos = [];
@@ -41,7 +41,7 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
   @override
   void initState() {
     super.initState();
-    _doctorData.getAllDoctors().then((value) => {
+    general.getAllUser('doctor').then((value) => {
           value.forEach((item) {
             setState(() {
               data.add(item['name']);

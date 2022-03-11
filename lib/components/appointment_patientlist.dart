@@ -1,11 +1,10 @@
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/screens/medicaldata/about_screen.dart';
-import 'package:careconnect/services/patientdata.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/doctorData.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
-// import 'package:flutter_stripe/flutter_stripe.dart';
 
 class AppointmentPatientList extends StatefulWidget {
   final String doctoremail;
@@ -24,7 +23,7 @@ class _AppointmentPatientListState extends State<AppointmentPatientList> {
   String patientId;
   String paymentAmount;
   DoctorData _doctorData = DoctorData();
-  PatientData _patientData = PatientData();
+  GeneralFunctions general = GeneralFunctions();
   _AppointmentPatientListState(this.date, this.doctoremail);
   List data = [];
   @override
@@ -262,9 +261,10 @@ class _AppointmentPatientListState extends State<AppointmentPatientList> {
                                     ),
                                     child: Text("View"),
                                     onPressed: () {
-                                      _patientData
+                                      general
                                           .getDocsId(
-                                              data[index]['patientemail'])
+                                              data[index]['patientemail'],
+                                              'Patient')
                                           .then((value) {
                                         Navigator.push(
                                             context,
@@ -287,10 +287,11 @@ class _AppointmentPatientListState extends State<AppointmentPatientList> {
                                       primary: Colors.deepPurple,
                                     ),
                                     onPressed: () async {
-                                      var docId = await _patientData.getDocsId(
-                                          data[index]['patientemail']);
-                                      var info = await _patientData
-                                          .getPatientInfo(docId['documentId']);
+                                      var docId = await general.getDocsId(
+                                          data[index]['patientemail'],
+                                          'Patient');
+                                      var info = await general.getUserInfo(
+                                          docId['documentId'], 'Patient');
                                       var tele = info['phoneno'];
 
                                       await launch("tel:$tele");

@@ -1,5 +1,6 @@
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/services/admin_data.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -20,6 +21,7 @@ class _AdminFormState extends State<AdminForm> {
   _AdminFormState(this.adminId);
   AdminData _adminData = AdminData();
   ImagePicker picker = ImagePicker();
+  GeneralFunctions general = GeneralFunctions();
   PickedFile _image;
   String userId;
 
@@ -52,9 +54,11 @@ class _AdminFormState extends State<AdminForm> {
     _adminData.getAdminInfo(adminId).then((value) {
       setState(() {
         adminInfo = value;
+        imageURL = adminInfo['profileImageURL'];
         userId = adminInfo['userid'];
         name = adminInfo['name'];
         email = adminInfo['email'];
+        imageURL = adminInfo['profileImageURL'];
         contact = adminInfo['contact'].toString();
         bloodgroup = adminInfo['bloodgroup'];
         address = adminInfo['address'];
@@ -67,11 +71,6 @@ class _AdminFormState extends State<AdminForm> {
       convertDate(adminInfo['dateofbirth']).then((value) {
         setState(() {
           selecteddate = DateTime.parse(value);
-        });
-      });
-      _adminData.getProfileImageURL(userId).then((value) {
-        setState(() {
-          imageURL = value;
         });
       });
     });
@@ -214,6 +213,20 @@ class _AdminFormState extends State<AdminForm> {
                                       ),
                               )),
                             )),
+                        imageURL != null
+                            ? ElevatedButton(
+                                onPressed: () async {
+                                  await general.deleteProfileImageURL(
+                                      adminId, userId, 'Admin');
+                                  setState(() {
+                                    _image = null;
+                                    imageURL = null;
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.deepPurple),
+                                child: Text("Remove Profile Photo"))
+                            : Text("")
                       ],
                     ),
 // --------------------------form begins here---------------------------------------//
@@ -555,28 +568,8 @@ class _AdminFormState extends State<AdminForm> {
                                       onPressed: () async {
                                         if (adminupdateformkey.currentState
                                             .validate()) {
-                                          await _adminData
-                                              .updateAdmininfo(adminId, {
-                                            'name': name,
-                                            'email': email,
-                                            'dateofbirth':
-                                                "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                            'gender': gender == 0
-                                                ? 'Male'
-                                                : gender == 1
-                                                    ? 'Female'
-                                                    : 'Other',
-                                            'bloodgroup': bloodgroup,
-                                            'contact': contact,
-                                            'address': address
-                                          });
-                                          if (_image != null) {
-                                            _adminData.updateFile(
-                                                File(_image.path), '$userId');
-                                          }
                                           Navigator.pop(context);
-                                          Navigator.pop(context);
-                                          return Fluttertoast.showToast(
+                                          Fluttertoast.showToast(
                                               msg: "Data Updated",
                                               toastLength: Toast.LENGTH_LONG,
                                               gravity: ToastGravity.SNACKBAR,
@@ -584,6 +577,35 @@ class _AdminFormState extends State<AdminForm> {
                                               textColor: Colors.white,
                                               fontSize: 15,
                                               timeInSecForIosWeb: 1);
+                                          Navigator.pop(context);
+                                          String newImageURL;
+                                          if (_image != null) {
+                                            newImageURL = await general
+                                                .uploadProfileImage(
+                                                    File(_image.path),
+                                                    '$userId');
+                                          }
+                                          await general.updateUserinfo(
+                                              adminId,
+                                              {
+                                                'name': name,
+                                                'email': email,
+                                                'dateofbirth':
+                                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                                'gender': gender == 0
+                                                    ? 'Male'
+                                                    : gender == 1
+                                                        ? 'Female'
+                                                        : 'Other',
+                                                'bloodgroup': bloodgroup,
+                                                'contact': contact,
+                                                'address': address,
+                                                'profileImageURL':
+                                                    newImageURL == null
+                                                        ? imageURL
+                                                        : newImageURL
+                                              },
+                                              'Admin');
                                         }
                                       },
                                       child: Text(

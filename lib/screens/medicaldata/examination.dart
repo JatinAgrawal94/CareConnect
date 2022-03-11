@@ -1,7 +1,7 @@
 import 'package:careconnect/components/examinationList.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/components/photogrid.dart';
-import 'package:careconnect/services/doctorData.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -27,8 +27,8 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
   String category = "examination";
   _ExaminationScreenState(this.patientId, this.userId);
   PatientData _patientData = PatientData();
-  DoctorData _doctorData = DoctorData();
   DateTime selecteddate = DateTime.now();
+  GeneralFunctions general = GeneralFunctions();
   CollectionReference examination;
   String temperature = "";
   String weight = "";
@@ -47,7 +47,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
   @override
   void initState() {
     super.initState();
-    _doctorData.getAllDoctors().then((value) => {
+    general.getAllUser('doctor').then((value) => {
           value.forEach((item) {
             setState(() {
               data.add(item['name']);

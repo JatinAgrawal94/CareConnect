@@ -1,5 +1,5 @@
 import 'package:careconnect/components/loading.dart';
-import 'package:careconnect/services/doctorData.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -21,7 +21,7 @@ class _DoctorFormState extends State<DoctorForm> {
   ImagePicker picker = ImagePicker();
   PickedFile _image;
   String userId;
-  DoctorData _doctorData = DoctorData();
+  GeneralFunctions general = GeneralFunctions();
   static String imageURL;
   static var doctorInfo = Map<String, dynamic>();
 
@@ -51,7 +51,7 @@ class _DoctorFormState extends State<DoctorForm> {
   @override
   void initState() {
     super.initState();
-    _doctorData.getDoctorInfo(doctorId).then((value) {
+    general.getUserInfo(doctorId,'Doctor').then((value) {
       setState(() {
         doctorInfo = value;
         imageURL = doctorInfo['profileImageURL'];
@@ -215,17 +215,20 @@ class _DoctorFormState extends State<DoctorForm> {
                                       ),
                               )),
                             )),
-                        ElevatedButton(
-                            onPressed: () async {
-                              await _doctorData.deleteProfileImageURL(
-                                  doctorId, userId);
-                              setState(() {
-                                _image = null;
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                                primary: Colors.deepPurple),
-                            child: Text("Remove Profile Photo"))
+                        imageURL != null
+                            ? ElevatedButton(
+                                onPressed: () async {
+                                  await general.deleteProfileImageURL(
+                                      doctorId, userId, 'Doctor');
+                                  setState(() {
+                                    _image = null;
+                                    imageURL = null;
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.deepPurple),
+                                child: Text("Remove Profile Photo"))
+                            : Text("")
                       ],
                     ),
 // --------------------------form begins here---------------------------------------//
@@ -731,32 +734,37 @@ class _DoctorFormState extends State<DoctorForm> {
                                               timeInSecForIosWeb: 1);
 
                                           Navigator.pop(context);
-                                          String profileImageURL;
+                                          String newImageURL;
                                           if (_image != null) {
-                                            profileImageURL =
-                                                await _doctorData.updateFile(
+                                            newImageURL = await general
+                                                .uploadProfileImage(
                                                     File(_image.path),
                                                     '$userId');
                                           }
-                                          await _doctorData
-                                              .updateDoctorinfo(doctorId, {
-                                            'name': name,
-                                            'email': email,
-                                            'dateofbirth':
-                                                "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                            'gender': gender == 0
-                                                ? 'Male'
-                                                : gender == 1
-                                                    ? 'Female'
-                                                    : 'Other',
-                                            'bloodgroup': bloodgroup,
-                                            'contact': contact,
-                                            'designation': designation,
-                                            'address': address,
-                                            'doctype': doctype,
-                                            'zoom': zoom,
-                                            'profileImageURL': profileImageURL
-                                          });
+                                          await general.updateUserinfo(
+                                              doctorId,
+                                              {
+                                                'name': name,
+                                                'email': email,
+                                                'dateofbirth':
+                                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                                'gender': gender == 0
+                                                    ? 'Male'
+                                                    : gender == 1
+                                                        ? 'Female'
+                                                        : 'Other',
+                                                'bloodgroup': bloodgroup,
+                                                'contact': contact,
+                                                'designation': designation,
+                                                'address': address,
+                                                'doctype': doctype,
+                                                'zoom': zoom,
+                                                'profileImageURL':
+                                                    newImageURL == null
+                                                        ? imageURL
+                                                        : newImageURL
+                                              },
+                                              'Doctor');
                                         }
                                       },
                                       child: Text(

@@ -23,22 +23,6 @@ class _PatientListTileState extends State<PatientListTile> {
   String profileImageURL;
   _PatientListTileState(
       this.name, this.userId, this.documentId, this.profileImageURL);
-  @override
-  void initState() {
-    super.initState();
-    // _patientData.getProfileImageURL(userId).then((value) {
-    //   if (this.mounted) {
-    //     setState(() {
-    //       image = value;
-    //     });
-    //   }
-    // });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +52,7 @@ class _PatientListTileState extends State<PatientListTile> {
                       MedicalScreen(patientId: documentId, userId: userId)));
         },
       ),
-      decoration: BoxDecoration(border: Border.all(width: 0.3)),
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 0.3))),
     );
   }
 }

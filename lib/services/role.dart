@@ -23,7 +23,6 @@ class _RoleAuthorizationState extends State<RoleAuthorization> {
   @override
   void initState() {
     super.initState();
-
     auth.getRole(email).then((value) {
       if (mounted) {
         setState(() {

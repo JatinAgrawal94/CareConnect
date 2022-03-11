@@ -1,6 +1,7 @@
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/components/medical_info.dart';
 import 'package:careconnect/services/auth.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 
@@ -17,13 +18,14 @@ class _PatientHomeState extends State<PatientHome> {
   _PatientHomeState(this.email);
   AuthService auth = AuthService();
   PatientData patient = PatientData();
+  GeneralFunctions general = GeneralFunctions();
   String documentId;
   String userId;
 
   @override
   void initState() {
     super.initState();
-    patient.getDocsId(email).then((value) {
+    general.getDocsId(email, 'Patient').then((value) {
       setState(() {
         documentId = value['documentId'];
         userId = value['userId'];
