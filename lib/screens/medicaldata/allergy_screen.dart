@@ -1,6 +1,7 @@
 import 'package:careconnect/components/allergyList.dart';
+import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/loading.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
@@ -17,16 +18,33 @@ class _AllergyScreenState extends State<AllergyScreen> {
   final String patientId;
   _AllergyScreenState(this.patientId);
   PatientData _patientData = PatientData();
+  GeneralFunctions general = GeneralFunctions();
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   DateTime selecteddate = DateTime.now();
   String type = "";
-  CollectionReference allergy;
+  List allergyList = [];
+  var empty = 1;
   @override
   void initState() {
     super.initState();
+    _patientData.getCategoryData('allergy', patientId).then((value) {
+      value.forEach((item) {
+        setState(() {
+          allergyList.add(item);
+        });
+      });
+      if (allergyList.length == 0) {
+        setState(() {
+          empty = 0;
+        });
+      }
+    });
+  }
+
+  Future setData() async {
+    var data = await _patientData.getCategoryData("allergy", patientId);
     setState(() {
-      allergy =
-          FirebaseFirestore.instance.collection('Patient/$patientId/allergy');
+      this.allergyList = data;
     });
   }
 
@@ -173,31 +191,25 @@ class _AllergyScreenState extends State<AllergyScreen> {
                     ),
                   ))),
 // ----------------------------------------------------------------------------------------------------------
-              Container(
-                  child: StreamBuilder<QuerySnapshot>(
-                stream: allergy.snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError) {
-                    return Text('Something went wrong');
-                  }
-
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return LoadingHeart();
-                  }
-
-                  return new ListView(
-                    children:
-                        snapshot.data.docs.map((DocumentSnapshot document) {
-                      return AllergyList(
-                          type: document.data()['type'],
-                          date: document.data()['date'],
-                          patientId: patientId,
-                          recordId: document.id);
-                    }).toList(),
-                  );
-                },
-              )),
+              allergyList.length == 0 && empty == 1
+                  ? LoadingHeart()
+                  : empty == 0
+                      ? EmptyRecord()
+                      : Container(
+                          child: RefreshIndicator(
+                              color: Colors.deepPurple,
+                              onRefresh: setData,
+                              child: ListView.builder(
+                                itemCount: allergyList.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return AllergyList(
+                                      type: allergyList[index]['type'],
+                                      date: allergyList[index]['date'],
+                                      patientId: patientId,
+                                      recordId: allergyList[index]
+                                          ['documentid']);
+                                },
+                              ))),
             ],
           ),
         ));

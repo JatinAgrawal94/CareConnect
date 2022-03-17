@@ -1,3 +1,4 @@
+import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/examinationList.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/components/photogrid.dart';
@@ -5,7 +6,6 @@ import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 
 class ExaminationScreen extends StatefulWidget {
@@ -29,7 +29,6 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
   PatientData _patientData = PatientData();
   DateTime selecteddate = DateTime.now();
   GeneralFunctions general = GeneralFunctions();
-  CollectionReference examination;
   String temperature = "";
   String weight = "";
   String height = "";
@@ -43,6 +42,8 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
   List videos = [];
   List files = [];
   var names = {'images': [], 'videos': [], 'files': []};
+  var examinationList = [];
+  var empty = 1;
 
   @override
   void initState() {
@@ -54,9 +55,24 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
             });
           })
         });
+    _patientData.getCategoryData('examination', patientId).then((value) {
+      value.forEach((item) => {
+            setState(() {
+              examinationList.add(item);
+            })
+          });
+      if (examinationList.length == 0) {
+        setState(() {
+          empty = 0;
+        });
+      }
+    });
+  }
+
+  Future setData() async {
+    var data = await _patientData.getCategoryData("examination", patientId);
     setState(() {
-      examination = FirebaseFirestore.instance
-          .collection('Patient/$patientId/examination');
+      this.examinationList = data;
     });
   }
 
@@ -588,40 +604,39 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                               )
                             ],
                           )))),
-              Container(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: examination.snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return Text('Something went wrong');
-                    }
-
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return LoadingHeart();
-                    }
-
-                    return new ListView(
-                      children:
-                          snapshot.data.docs.map((DocumentSnapshot document) {
-                        return ExaminationList(
-                            temperature: document.data()['temperature'],
-                            weight: document.data()['temperature'],
-                            height: document.data()['height'],
-                            symptoms: document.data()['symptoms'],
-                            diagnosis: document.data()['diagnosis'],
-                            notes: document.data()['notes'],
-                            doctor: document.data()['doctor'],
-                            date: document.data()['date'],
-                            place: document.data()['place'],
-                            recordId: document.id,
-                            patientId: patientId,
-                            media: document.data()['media']);
-                      }).toList(),
-                    );
-                  },
-                ),
-              ),
+              examinationList.length == 0 && empty == 1
+                  ? LoadingHeart()
+                  : empty == 0
+                      ? EmptyRecord()
+                      : Container(
+                          child: RefreshIndicator(
+                              onRefresh: setData,
+                              color: Colors.deepPurple,
+                              child: ListView.builder(
+                                  itemCount: examinationList.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return ExaminationList(
+                                        temperature: examinationList[index]
+                                            ['temperature'],
+                                        weight: examinationList[index]
+                                            ['temperature'],
+                                        height: examinationList[index]
+                                            ['height'],
+                                        symptoms: examinationList[index]
+                                            ['symptoms'],
+                                        diagnosis: examinationList[index]
+                                            ['diagnosis'],
+                                        notes: examinationList[index]['notes'],
+                                        doctor: examinationList[index]
+                                            ['doctor'],
+                                        date: examinationList[index]['date'],
+                                        place: examinationList[index]['place'],
+                                        recordId: examinationList[index]
+                                            ['documentid'],
+                                        patientId: patientId,
+                                        media: examinationList[index]['media']);
+                                  }))),
             ],
           ),
         ));

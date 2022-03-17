@@ -6,6 +6,8 @@ import 'package:careconnect/services/doctorData.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+// this component shows the list item of appointments in doctor profile
+
 class AppointmentPatientList extends StatefulWidget {
   final String doctoremail;
   final String date;
@@ -185,6 +187,8 @@ class _AppointmentPatientListState extends State<AppointmentPatientList> {
                                                                           [
                                                                           'paymentstatus'],
                                                                       paymentAmount);
+                                                                  Navigator.pop(
+                                                                      context);
                                                                   return Fluttertoast.showToast(
                                                                       msg:
                                                                           "PaymentAmount Updated !",

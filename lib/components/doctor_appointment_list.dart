@@ -1,6 +1,7 @@
 import 'package:careconnect/components/appointment_patientlist.dart';
 import 'package:flutter/material.dart';
 
+// this component displays the date of appointment and a view button
 class DoctorAppointmentComponent extends StatefulWidget {
   final String date;
   final String noOfpatients;

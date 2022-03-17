@@ -192,7 +192,8 @@ class _AdminHomeState extends State<AdminHome> {
                                       profileImageURL: patients[index]
                                           ['profileImageURL'],
                                       userId: patients[index]['userid']);
-                                }))),
+                                }))
+                                ),
                 doctors.length == 0
                     ? LoadingHeart()
                     : Container(

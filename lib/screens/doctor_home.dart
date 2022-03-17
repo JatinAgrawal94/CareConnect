@@ -1,10 +1,9 @@
 import 'package:careconnect/components/loading.dart';
-import 'package:careconnect/components/medical_info.dart';
-import 'package:careconnect/screens/userdataforms/doctor_profile.dart';
+import 'package:careconnect/components/patientlisttile.dart';
+import 'package:careconnect/screens/doctor_medical_screen.dart';
 import 'package:careconnect/screens/userdataforms/patient_add_form.dart';
 import 'package:careconnect/services/auth.dart';
 import 'package:careconnect/services/general.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class DoctorHome extends StatefulWidget {
@@ -20,11 +19,9 @@ class _DoctorHomeState extends State<DoctorHome> {
   _DoctorHomeState(this.email);
   AuthService auth = AuthService();
   GeneralFunctions general = GeneralFunctions();
-  static String patientId;
-  CollectionReference patientList =
-      FirebaseFirestore.instance.collection('Patient');
+  var patientList = [];
   String documentId;
-
+  String profileImageURL;
   @override
   void initState() {
     super.initState();
@@ -32,6 +29,37 @@ class _DoctorHomeState extends State<DoctorHome> {
       setState(() {
         documentId = value['documentId'];
       });
+    });
+    general.getAllUser('patient').then((value) {
+      value.forEach((element) => {
+            setState(() {
+              patientList.add({
+                'name': element['name'],
+                'profileImageURL': element['profileImageURL'],
+                'documentid': element['documentid'],
+                'userid': element['userid']
+              });
+            })
+          });
+    });
+  }
+
+  Future loadPatients() async {
+    var data = await general.getAllUser('patient');
+    var result = [];
+    setState(() {
+      this.patientList = null;
+      data.forEach((element) => {
+            setState(() {
+              result.add({
+                'name': element['name'],
+                'profileImageURL': element['profileImageURL'],
+                'documentid': element['documentid'],
+                'userid': element['userid']
+              });
+            })
+          });
+      this.patientList = result;
     });
   }
 
@@ -48,8 +76,10 @@ class _DoctorHomeState extends State<DoctorHome> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              DoctorProfile(doctorId: documentId)));
+                          builder: (BuildContext context) => DoctorInfo(
+                                documentId: documentId,
+                                email: email,
+                              )));
                 }),
             IconButton(
                 onPressed: () {
@@ -72,43 +102,20 @@ class _DoctorHomeState extends State<DoctorHome> {
                 MaterialPageRoute(builder: (context) => PatientAddForm()));
           },
         ),
-        body: StreamBuilder<QuerySnapshot>(
-            stream: patientList.snapshots(),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.hasError) {
-                return Text("Something went wrong");
-              }
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return LoadingHeart();
-              }
-
-              return new ListView(
-                  children: snapshot.data.docs.map((DocumentSnapshot document) {
-                return Container(
-                  child: ListTile(
-                    leading: Icon(Icons.person, size: 40.0),
-                    title: new Text(
-                      document.data()['name'],
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    subtitle:
-                        new Text("Patient Id: " + document.data()['userid']),
-                    trailing: Icon(Icons.info),
-                    onTap: () {
-                      patientId = document.id;
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MedicalScreen(
-                                    patientId: patientId,
-                                    userId: document.data()['userid'],
-                                  )));
-                    },
-                  ),
-                  decoration: BoxDecoration(border: Border.all(width: 0.3)),
-                );
-              }).toList());
-            }));
+        body: patientList.length == 0
+            ? LoadingHeart()
+            : Container(
+                child: RefreshIndicator(
+                    onRefresh: loadPatients,
+                    color: Colors.deepPurple,
+                    child: ListView(
+                        children: patientList.map((element) {
+                      return PatientListTile(
+                        documentId: element['documentid'],
+                        userId: element['userid'],
+                        profileImageURL: element['profileImageURL'],
+                        name: element['name'],
+                      );
+                    }).toList()))));
   }
 }

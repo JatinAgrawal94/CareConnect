@@ -1,9 +1,9 @@
 import 'package:careconnect/components/blood_pressure_list.dart';
+import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BloodPressureScreen extends StatefulWidget {
   final String patientId;
@@ -19,18 +19,34 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
   String systolic = "";
   String diastolic = "";
   String pulse = "";
+  var empty = 1;
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   DateTime selecteddate = DateTime.now();
   TimeOfDay selectedtime = TimeOfDay.now();
   _BloodPressureScreenState(this.patientId);
   PatientData _patientData = PatientData();
-  CollectionReference bloodpressure;
+  List bloodPressureList = [];
   @override
   void initState() {
     super.initState();
+    _patientData.getCategoryData('bloodpressure', patientId).then((value) {
+      value.forEach((item) => {
+            setState(() {
+              bloodPressureList.add(item);
+            })
+          });
+      if (bloodPressureList.length == 0) {
+        setState(() {
+          empty = 0;
+        });
+      }
+    });
+  }
+
+  Future setData() async {
+    var data = await _patientData.getCategoryData("bloodpressure", patientId);
     setState(() {
-      bloodpressure = FirebaseFirestore.instance
-          .collection('Patient/$patientId/bloodpressure');
+      this.bloodPressureList = data;
     });
   }
 
@@ -251,33 +267,28 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                       child: Text("Save", style: TextStyle(fontSize: 20)))
                 ]),
               ),
-              Container(
-                  child: StreamBuilder<QuerySnapshot>(
-                stream: bloodpressure.snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError) {
-                    return Text('Something went wrong');
-                  }
-
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return LoadingHeart();
-                  }
-
-                  return new ListView(
-                    children:
-                        snapshot.data.docs.map((DocumentSnapshot document) {
-                      return BloodPressureList(
-                        systolic: document.data()['systolic'],
-                        diastolic: document.data()['diastolic'],
-                        pulse: document.data()['pulse'],
-                        date: document.data()['date'],
-                        time: document.data()['time'],
-                      );
-                    }).toList(),
-                  );
-                },
-              ))
+              bloodPressureList.length == 0 && empty == 1
+                  ? LoadingHeart()
+                  : empty == 0
+                      ? EmptyRecord()
+                      : Container(
+                          child: RefreshIndicator(
+                              color: Colors.deepPurple,
+                              onRefresh: setData,
+                              child: ListView.builder(
+                                itemCount: bloodPressureList.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return BloodPressureList(
+                                    systolic: bloodPressureList[index]
+                                        ['systolic'],
+                                    diastolic: bloodPressureList[index]
+                                        ['diastolic'],
+                                    pulse: bloodPressureList[index]['pulse'],
+                                    date: bloodPressureList[index]['date'],
+                                    time: bloodPressureList[index]['time'],
+                                  );
+                                },
+                              )))
             ],
           ),
         ));

@@ -1,3 +1,4 @@
+import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/photogrid.dart';
 import 'package:careconnect/components/surgery_list.dart';
 import 'package:careconnect/services/general.dart';
@@ -37,7 +38,8 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
   List images = [];
   List videos = [];
   List files = [];
-
+  List surgeryList = [];
+  var empty = 1;
   @override
   void initState() {
     super.initState();
@@ -48,9 +50,24 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
             });
           })
         });
+    _patientData.getCategoryData('surgery', patientId).then((value) {
+      value.forEach((item) {
+        setState(() {
+          surgeryList.add(item);
+        });
+      });
+      if (surgeryList.length == 0) {
+        setState(() {
+          empty = 0;
+        });
+      }
+    });
+  }
+
+  Future setData() async {
+    var data = await _patientData.getCategoryData("surgery", patientId);
     setState(() {
-      surgery =
-          FirebaseFirestore.instance.collection('Patient/$patientId/surgery');
+      this.surgeryList = data;
     });
   }
 
@@ -379,36 +396,30 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                               )
                             ],
                           )))),
-              Container(
-                  padding: EdgeInsets.all(5),
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: surgery.snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Something went wrong');
-                      }
-
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return LoadingHeart();
-                      }
-
-                      return new ListView(
-                        children:
-                            snapshot.data.docs.map((DocumentSnapshot document) {
-                          return SurgeryList(
-                              title: document.data()['title'],
-                              result: document.data()['result'],
-                              doctor: document.data()['doctor'],
-                              place: document.data()['place'],
-                              date: document.data()['date'],
-                              patientId: patientId,
-                              recordId: document.id,
-                              media: document.data()['media']);
-                        }).toList(),
-                      );
-                    },
-                  ))
+              surgeryList.length == 0 && empty == 1
+                  ? LoadingHeart()
+                  : empty == 0
+                      ? EmptyRecord()
+                      : Container(
+                          padding: EdgeInsets.all(5),
+                          child: RefreshIndicator(
+                              onRefresh: setData,
+                              color: Colors.deepPurple,
+                              child: ListView.builder(
+                                  itemCount: surgeryList.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return SurgeryList(
+                                        title: surgeryList[index]['title'],
+                                        result: surgeryList[index]['result'],
+                                        doctor: surgeryList[index]['doctor'],
+                                        place: surgeryList[index]['place'],
+                                        date: surgeryList[index]['date'],
+                                        patientId: patientId,
+                                        recordId: surgeryList[index]
+                                            ['documentid'],
+                                        media: surgeryList[index]['media']);
+                                  })))
             ],
           ),
         ));

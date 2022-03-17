@@ -1,3 +1,4 @@
+import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/photogrid.dart';
 import 'package:careconnect/components/prescription_list.dart';
 import 'package:careconnect/services/general.dart';
@@ -5,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:careconnect/components/loading.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 
 class PrescriptionScreen extends StatefulWidget {
@@ -36,10 +36,11 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   _PrescriptionScreenState(this.patientId, this.userId);
   PatientData _patientData = PatientData();
   GeneralFunctions general = GeneralFunctions();
-  CollectionReference prescription;
   List images = [];
   List videos = [];
   List files = [];
+  List prescriptionList = [];
+  var empty = 1;
 
   @override
   void initState() {
@@ -51,9 +52,24 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
             });
           })
         });
+    _patientData.getCategoryData('prescription', patientId).then((value) {
+      value.forEach((item) {
+        setState(() {
+          prescriptionList.add(item);
+        });
+      });
+      if (prescriptionList.length == 0) {
+        setState(() {
+          empty = 0;
+        });
+      }
+    });
+  }
+
+  Future setData() async {
+    var data = await _patientData.getCategoryData("prescription", patientId);
     setState(() {
-      prescription = FirebaseFirestore.instance
-          .collection('Patient/$patientId/prescription');
+      this.prescriptionList = data;
     });
   }
 
@@ -505,36 +521,32 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                       ],
                     ))),
               ),
-              Container(
-                  padding: EdgeInsets.all(5),
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: prescription.snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Something went wrong');
-                      }
-
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return LoadingHeart();
-                      }
-
-                      return new ListView(
-                        children:
-                            snapshot.data.docs.map((DocumentSnapshot document) {
-                          return PrescriptionList(
-                              drug: document.data()['drug'],
-                              dose: document.data()['dose'],
-                              doctor: document.data()['doctor'],
-                              date: document.data()['date'],
-                              timing: document.data()['timing'],
-                              patientId: patientId,
-                              prescriptionId: document.id,
-                              media: document.data()['media']);
-                        }).toList(),
-                      );
-                    },
-                  )),
+              prescriptionList.length == 0 && empty == 1
+                  ? LoadingHeart()
+                  : empty == 0
+                      ? EmptyRecord()
+                      : Container(
+                          child: RefreshIndicator(
+                              onRefresh: setData,
+                              color: Colors.deepPurple,
+                              child: ListView.builder(
+                                  itemCount: prescriptionList.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return PrescriptionList(
+                                        drug: prescriptionList[index]['drug'],
+                                        dose: prescriptionList[index]['dose'],
+                                        doctor: prescriptionList[index]
+                                            ['doctor'],
+                                        date: prescriptionList[index]['date'],
+                                        timing: prescriptionList[index]
+                                            ['timing'],
+                                        patientId: patientId,
+                                        prescriptionId: prescriptionList[index]
+                                            ['documentid'],
+                                        media: prescriptionList[index]
+                                            ['media']);
+                                  })))
             ],
           ),
         ));

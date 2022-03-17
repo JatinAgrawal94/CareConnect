@@ -1,10 +1,11 @@
+import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/labtest_list.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/components/photogrid.dart';
 import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -36,8 +37,9 @@ class _LabTestScreenState extends State<LabTestScreen> {
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   PatientData _patientData = PatientData();
   GeneralFunctions general = GeneralFunctions();
-  CollectionReference labtest;
   DateTime selecteddate = DateTime.now();
+  List labtestList = [];
+  var empty = 1;
 
   @override
   void initState() {
@@ -49,9 +51,24 @@ class _LabTestScreenState extends State<LabTestScreen> {
             });
           })
         });
+    _patientData.getCategoryData('labtest', patientId).then((value) {
+      value.forEach((item) => {
+            setState(() {
+              labtestList.add(item);
+            })
+          });
+      if (labtestList.length == 0) {
+        setState(() {
+          empty = 0;
+        });
+      }
+    });
+  }
+
+  Future setData() async {
+    var data = await _patientData.getCategoryData("labtest", patientId);
     setState(() {
-      labtest =
-          FirebaseFirestore.instance.collection('Patient/$patientId/labtest');
+      this.labtestList = data;
     });
   }
 
@@ -419,37 +436,30 @@ class _LabTestScreenState extends State<LabTestScreen> {
                       ],
                     )),
               )),
-              Container(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: labtest.snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return Text('Something went wrong');
-                    }
-
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return LoadingHeart();
-                    }
-
-                    return new ListView(
-                      children:
-                          snapshot.data.docs.map((DocumentSnapshot document) {
-                        return LabTestList(
-                            test: document.data()['test'],
-                            result: document.data()['result'],
-                            normal: document.data()['normal'],
-                            doctor: document.data()['doctor'],
-                            place: document.data()['place'],
-                            date: document.data()['date'],
-                            patientId: patientId,
-                            recordId: document.id,
-                            media: document.data()['media']);
-                      }).toList(),
-                    );
-                  },
-                ),
-              )
+              labtestList.length == 0 && empty == 1
+                  ? LoadingHeart()
+                  : empty == 0
+                      ? EmptyRecord()
+                      : Container(
+                          child: RefreshIndicator(
+                              onRefresh: setData,
+                              color: Colors.deepPurple,
+                              child: ListView.builder(
+                                  itemCount: labtestList.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return LabTestList(
+                                        test: labtestList[index]['test'],
+                                        result: labtestList[index]['result'],
+                                        normal: labtestList[index]['normal'],
+                                        doctor: labtestList[index]['doctor'],
+                                        place: labtestList[index]['place'],
+                                        date: labtestList[index]['date'],
+                                        patientId: patientId,
+                                        recordId: labtestList[index]
+                                            ['documentid'],
+                                        media: labtestList[index]['media']);
+                                  })))
             ],
           ),
         ));

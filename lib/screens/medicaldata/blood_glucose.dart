@@ -1,9 +1,9 @@
 import 'package:careconnect/components/blood_glucose_List.dart';
+import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BloodGlucoseScreen extends StatefulWidget {
   final String patientId;
@@ -24,13 +24,29 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
   String result = "";
   String resultUnit = 'mg/dL';
   List bloodGlucoseList = [];
-  CollectionReference bloodglucose;
+  var empty = 1;
+
   @override
   void initState() {
     super.initState();
+    _patientData.getCategoryData('bloodglucose', patientId).then((value) {
+      value.forEach((item) => {
+            setState(() {
+              bloodGlucoseList.add(item);
+            })
+          });
+      if (bloodGlucoseList.length == 0) {
+        setState(() {
+          empty = 0;
+        });
+      }
+    });
+  }
+
+  Future setData() async {
+    var data = await _patientData.getCategoryData("bloodglucose", patientId);
     setState(() {
-      bloodglucose = FirebaseFirestore.instance
-          .collection('Patient/$patientId/bloodglucose');
+      this.bloodGlucoseList = data;
     });
   }
 
@@ -274,35 +290,30 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                   ],
                 ),
               )),
-              Container(
-                  child: StreamBuilder<QuerySnapshot>(
-                stream: bloodglucose.snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError) {
-                    return Text('Something went wrong');
-                  }
-
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return LoadingHeart();
-                  }
-
-                  return new ListView(
-                    children:
-                        snapshot.data.docs.map((DocumentSnapshot document) {
-                      return BloodGlucoseList(
-                        type: document.data()['type'],
-                        result: document.data()['result'],
-                        date: document.data()['date'],
-                        time: document.data()['time'],
-                        resultUnit: document.data()['resultUnit'],
-                        patientId: patientId,
-                        recordId: document.id,
-                      );
-                    }).toList(),
-                  );
-                },
-              ))
+              bloodGlucoseList.length == 0 && empty == 1
+                  ? LoadingHeart()
+                  : empty == 0
+                      ? EmptyRecord()
+                      : Container(
+                          child: RefreshIndicator(
+                              color: Colors.deepPurple,
+                              onRefresh: setData,
+                              child: ListView.builder(
+                                  itemCount: bloodGlucoseList.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return BloodGlucoseList(
+                                      type: bloodGlucoseList[index]['type'],
+                                      result: bloodGlucoseList[index]['result'],
+                                      date: bloodGlucoseList[index]['date'],
+                                      time: bloodGlucoseList[index]['time'],
+                                      resultUnit: bloodGlucoseList[index]
+                                          ['resultUnit'],
+                                      patientId: patientId,
+                                      recordId: bloodGlucoseList[index]
+                                          ['documentid'],
+                                    );
+                                  })))
             ],
           ),
         ));

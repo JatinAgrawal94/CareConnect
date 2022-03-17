@@ -1,11 +1,10 @@
 import 'package:careconnect/components/appointment_list.dart';
+import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/components/loading.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:careconnect/services/patientdata.dart';
-import 'package:careconnect/services/doctordata.dart';
 
 class Appointment extends StatefulWidget {
   final String patientId;
@@ -27,11 +26,11 @@ class _AppointmentState extends State<Appointment> {
 
   DateTime selecteddate = DateTime.now();
   PatientData _patientData = PatientData();
-  DoctorData _doctorData = DoctorData();
   GeneralFunctions general = GeneralFunctions();
-  CollectionReference appointment;
   List<String> doctorList = [];
   List doctordata = [];
+  List appointmentList = [];
+  var empty = 1;
   var patientdata;
   @override
   void initState() {
@@ -49,13 +48,30 @@ class _AppointmentState extends State<Appointment> {
         });
       });
     });
+
     general.getUserInfo(patientId, 'Patient').then((value) {
       setState(() {
         patientdata = {'name': value['name'], 'email': value['email']};
       });
+      _patientData.getPatientAppointments(value['email']).then((value) {
+        value.forEach((item) {
+          setState(() {
+            appointmentList.add(item);
+          });
+        });
+        if (appointmentList.length == 0) {
+          setState(() {
+            empty = 0;
+          });
+        }
+      });
     });
+  }
+
+  Future setData() async {
+    var data = await _patientData.getPatientAppointments(patientdata['email']);
     setState(() {
-      appointment = FirebaseFirestore.instance.collection('Appointment');
+      this.appointmentList = data;
     });
   }
 
@@ -267,11 +283,12 @@ class _AppointmentState extends State<Appointment> {
                                     primary: Colors.deepPurple),
                                 onPressed: () async {
                                   var doctorindex = doctorList.indexOf(doctor);
-                                  var status = await _doctorData
+                                  var status = await _patientData
                                       .checkUserValidityForAppointment(
                                           doctordata[doctorindex]['email'],
                                           patientdata['email'],
                                           "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}");
+
                                   if (status == 0) {
                                     Fluttertoast.showToast(
                                         msg: "Appointment limit reached",
@@ -305,7 +322,7 @@ class _AppointmentState extends State<Appointment> {
                                           : "Online"
                                     });
                                     Fluttertoast.showToast(
-                                        msg: "Data Saved",
+                                        msg: "Appointment Booked!",
                                         toastLength: Toast.LENGTH_LONG,
                                         gravity: ToastGravity.SNACKBAR,
                                         backgroundColor: Colors.grey,
@@ -329,55 +346,67 @@ class _AppointmentState extends State<Appointment> {
                           ],
                         )),
                   )),
-            Container(
-                padding: EdgeInsets.all(5),
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: appointment.snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return Text('Something went wrong');
-                    }
-
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return LoadingHeart();
-                    }
-                    return new ListView(
-                      children:
-                          snapshot.data.docs.map((DocumentSnapshot document) {
-                        if (document.data()['appointmenttype'] == 'Online') {
-                          return AppointmentList(
-                              reason: document.data()['reason'],
-                              doctor: document.data()['doctorname'],
-                              doctoremail: document.data()['doctoremail'],
-                              paymentstatus: document.data()['paymentstatus'],
-                              date: document.data()['date'],
-                              timing: document.data()['timing'],
-                              visittype: document.data()['visittype'],
-                              paymentamount: document.data()['paymentamount'],
-                              appointmenttype:
-                                  document.data()['appointmenttype'],
-                              patientemail: document.data()['patientemail'],
-                              zoomlink: document.data()['zoom']);
-                        } else {
-                          return AppointmentList(
-                              reason: document.data()['reason'],
-                              doctor: document.data()['doctorname'],
-                              doctoremail: document.data()['doctoremail'],
-                              paymentstatus: document.data()['paymentstatus'],
-                              date: document.data()['date'],
-                              timing: document.data()['timing'],
-                              visittype: document.data()['visittype'],
-                              paymentamount: document.data()['paymentamount'],
-                              appointmenttype:
-                                  document.data()['appointmenttype'],
-                              patientemail: document.data()['patientemail'],
-                              zoomlink: '');
-                        }
-                      }).toList(),
-                    );
-                  },
-                ))
+            appointmentList.length == 0 && empty == 1
+                ? LoadingHeart()
+                : empty == 0
+                    ? EmptyRecord()
+                    : Container(
+                        padding: EdgeInsets.all(5),
+                        child: RefreshIndicator(
+                            onRefresh: setData,
+                            color: Colors.deepPurple,
+                            child: ListView.builder(
+                                itemCount: appointmentList.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  if (appointmentList[index]
+                                          ['appointmenttype'] ==
+                                      'Online') {
+                                    return AppointmentList(
+                                        reason: appointmentList[index]
+                                            ['reason'],
+                                        doctor: appointmentList[index]
+                                            ['doctorname'],
+                                        doctoremail: appointmentList[index]
+                                            ['doctoremail'],
+                                        paymentstatus: appointmentList[index]
+                                            ['paymentstatus'],
+                                        date: appointmentList[index]['date'],
+                                        timing: appointmentList[index]
+                                            ['timing'],
+                                        visittype: appointmentList[index]
+                                            ['visittype'],
+                                        paymentamount: appointmentList[index]
+                                            ['paymentamount'],
+                                        appointmenttype: appointmentList[index]
+                                            ['appointmenttype'],
+                                        patientemail: appointmentList[index]
+                                            ['patientemail'],
+                                        zoomlink: appointmentList[index]
+                                            ['zoom']);
+                                  } else {
+                                    return AppointmentList(
+                                        reason: appointmentList[index]
+                                            ['reason'],
+                                        doctor: appointmentList[index]
+                                            ['doctorname'],
+                                        doctoremail: appointmentList[index]
+                                            ['doctoremail'],
+                                        paymentstatus: appointmentList[index]
+                                            ['paymentstatus'],
+                                        date: appointmentList[index]['date'],
+                                        timing: appointmentList[index]
+                                            ['timing'],
+                                        visittype: appointmentList[index]
+                                            ['visittype'],
+                                        paymentamount: appointmentList[index]
+                                            ['paymentamount'],
+                                        appointmenttype: appointmentList[index]
+                                            ['appointmenttype'],
+                                        patientemail: appointmentList[index]
+                                            ['patientemail'],
+                                        zoomlink: '');
+                                  }
+                                })))
           ]),
         ));
   }

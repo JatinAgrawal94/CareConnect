@@ -15,7 +15,6 @@ import 'package:careconnect/screens/medicaldata/radiology.dart';
 import 'package:careconnect/screens/medicaldata/surgery.dart';
 import 'package:careconnect/screens/medicaldata/vaccine.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:careconnect/screens/medicaldata/prescription.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
@@ -26,7 +25,7 @@ import 'package:http/http.dart' as http;
 class PatientData {
   // keys to map correct data on aboutpage.
   static PickedFile media;
-
+  String host = "https://careconnect-api.herokuapp.com";
   PickedFile get getMedia {
     return PatientData.media;
   }
@@ -101,66 +100,69 @@ class PatientData {
     }
   }
 
+  Future getCategoryData(String category, String documentid) async {
+    try {
+      category = category.toLowerCase();
+      var response =
+          await http.get('$host/patient/$category/all?documentid=$documentid');
+      var data = jsonDecode(response.body);
+      return data;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  Future<void> setCategoryData(
+      String category, String documentid, variable) async {
+    var data = await getCategoryData(category, documentid);
+    variable = data;
+  }
+
+  Future checkUserValidityForAppointment(
+      String doctoremail, String patientemail, String date) async {
+    try {
+      var body = {
+        'doctoremail': doctoremail,
+        'patientemail': patientemail,
+        'date': date
+      };
+      var response = await http.post('$host/appointment/check', body: body);
+      return int.parse(response.body);
+    } catch (err) {
+      return null;
+    }
+  }
+
   Future addAppointment(String patientId, data) async {
-    String zoom;
-
-    var offline = {
-      'reason': data['reason'],
-      'date': data['date'],
-      'timing': data['timing'],
-      'doctorname': data['doctorname'],
-      'doctoremail': data['doctoremail'],
-      'patientname': data['patientname'],
-      'patientemail': data['patientemail'],
-      'visittype': data['visittype'],
-      'appointmenttype': data['appointmenttype'],
-      'paymentstatus': data['paymentstatus'],
-      'paymentamount': data['paymentamount'],
-      'delete': 0
-    };
-
-    if (data['appointmenttype'] == 'Online') {
-      await FirebaseFirestore.instance
-          .collection('Doctor')
-          .where('email', isEqualTo: data['doctoremail'])
-          .get()
-          .then((QuerySnapshot snapshot) {
-        snapshot.docs.forEach((element) {
-          zoom = element['zoom'];
-        });
-      });
-      CollectionReference appointment =
-          FirebaseFirestore.instance.collection('Appointment');
-      await appointment.add({
-        'reason': data['reason'],
-        'date': data['date'],
-        'timing': data['timing'],
-        'doctorname': data['doctorname'],
-        'doctoremail': data['doctoremail'],
-        'patientname': data['patientname'],
-        'patientemail': data['patientemail'],
-        'visittype': data['visittype'],
-        'appointmenttype': data['appointmenttype'],
-        'paymentstatus': data['paymentstatus'],
-        'paymentamount': data['paymentamount'],
-        'zoom': zoom,
-        'delete': 0
-      });
-    } else {
-      CollectionReference appointment =
-          FirebaseFirestore.instance.collection('Appointment');
-      await appointment.add(offline);
+    try {
+      await http.post('$host/appointment/create', body: data);
+    } catch (err) {
+      return null;
     }
   }
 
   Future deleteAnyPatientRecord(patientId, recordId, category) async {
     // patient documentId, prescription docuementId
-    FirebaseFirestore.instance
-        .collection('Patient/$patientId/$category')
-        .doc(recordId)
-        .delete()
-        .then((value) => print("$category record Deleted"))
-        .catchError((error) => print("Failed to delete prescription: $error"));
+    try {
+      var body = {
+        'patientid': patientId,
+        'recordid': recordId,
+        'category': category
+      };
+      await http.post('$host/patient/record/delete', body: body);
+    } catch (err) {
+      print("Failed to delete $category record: $err");
+    }
+  }
+
+  Future getPatientAppointments(String email) async {
+    try {
+      var response = await http.get('$host/appointment/patient?email=$email');
+      var data = jsonDecode(response.body);
+      return data;
+    } catch (err) {
+      return null;
+    }
   }
 
   Future<void> uploadPatientPhoto(
@@ -273,33 +275,6 @@ class PatientData {
     } catch (err) {
       return 0;
     }
-  }
-
-// yet to be configured not ready to be used
-  Future deletePatient(String patientId, String userId) async {
-    var id;
-    CollectionReference patient =
-        FirebaseFirestore.instance.collection('Patient');
-    await patient
-        .doc(patientId)
-        .delete()
-        .then((value) => print("User Deleted"))
-        .catchError((error) => print("Failed to delete user: $error"));
-
-    CollectionReference user = FirebaseFirestore.instance.collection('user');
-
-    await user
-        .where('userid', isEqualTo: userId)
-        .get()
-        .then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) {
-        id = element.id;
-      });
-    });
-
-    user.doc(id).delete().then((value) {
-      print("Patient Deleted");
-    }).catchError((error) => print(error));
   }
 
   Future getVideoThumbnail(video) async {

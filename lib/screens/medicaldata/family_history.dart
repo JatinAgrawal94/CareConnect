@@ -1,9 +1,9 @@
+import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/family_list.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FamilyHistoryScreen extends StatefulWidget {
   final String patientId;
@@ -18,16 +18,32 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
   final String patientId;
   _FamilyHistoryScreenState(this.patientId);
   PatientData _patientData = PatientData();
-  CollectionReference family;
   String memberName = '';
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   String description = '';
+  var empty = 1;
+  List familyhistoryList = [];
   @override
   void initState() {
     super.initState();
+    _patientData.getCategoryData('familyhistory', patientId).then((value) {
+      value.forEach((item) => {
+            setState(() {
+              familyhistoryList.add(item);
+            })
+          });
+      if (familyhistoryList.length == 0) {
+        setState(() {
+          empty = 0;
+        });
+      }
+    });
+  }
+
+  Future setData() async {
+    var data = await _patientData.getCategoryData("familyhistory", patientId);
     setState(() {
-      family = FirebaseFirestore.instance
-          .collection('Patient/$patientId/familyhistory');
+      this.familyhistoryList = data;
     });
   }
 
@@ -135,33 +151,27 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                       ],
                     )),
               ),
-              Container(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: family.snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return Text('Something went wrong');
-                    }
-
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return LoadingHeart();
-                    }
-
-                    return new ListView(
-                      children:
-                          snapshot.data.docs.map((DocumentSnapshot document) {
-                        return FamilyList(
-                          name: document.data()['name'],
-                          description: document.data()['description'],
-                          recordId: document.id,
-                          patientId: patientId,
-                        );
-                      }).toList(),
-                    );
-                  },
-                ),
-              )
+              familyhistoryList.length == 0 && empty == 1
+                  ? LoadingHeart()
+                  : empty == 0
+                      ? EmptyRecord()
+                      : Container(
+                          child: RefreshIndicator(
+                              onRefresh: setData,
+                              color: Colors.deepPurple,
+                              child: ListView.builder(
+                                  itemCount: familyhistoryList.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return FamilyList(
+                                      name: familyhistoryList[index]['name'],
+                                      description: familyhistoryList[index]
+                                          ['description'],
+                                      recordId: familyhistoryList[index]
+                                          ['documentid'],
+                                      patientId: patientId,
+                                    );
+                                  })))
             ],
           ),
         ));

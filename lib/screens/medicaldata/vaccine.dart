@@ -1,8 +1,8 @@
+import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/vaccine_list.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:careconnect/components/loading.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class VaccineScreen extends StatefulWidget {
@@ -20,15 +20,30 @@ class _VaccineScreenState extends State<VaccineScreen> {
   DateTime selecteddate = DateTime.now();
   _VaccineScreenState(this.patientId);
   PatientData _patientData = PatientData();
-  CollectionReference vaccineList;
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
-
+  List vaccineList = [];
+  var empty = 1;
   @override
   void initState() {
     super.initState();
+    _patientData.getCategoryData('vaccine', patientId).then((value) {
+      value.forEach((item) {
+        setState(() {
+          vaccineList.add(item);
+        });
+      });
+      if (vaccineList.length == 0) {
+        setState(() {
+          empty = 0;
+        });
+      }
+    });
+  }
+
+  Future setData() async {
+    var data = await _patientData.getCategoryData("vaccine", patientId);
     setState(() {
-      vaccineList =
-          FirebaseFirestore.instance.collection('Patient/$patientId/vaccine');
+      this.vaccineList = data;
     });
   }
 
@@ -202,33 +217,27 @@ class _VaccineScreenState extends State<VaccineScreen> {
                           )
                         ],
                       ))),
-              Container(
-                  padding: EdgeInsets.all(5),
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: vaccineList.snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Something went wrong');
-                      }
-
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return LoadingHeart();
-                      }
-
-                      return new ListView(
-                        children:
-                            snapshot.data.docs.map((DocumentSnapshot document) {
-                          return VaccineList(
-                            vaccine: document.data()['vaccine'],
-                            date: document.data()['date'],
-                            patientId: patientId,
-                            recordId: document.id,
-                          );
-                        }).toList(),
-                      );
-                    },
-                  ))
+              vaccineList.length == 0 && empty == 1
+                  ? LoadingHeart()
+                  : empty == 0
+                      ? EmptyRecord()
+                      : Container(
+                          padding: EdgeInsets.all(5),
+                          child: RefreshIndicator(
+                              onRefresh: setData,
+                              color: Colors.deepPurple,
+                              child: ListView.builder(
+                                  itemCount: vaccineList.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return VaccineList(
+                                      vaccine: vaccineList[index]['vaccine'],
+                                      date: vaccineList[index]['date'],
+                                      patientId: patientId,
+                                      recordId: vaccineList[index]
+                                          ['documentid'],
+                                    );
+                                  })))
             ],
           ),
         ));

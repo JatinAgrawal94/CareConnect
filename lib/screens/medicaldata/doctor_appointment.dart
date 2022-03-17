@@ -5,18 +5,22 @@ import 'package:careconnect/services/doctorData.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+// Page showing list of dates doctor has appointments.
+
 class DoctorAppointment extends StatefulWidget {
   final String doctorId;
-  DoctorAppointment({Key key, this.doctorId}) : super(key: key);
+  final String email;
+  DoctorAppointment({Key key, this.doctorId, this.email}) : super(key: key);
 
   @override
   State<DoctorAppointment> createState() =>
-      _DoctorAppointmentState(this.doctorId);
+      _DoctorAppointmentState(this.doctorId, this.email);
 }
 
 class _DoctorAppointmentState extends State<DoctorAppointment> {
   final String doctorId;
-  _DoctorAppointmentState(this.doctorId);
+  final String email;
+  _DoctorAppointmentState(this.doctorId, this.email);
   DoctorData _doctorData = DoctorData();
   CollectionReference appointment;
   List date = [];
@@ -28,13 +32,12 @@ class _DoctorAppointmentState extends State<DoctorAppointment> {
   @override
   void initState() {
     super.initState();
-    _doctorData.getAppointmentDates(doctorId).then((value) {
+    _doctorData.getAppointmentDates(email).then((value) {
       setState(() {
         date = value[0];
         dateOccurence = value[1];
         timing = value[2];
         doctoremail = value[3];
-        documentId = value[4];
       });
     });
   }
@@ -78,7 +81,6 @@ class _DoctorAppointmentState extends State<DoctorAppointment> {
                           date: date[index],
                           noOfpatients: dateOccurence[date[index]].toString(),
                           doctoremail: doctoremail,
-                          documentId: documentId[index],
                         );
                       }),
                     ))

@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/doctordata.dart';
 
+// page showing options in by clicking on doctor profile button.
 class DoctorInfo extends StatefulWidget {
   final String documentId;
-  DoctorInfo({Key key, this.documentId}) : super(key: key);
+  final String email;
+  DoctorInfo({Key key, this.documentId, this.email}) : super(key: key);
 
   @override
-  State<DoctorInfo> createState() => _DoctorInfoState(this.documentId);
+  State<DoctorInfo> createState() =>
+      _DoctorInfoState(this.documentId, this.email);
 }
 
 class _DoctorInfoState extends State<DoctorInfo> {
   final String doctorId;
+  final String email;
   DoctorData _doctorData = DoctorData();
-  _DoctorInfoState(this.doctorId);
+  _DoctorInfoState(this.doctorId, this.email);
   List info = ["Personal Information", "Appointments"];
   List images = ['assets/about.png', 'assets/appointment.png'];
 
@@ -41,7 +45,7 @@ class _DoctorInfoState extends State<DoctorInfo> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            _doctorData.getScreen(index, doctorId)));
+                            _doctorData.getScreen(index, doctorId, email)));
               },
             ));
           }),

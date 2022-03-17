@@ -3,9 +3,12 @@ import 'package:careconnect/screens/userdataforms/doctor_profile.dart';
 import 'package:careconnect/services/general.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class DoctorData {
   static String doctorId;
+  String host = "https://careconnect-api.herokuapp.com";
   GeneralFunctions general = GeneralFunctions();
   final doctorInfoKeys = {
     0: 'name',
@@ -33,12 +36,13 @@ class DoctorData {
     return g.join('-').toString();
   }
 
-  Widget getScreen(int index, String doctorId) {
+  Widget getScreen(int index, String doctorId, String email) {
     if (index == 0) {
       return DoctorProfile(doctorId: doctorId);
     } else {
       return DoctorAppointment(
         doctorId: doctorId,
+        email: email,
       );
     }
   }
@@ -51,125 +55,72 @@ class DoctorData {
     });
   }
 
-  Map count(elements) {
-    var map = Map();
-    elements.forEach((element) {
-      if (!map.containsKey(element)) {
-        map[element] = 1;
-      } else {
-        map[element] += 1;
-      }
-    });
-    return map;
-  }
-
-  Future getAppointmentDates(String doctorId) async {
-    List data = [];
-    var date = [];
-    var doctoremail = " ";
-    List documentId = [];
-    var info = await general.getUserInfo(doctorId, 'Doctor');
-    doctoremail = info['email'];
-    await FirebaseFirestore.instance
-        .collection('Appointment')
-        .where('doctoremail', isEqualTo: info['email'].toString())
-        .get()
-        .then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) {
-        data.add({
-          'date': element['date'],
-          'timing': element['timing'],
-          'documentId': element.id
-        });
-      });
-    });
-    data.forEach((item) {
-      date.add(item['date']);
-    });
-    data.forEach((item) {
-      documentId.add(item['documentId']);
-    });
-
-    var dateOccurence = count(date);
-    var timing = data[0]['timing'];
-    return [date, dateOccurence, timing, doctoremail, documentId];
+  Future getAppointmentDates(String email) async {
+    try {
+      var url = Uri.parse('$host/appointment/appointmentdates?email=$email');
+      var response = await http.get(url);
+      var info = jsonDecode(response.body);
+      return [info[0], info[1], info[2][0]['timing'], email];
+    } catch (err) {
+      return null;
+    }
   }
 
   Future getPatientsBasedOnDateAndDoctor(
       String doctoremail, String date) async {
     List data = [];
-    await FirebaseFirestore.instance
-        .collection('Appointment')
-        .where('doctoremail', isEqualTo: doctoremail)
-        .where('date', isEqualTo: date)
-        .get()
-        .then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) {
-        data.add({
-          'patientname': element['patientname'],
-          'patientemail': element['patientemail'],
-          'reason': element['reason'],
-          'visittype': element['visittype'],
-          'paymentstatus': element['paymentstatus'],
-          'paymentamount': element['paymentamount'],
-          'appointmenttype': element['appointmenttype'],
-          'docId': element.id
-        });
-      });
-    });
-    return data;
+    try {
+      var url = '$host/appointment/specific?email=$doctoremail&date=$date';
+      var response = await http.get(url);
+      data = jsonDecode(response.body);
+      return data;
+    } catch (err) {
+      return null;
+    }
   }
 
-  Future getAppointmentId(String doctoremail, String patientemail, String date,
-      String paymentstatus) async {
-    var id;
-    await FirebaseFirestore.instance
-        .collection('Appointment')
-        .where('doctoremail', isEqualTo: doctoremail)
-        .where('patientemail', isEqualTo: patientemail)
-        .where('date', isEqualTo: date)
-        .where('paymentstatus', isEqualTo: paymentstatus)
-        .get()
-        .then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) {
-        id = element.id;
-      });
-    });
-    return id;
-  }
+  // Future getAppointmentId(String doctoremail, String patientemail, String date,
+  //     String paymentstatus) async {
+  //   var id;
+  //   await FirebaseFirestore.instance
+  //       .collection('Appointment')
+  //       .where('doctoremail', isEqualTo: doctoremail)
+  //       .where('patientemail', isEqualTo: patientemail)
+  //       .where('date', isEqualTo: date)
+  //       .where('paymentstatus', isEqualTo: paymentstatus)
+  //       .get()
+  //       .then((QuerySnapshot snapshot) {
+  //     snapshot.docs.forEach((element) {
+  //       id = element.id;
+  //     });
+  //   });
+  //   return id;
+  // }
 
   Future updatePaymentAmount(String doctorEmail, String patientEmail,
       String date, String paymentStatus, String paymentamount) async {
-    var docId =
-        await getAppointmentId(doctorEmail, patientEmail, date, paymentStatus);
-    await FirebaseFirestore.instance
-        .collection('Appointment')
-        .doc(docId)
-        .update({'paymentamount': paymentamount})
-        .then((value) {})
-        .catchError((error) {});
-  }
-
-  Future checkUserValidityForAppointment(
-      String doctoremail, String patientemail, String date) async {
-    List data = [];
-    await FirebaseFirestore.instance
-        .collection('Appointment')
-        .where('doctoremail', isEqualTo: doctoremail)
-        .where('patientemail', isEqualTo: patientemail)
-        .where('date', isEqualTo: date)
-        .get()
-        .then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) {
-        if (element != null) {
-          data.add(element['patientemail']);
-        }
-      });
-    });
-    if (data.length == 1) {
-      return 0;
-    } else {
-      return 1;
+    try {
+      var body = {
+        'doctoremail': doctorEmail,
+        'patientemail': patientEmail,
+        'date': date,
+        'paymentstatus': paymentStatus,
+        'paymentamount': paymentamount
+      };
+      var url = Uri.parse('$host/appointment/updatepaymentamount');
+      var response = await http.post(url, body: body);
+      return response.body;
+    } catch (err) {
+      return null;
     }
+  //   var docId =
+  //       await getAppointmentId(doctorEmail, patientEmail, date, paymentStatus);
+  //   await FirebaseFirestore.instance
+  //       .collection('Appointment')
+  //       .doc(docId)
+  //       .update({'paymentamount': paymentamount})
+  //       .then((value) {})
+  //       .catchError((error) {});
+
   }
 }

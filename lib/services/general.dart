@@ -7,6 +7,7 @@ import 'dart:io';
 
 class GeneralFunctions {
   String host = "https://careconnect-api.herokuapp.com";
+
   Future<String> getProfileImageURL(String userId) async {
     try {
       String downloadURL = await firebase_storage.FirebaseStorage.instance
@@ -55,8 +56,7 @@ class GeneralFunctions {
 
   Future getDocsId(String email, String collection) async {
     var path = collection.toLowerCase();
-    var url = Uri.parse(
-        'https://careconnect-api.herokuapp.com/$path/getdocsid?email=$email&role=$collection');
+    var url = Uri.parse('$host/$path/getdocsid?email=$email&role=$collection');
     var response = await http.get(url);
     var data = jsonDecode(response.body)[0];
     return {
@@ -68,8 +68,8 @@ class GeneralFunctions {
 
   Future getUserInfo(String documentid, String collection) async {
     var path = collection.toLowerCase();
-    var url = Uri.parse(
-        'https://careconnect-api.herokuapp.com/$path/info?documentid=$documentid&role=$collection');
+    var url =
+        Uri.parse('$host/$path/info?documentid=$documentid&role=$collection');
     var response = await http.get(url);
     var data = jsonDecode(response.body);
     return data;
@@ -78,7 +78,7 @@ class GeneralFunctions {
   Future<void> updateUserinfo(documentId, data, String collection) async {
     try {
       var role = collection.toLowerCase();
-      var url = Uri.parse('https://careconnect-api.herokuapp.com/$role/update');
+      var url = Uri.parse('$host/$role/update');
       var userData = jsonEncode(data);
       await http.post(url, body: {
         'documentid': documentId,
@@ -94,7 +94,8 @@ class GeneralFunctions {
   Future getAllUser(String collection) async {
     try {
       var role = collection.toLowerCase();
-      var response = await http.get('$host/$role/all$role');
+      var url = Uri.parse('$host/$role/all$role');
+      var response = await http.get(url);
       List data = jsonDecode(response.body);
       return data;
     } catch (err) {

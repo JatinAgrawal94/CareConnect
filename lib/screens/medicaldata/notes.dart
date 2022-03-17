@@ -1,10 +1,10 @@
+import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/notes.dart';
 import 'package:careconnect/components/photogrid.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:careconnect/components/loading.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 
 class NotesScreen extends StatefulWidget {
@@ -26,16 +26,32 @@ class _NotesScreenState extends State<NotesScreen> {
   String description;
   _NotesScreenState(this.patientId, this.userId);
   PatientData _patientData = PatientData();
-  CollectionReference notes;
   List images = [];
   List videos = [];
   List files = [];
-
+  List notesList = [];
+  var empty = 1;
   @override
   void initState() {
     super.initState();
+    _patientData.getCategoryData('notes', patientId).then((value) {
+      value.forEach((item) {
+        setState(() {
+          notesList.add(item);
+        });
+      });
+      if (notesList.length == 0) {
+        setState(() {
+          empty = 0;
+        });
+      }
+    });
+  }
+
+  Future setData() async {
+    var data = await _patientData.getCategoryData("notes", patientId);
     setState(() {
-      notes = FirebaseFirestore.instance.collection('Patient/$patientId/notes');
+      this.notesList = data;
     });
   }
 
@@ -241,33 +257,27 @@ class _NotesScreenState extends State<NotesScreen> {
                           )
                         ],
                       ))),
-              Container(
-                  padding: EdgeInsets.all(5),
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: notes.snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Something went wrong');
-                      }
-
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return LoadingHeart();
-                      }
-
-                      return new ListView(
-                        children:
-                            snapshot.data.docs.map((DocumentSnapshot document) {
-                          return NotesList(
-                              title: document.data()['title'],
-                              description: document.data()['description'],
-                              patientId: patientId,
-                              recordId: document.id,
-                              media: document.data()['media']);
-                        }).toList(),
-                      );
-                    },
-                  )),
+              notesList.length == 0 && empty == 1
+                  ? LoadingHeart()
+                  : empty == 0
+                      ? EmptyRecord()
+                      : Container(
+                          child: RefreshIndicator(
+                              onRefresh: setData,
+                              color: Colors.deepPurple,
+                              child: ListView.builder(
+                                  itemCount: notesList.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return NotesList(
+                                        title: notesList[index]['title'],
+                                        description: notesList[index]
+                                            ['description'],
+                                        patientId: patientId,
+                                        recordId: notesList[index]
+                                            ['documentid'],
+                                        media: notesList[index]['media']);
+                                  }))),
             ],
           ),
         ));

@@ -18,7 +18,6 @@ class _PatientAddFormState extends State<PatientAddForm> {
   ImagePicker picker = ImagePicker();
   PickedFile _image;
   PatientData patientData = PatientData();
-  String _patientId;
   static String imageURL;
   static var patientInfo = Map<String, dynamic>();
   GeneralFunctions general = GeneralFunctions();

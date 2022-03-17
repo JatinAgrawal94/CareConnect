@@ -10,22 +10,20 @@ import 'package:http/http.dart' as http;
 
 class AuthService {
   FirebaseAuth auth = FirebaseAuth.instance;
+  String host = "https://careconnect-api.herokuapp.com";
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static String role = 'doctor';
   static String userid;
 
   Future getRole(String email) async {
     List data = [];
-    await FirebaseFirestore.instance
-        .collection('users')
-        .where('email', isEqualTo: email)
-        .get()
-        .then((value) {
-      value.docs.forEach((element) {
-        data.add({'role': element['role']});
-      });
-    });
-    return data;
+    try {
+      var response = await http.get('$host/auth/getrole?email=$email');
+      data = jsonDecode(response.body);
+      return data;
+    } catch (err) {
+      print(err);
+    }
   }
 
   // get RegisteredUser(model) format for logged in user.

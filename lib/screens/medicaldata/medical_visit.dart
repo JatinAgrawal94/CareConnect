@@ -1,3 +1,4 @@
+import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/components/medical_visit.dart';
 import 'package:flutter/material.dart';
@@ -19,18 +20,34 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
   int visitType = 0;
   String doctor = '';
   String place = '';
+  var empty = 1;
   _MedicalVisitScreenState(this.patientId);
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   PatientData _patientData = PatientData();
   DateTime selecteddate = DateTime.now();
   CollectionReference visit;
-
+  List medicalvisitList = [];
   @override
   void initState() {
     super.initState();
+    _patientData.getCategoryData('medicalvisit', patientId).then((value) {
+      value.forEach((item) => {
+            setState(() {
+              medicalvisitList.add(item);
+            })
+          });
+      if (medicalvisitList.length == 0) {
+        setState(() {
+          empty = 0;
+        });
+      }
+    });
+  }
+
+  Future setData() async {
+    var data = await _patientData.getCategoryData("medicalvisit", patientId);
     setState(() {
-      visit = FirebaseFirestore.instance
-          .collection('Patient/$patientId/medicalvisit');
+      this.medicalvisitList = data;
     });
   }
 
@@ -243,35 +260,29 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                   Text("Save", style: TextStyle(fontSize: 20)))
                         ],
                       ))),
-              Container(
-                  padding: EdgeInsets.all(5),
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: visit.snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Something went wrong');
-                      }
-
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return LoadingHeart();
-                      }
-
-                      return new ListView(
-                        children:
-                            snapshot.data.docs.map((DocumentSnapshot document) {
-                          return MedicalVisitList(
-                            visitType: document.data()['visitType'],
-                            doctor: document.data()['doctor'],
-                            place: document.data()['place'],
-                            date: document.data()['date'],
-                            recordId: document.id,
-                            patientId: patientId,
-                          );
-                        }).toList(),
-                      );
-                    },
-                  ))
+              medicalvisitList.length == 0 && empty == 1
+                  ? LoadingHeart()
+                  : empty == 0
+                      ? EmptyRecord()
+                      : Container(
+                          child: RefreshIndicator(
+                              onRefresh: setData,
+                              color: Colors.deepPurple,
+                              child: ListView.builder(
+                                itemCount: medicalvisitList.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return MedicalVisitList(
+                                    visitType: medicalvisitList[index]
+                                        ['visitType'],
+                                    doctor: medicalvisitList[index]['doctor'],
+                                    place: medicalvisitList[index]['place'],
+                                    date: medicalvisitList[index]['date'],
+                                    recordId: medicalvisitList[index]
+                                        ['documentid'],
+                                    patientId: patientId,
+                                  );
+                                },
+                              )))
             ],
           ),
         ));

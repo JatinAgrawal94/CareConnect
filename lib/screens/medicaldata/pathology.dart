@@ -1,3 +1,4 @@
+import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/pathology_list.dart';
 import 'package:careconnect/components/photogrid.dart';
 import 'package:careconnect/services/general.dart';
@@ -5,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:careconnect/components/loading.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 
 class PathologyScreen extends StatefulWidget {
@@ -33,14 +33,14 @@ class _PathologyScreenState extends State<PathologyScreen> {
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   _PathologyScreenState(this.patientId, this.userId);
   PatientData _patientData = PatientData();
-  CollectionReference pathology;
   DateTime selecteddate = DateTime.now();
   GeneralFunctions general = GeneralFunctions();
   List<String> data = [];
   List images = [];
   List videos = [];
   List files = [];
-
+  List pathologyList = [];
+  var empty = 1;
   @override
   void initState() {
     super.initState();
@@ -51,9 +51,24 @@ class _PathologyScreenState extends State<PathologyScreen> {
             });
           })
         });
+    _patientData.getCategoryData('pathology', patientId).then((value) {
+      value.forEach((item) {
+        setState(() {
+          pathologyList.add(item);
+        });
+      });
+      if (pathologyList.length == 0) {
+        setState(() {
+          empty = 0;
+        });
+      }
+    });
+  }
+
+  Future setData() async {
+    var data = await _patientData.getCategoryData("pathology", patientId);
     setState(() {
-      pathology =
-          FirebaseFirestore.instance.collection('Patient/$patientId/pathology');
+      this.pathologyList = data;
     });
   }
 
@@ -415,37 +430,30 @@ class _PathologyScreenState extends State<PathologyScreen> {
                       ],
                     )),
               )),
-              Container(
-                  padding: EdgeInsets.all(5),
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: pathology.snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Something went wrong');
-                      }
-
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return LoadingHeart();
-                      }
-
-                      return new ListView(
-                        children:
-                            snapshot.data.docs.map((DocumentSnapshot document) {
-                          return PathologyList(
-                            title: document.data()['title'],
-                            result: document.data()['result'],
-                            doctor: document.data()['doctor'],
-                            place: document.data()['place'],
-                            date: document.data()['date'],
-                            patientId: patientId,
-                            recordId: document.id,
-                            media: document.data()['media'],
-                          );
-                        }).toList(),
-                      );
-                    },
-                  ))
+              pathologyList.length == 0 && empty == 1
+                  ? LoadingHeart()
+                  : empty == 0
+                      ? EmptyRecord()
+                      : Container(
+                          child: RefreshIndicator(
+                              onRefresh: setData,
+                              color: Colors.deepPurple,
+                              child: ListView.builder(
+                                  itemCount: pathologyList.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return PathologyList(
+                                      title: pathologyList[index]['title'],
+                                      result: pathologyList[index]['result'],
+                                      doctor: pathologyList[index]['doctor'],
+                                      place: pathologyList[index]['place'],
+                                      date: pathologyList[index]['date'],
+                                      patientId: patientId,
+                                      recordId: pathologyList[index]
+                                          ['documentid'],
+                                      media: pathologyList[index]['media'],
+                                    );
+                                  })))
             ],
           ),
         ));

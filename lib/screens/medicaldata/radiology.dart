@@ -1,10 +1,10 @@
+import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/photogrid.dart';
 import 'package:careconnect/components/radiology_list.dart';
 import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:careconnect/components/loading.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -32,11 +32,12 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
   DateTime selecteddate = DateTime.now();
   PatientData _patientData = PatientData();
   GeneralFunctions general = GeneralFunctions();
-  CollectionReference radiology;
   List<String> data = [];
   List images = [];
   List videos = [];
   List files = [];
+  List radiologyList = [];
+  var empty = 1;
 
   @override
   void initState() {
@@ -48,9 +49,24 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
             });
           })
         });
+    _patientData.getCategoryData('radiology', patientId).then((value) {
+      value.forEach((item) {
+        setState(() {
+          radiologyList.add(item);
+        });
+      });
+      if (radiologyList.length == 0) {
+        setState(() {
+          empty = 0;
+        });
+      }
+    });
+  }
+
+  Future setData() async {
+    var data = await _patientData.getCategoryData("radiology", patientId);
     setState(() {
-      radiology =
-          FirebaseFirestore.instance.collection('Patient/$patientId/radiology');
+      this.radiologyList = data;
     });
   }
 
@@ -380,37 +396,31 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                               )
                             ],
                           )))),
-              Container(
-                  padding: EdgeInsets.all(5),
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: radiology.snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Something went wrong');
-                      }
-
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return LoadingHeart();
-                      }
-
-                      return new ListView(
-                        children:
-                            snapshot.data.docs.map((DocumentSnapshot document) {
-                          return RadiologyList(
-                            title: document.data()['title'],
-                            result: document.data()['result'],
-                            doctor: document.data()['doctor'],
-                            place: document.data()['place'],
-                            date: document.data()['date'],
-                            recordId: document.id,
-                            patientId: patientId,
-                            media: document.data()['media'],
-                          );
-                        }).toList(),
-                      );
-                    },
-                  )),
+              radiologyList.length == 0 && empty == 1
+                  ? LoadingHeart()
+                  : empty == 0
+                      ? EmptyRecord()
+                      : Container(
+                          padding: EdgeInsets.all(5),
+                          child: RefreshIndicator(
+                              onRefresh: setData,
+                              color: Colors.deepPurple,
+                              child: ListView.builder(
+                                  itemCount: radiologyList.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return RadiologyList(
+                                      title: radiologyList[index]['title'],
+                                      result: radiologyList[index]['result'],
+                                      doctor: radiologyList[index]['doctor'],
+                                      place: radiologyList[index]['place'],
+                                      date: radiologyList[index]['date'],
+                                      recordId: radiologyList[index]
+                                          ['documentid'],
+                                      patientId: patientId,
+                                      media: radiologyList[index]['media'],
+                                    );
+                                  })))
             ],
           ),
         ));

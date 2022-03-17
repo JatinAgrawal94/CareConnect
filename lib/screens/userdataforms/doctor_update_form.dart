@@ -42,7 +42,7 @@ class _DoctorFormState extends State<DoctorForm> {
   String bloodgroup;
   String contact = " ";
   String designation = " ";
-  String address = " ";
+  String address ;
   String name = " ";
   String email = " ";
   String doctype = " ";
@@ -146,7 +146,7 @@ class _DoctorFormState extends State<DoctorForm> {
 
   @override
   Widget build(BuildContext context) {
-    return (address == "" && imageURL == null)
+    return (address == null)
         ? LoadingHeart()
         : Scaffold(
             appBar: AppBar(
