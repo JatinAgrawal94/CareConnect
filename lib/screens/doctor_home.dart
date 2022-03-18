@@ -1,3 +1,4 @@
+import 'package:careconnect/components/emptypatient.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/components/patientlisttile.dart';
 import 'package:careconnect/screens/doctor_medical_screen.dart';
@@ -22,6 +23,8 @@ class _DoctorHomeState extends State<DoctorHome> {
   var patientList = [];
   String documentId;
   String profileImageURL;
+  var emptyPatients = 1;
+
   @override
   void initState() {
     super.initState();
@@ -31,16 +34,21 @@ class _DoctorHomeState extends State<DoctorHome> {
       });
     });
     general.getAllUser('patient').then((value) {
-      value.forEach((element) => {
-            setState(() {
-              patientList.add({
-                'name': element['name'],
-                'profileImageURL': element['profileImageURL'],
-                'documentid': element['documentid'],
-                'userid': element['userid']
-              });
-            })
+      value.forEach((element) {
+        setState(() {
+          patientList.add({
+            'name': element['name'],
+            'profileImageURL': element['profileImageURL'],
+            'documentid': element['documentid'],
+            'userid': element['userid']
           });
+        });
+      });
+      if (patientList.length == 0) {
+        setState(() {
+          emptyPatients = 0;
+        });
+      }
     });
   }
 
@@ -102,20 +110,22 @@ class _DoctorHomeState extends State<DoctorHome> {
                 MaterialPageRoute(builder: (context) => PatientAddForm()));
           },
         ),
-        body: patientList.length == 0
+        body: patientList.length == 0 && emptyPatients == 1
             ? LoadingHeart()
-            : Container(
-                child: RefreshIndicator(
-                    onRefresh: loadPatients,
-                    color: Colors.deepPurple,
-                    child: ListView(
-                        children: patientList.map((element) {
-                      return PatientListTile(
-                        documentId: element['documentid'],
-                        userId: element['userid'],
-                        profileImageURL: element['profileImageURL'],
-                        name: element['name'],
-                      );
-                    }).toList()))));
+            : emptyPatients == 0
+                ? EmptyPatientList()
+                : Container(
+                    child: RefreshIndicator(
+                        onRefresh: loadPatients,
+                        color: Colors.deepPurple,
+                        child: ListView(
+                            children: patientList.map((element) {
+                          return PatientListTile(
+                            documentId: element['documentid'],
+                            userId: element['userid'],
+                            profileImageURL: element['profileImageURL'],
+                            name: element['name'],
+                          );
+                        }).toList()))));
   }
 }

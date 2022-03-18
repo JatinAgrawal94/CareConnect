@@ -200,6 +200,7 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                     width:
                                         MediaQuery.of(context).size.width * 0.5,
                                     child: TextFormField(
+                                        initialValue: "CareConnect",
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (value) {
                                           setState(() {

@@ -116,11 +116,13 @@ class _RadiologyListState extends State<RadiologyList> {
                             Text(
                               "View",
                               style: TextStyle(
+                                  fontSize: 20,
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold),
                             ),
                             Icon(
                               Icons.arrow_right,
+                              size: 20,
                               color: Colors.white,
                             )
                           ],

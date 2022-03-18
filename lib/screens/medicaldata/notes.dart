@@ -189,72 +189,80 @@ class _NotesScreenState extends State<NotesScreen> {
                             "Media files should be less than 5MB",
                             style: TextStyle(fontSize: 15),
                           ),
-                          ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  primary: Colors.deepPurple),
-                              onPressed: () async {
-                                if (formkey.currentState.validate()) {
-                                  Fluttertoast.showToast(
-                                      msg: "Data Saved",
-                                      toastLength: Toast.LENGTH_LONG,
-                                      gravity: ToastGravity.SNACKBAR,
-                                      backgroundColor: Colors.grey,
-                                      textColor: Colors.white,
-                                      fontSize: 15,
-                                      timeInSecForIosWeb: 1);
-                                  Navigator.pop(context);
-                                  var data = await _patientData
-                                      .uploadMediaFiles({
-                                    'image': images,
-                                    'video': videos,
-                                    'file': files
-                                  }, category, userId);
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.deepPurple),
+                                    onPressed: () async {
+                                      if (formkey.currentState.validate()) {
+                                        Fluttertoast.showToast(
+                                            msg: "Data Saved",
+                                            toastLength: Toast.LENGTH_LONG,
+                                            gravity: ToastGravity.SNACKBAR,
+                                            backgroundColor: Colors.grey,
+                                            textColor: Colors.white,
+                                            fontSize: 15,
+                                            timeInSecForIosWeb: 1);
+                                        Navigator.pop(context);
+                                        var data = await _patientData
+                                            .uploadMediaFiles({
+                                          'image': images,
+                                          'video': videos,
+                                          'file': files
+                                        }, category, userId);
 
-                                  await _patientData.addMedicalData(
-                                      patientId, "notes", {
-                                    'title': title,
-                                    'description': description,
-                                    'media': data
-                                  });
-                                } else {}
-                              },
-                              child:
-                                  Text("Save", style: TextStyle(fontSize: 20))),
-                          RawMaterialButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5)),
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          PhotoGrid(
-                                            image: images,
-                                            video: videos,
-                                            file: files,
-                                            filetype: "new",
-                                          )));
-                            },
-                            fillColor: Colors.deepPurple,
-                            splashColor: Colors.white,
-                            child: Container(
-                                width: MediaQuery.of(context).size.width * 0.2,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "View",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Icon(
-                                      Icons.arrow_right,
-                                      color: Colors.white,
-                                    )
-                                  ],
-                                )),
-                          )
+                                        await _patientData.addMedicalData(
+                                            patientId, "notes", {
+                                          'title': title,
+                                          'description': description,
+                                          'media': data
+                                        });
+                                      } else {}
+                                    },
+                                    child: Text("Save",
+                                        style: TextStyle(fontSize: 20))),
+                                RawMaterialButton(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5)),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                PhotoGrid(
+                                                  image: images,
+                                                  video: videos,
+                                                  file: files,
+                                                  filetype: "new",
+                                                )));
+                                  },
+                                  fillColor: Colors.deepPurple,
+                                  splashColor: Colors.white,
+                                  child: Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.2,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "View",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_right,
+                                            size: 20,
+                                            color: Colors.white,
+                                          )
+                                        ],
+                                      )),
+                                )
+                              ])
                         ],
                       ))),
               notesList.length == 0 && empty == 1

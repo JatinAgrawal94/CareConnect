@@ -133,32 +133,26 @@ class _AllergyScreenState extends State<AllergyScreen> {
                           Container(
                               margin: EdgeInsets.only(top: 10),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(
-                                    "Date",
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                  Text(
-                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
-                                        .split(' ')[0],
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                  ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          primary: Colors.deepPurple),
+                                  IconButton(
+                                      iconSize: 20,
                                       onPressed: () {
                                         _setDate(context);
                                       },
-                                      child: Text(
-                                        "Change",
-                                        style: TextStyle(fontSize: 18),
-                                      ))
+                                      icon: Icon(
+                                        Icons.date_range,
+                                        size: 30,
+                                      )),
+                                  Text(
+                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                        .split(' ')[0],
+                                    style: TextStyle(fontSize: 20),
+                                  ),
                                 ],
                               )),
                           Container(
-                              alignment: Alignment.topLeft,
+                              alignment: Alignment.center,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.deepPurple),
@@ -183,7 +177,7 @@ class _AllergyScreenState extends State<AllergyScreen> {
                                 },
                                 child: Text(
                                   "Add",
-                                  style: TextStyle(fontSize: 18),
+                                  style: TextStyle(fontSize: 20),
                                 ),
                               ))
                         ],

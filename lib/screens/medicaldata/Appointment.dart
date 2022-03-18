@@ -27,8 +27,9 @@ class _AppointmentState extends State<Appointment> {
   DateTime selecteddate = DateTime.now();
   PatientData _patientData = PatientData();
   GeneralFunctions general = GeneralFunctions();
-  List<String> doctorList = [];
+  List<String> doctorList = ['Other'];
   List doctordata = [];
+  var otherDoctor = 0;
   List appointmentList = [];
   var empty = 1;
   var patientdata;
@@ -113,7 +114,7 @@ class _AppointmentState extends State<Appointment> {
                 Tab(child: Text('Previous')),
               ])),
           body: TabBarView(children: [
-            doctorList == null
+            doctorList.length == 1
                 ? LoadingHeart()
                 : SingleChildScrollView(
                     child: Container(
@@ -255,10 +256,12 @@ class _AppointmentState extends State<Appointment> {
                             Container(
                                 padding: EdgeInsets.all(5),
                                 child: Row(children: <Widget>[
-                                  Text(
-                                    "Doctor",
-                                    style: TextStyle(fontSize: 20),
-                                  ),
+                                  Container(
+                                      margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                      child: Text(
+                                        "Doctor",
+                                        style: TextStyle(fontSize: 20),
+                                      )),
                                   Expanded(
                                       child: DropdownButtonFormField<String>(
                                     value: doctor,
@@ -272,12 +275,62 @@ class _AppointmentState extends State<Appointment> {
                                     }).toList(),
                                     hint: Text("Select doctor"),
                                     onChanged: (String value) {
-                                      setState(() {
-                                        doctor = value;
-                                      });
+                                      if (value != 'Other') {
+                                        setState(() {
+                                          doctor = value;
+                                          if (otherDoctor == 1) {
+                                            otherDoctor = 0;
+                                          }
+                                        });
+                                      } else {
+                                        setState(() {
+                                          otherDoctor = 1;
+                                        });
+                                      }
                                     },
                                   )),
                                 ])),
+                            otherDoctor != 0
+                                ? Container(
+                                    padding: EdgeInsets.all(5),
+                                    child: Row(children: <Widget>[
+                                      Text(
+                                        "DoctorName",
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                      Container(
+                                        margin:
+                                            EdgeInsets.fromLTRB(15, 0, 5, 0),
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.6,
+                                        child: TextFormField(
+                                          cursorColor: Colors.deepPurple,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              doctor = value;
+                                            });
+                                          },
+                                          validator: (value) {
+                                            if (value.isEmpty) {
+                                              return "Field can't be Empty";
+                                            } else {
+                                              return null;
+                                            }
+                                          },
+                                          keyboardType: TextInputType.text,
+                                          decoration: InputDecoration(
+                                              hintText: "Doctor Name",
+                                              focusedBorder:
+                                                  UnderlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          width: 1,
+                                                          color: Colors
+                                                              .deepPurple))),
+                                        ),
+                                      ),
+                                    ]))
+                                : Container(width: 0, height: 0),
                             ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.deepPurple),
@@ -382,7 +435,9 @@ class _AppointmentState extends State<Appointment> {
                                         patientemail: appointmentList[index]
                                             ['patientemail'],
                                         zoomlink: appointmentList[index]
-                                            ['zoom']);
+                                            ['zoom'],
+                                        documentid: appointmentList[index]
+                                            ['documentid']);
                                   } else {
                                     return AppointmentList(
                                         reason: appointmentList[index]
@@ -404,7 +459,9 @@ class _AppointmentState extends State<Appointment> {
                                             ['appointmenttype'],
                                         patientemail: appointmentList[index]
                                             ['patientemail'],
-                                        zoomlink: '');
+                                        zoomlink: '',
+                                        documentid: appointmentList[index]
+                                            ['documentid']);
                                   }
                                 })))
           ]),

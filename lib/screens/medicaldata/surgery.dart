@@ -28,13 +28,14 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
   String result;
   String doctor;
   String place;
+  int otherDoctor = 0;
   _SurgeryScreenState(this.patientId, this.userId);
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   PatientData _patientData = PatientData();
   GeneralFunctions general = GeneralFunctions();
   DateTime selecteddate = DateTime.now();
   CollectionReference surgery;
-  List<String> data = [];
+  List<String> data = ['Other'];
   List images = [];
   List videos = [];
   List files = [];
@@ -114,288 +115,355 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
           ),
           body: TabBarView(
             children: [
-              SingleChildScrollView(
-                  child: Container(
-                      padding: EdgeInsets.all(5),
-                      margin: EdgeInsets.all(5),
-                      child: Form(
-                          key: formkey,
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                padding: EdgeInsets.all(5),
-                                child: TextFormField(
-                                  cursorColor: Colors.deepPurple,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      title = value;
-                                    });
-                                  },
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return "Field can't be empty";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  keyboardType: TextInputType.text,
-                                  decoration: InputDecoration(
-                                      hintText: "Title",
-                                      focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                              width: 1,
-                                              color: Colors.deepPurple))),
-                                ),
-                              ),
-                              Container(
-                                padding: EdgeInsets.all(5),
-                                child: TextFormField(
-                                  cursorColor: Colors.deepPurple,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      result = value;
-                                    });
-                                  },
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return "Field can't be empty";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  keyboardType: TextInputType.text,
-                                  decoration: InputDecoration(
-                                      hintText: "Result",
-                                      focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                              width: 1,
-                                              color: Colors.deepPurple))),
-                                ),
-                              ),
-                              Container(
-                                  margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                  // width:MediaQuery.of(context).size.width * 0.5,
-                                  child: Container(
-                                      child: DropdownButtonFormField<String>(
-                                    value: doctor,
-                                    items: data.map<DropdownMenuItem<String>>(
-                                        (String value) {
-                                      return DropdownMenuItem<String>(
-                                          child: Text(value,
-                                              style: TextStyle(fontSize: 15)),
-                                          value: value);
-                                    }).toList(),
-                                    hint: Text(
-                                      "Select doctor",
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                    onChanged: (String value) {
-                                      setState(() {
-                                        doctor = value;
-                                      });
-                                    },
-                                    validator: (doctor) {
-                                      if (doctor == null) {
-                                        return "Field can't be empty";
-                                      } else {
-                                        return null;
-                                      }
-                                    },
-                                  ))),
-                              Container(
-                                padding: EdgeInsets.all(5),
-                                child: TextFormField(
-                                  cursorColor: Colors.deepPurple,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      place = value;
-                                    });
-                                  },
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return "Field can't be empty";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  keyboardType: TextInputType.text,
-                                  decoration: InputDecoration(
-                                      hintText: "Place",
-                                      focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                              width: 1,
-                                              color: Colors.deepPurple))),
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.all(15),
-                                child: Row(
-                                  children: <Widget>[
-                                    IconButton(
-                                      icon: Icon(Icons.date_range, size: 30),
-                                      onPressed: () {
-                                        _setDate(context);
+              data.length == 1
+                  ? LoadingHeart()
+                  : SingleChildScrollView(
+                      child: Container(
+                          padding: EdgeInsets.all(5),
+                          margin: EdgeInsets.all(5),
+                          child: Form(
+                              key: formkey,
+                              child: Column(
+                                children: <Widget>[
+                                  Container(
+                                    padding: EdgeInsets.all(5),
+                                    child: TextFormField(
+                                      cursorColor: Colors.deepPurple,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          title = value;
+                                        });
                                       },
+                                      validator: (value) {
+                                        if (value.isEmpty) {
+                                          return "Field can't be empty";
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                      keyboardType: TextInputType.text,
+                                      decoration: InputDecoration(
+                                          hintText: "Title",
+                                          focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Colors.deepPurple))),
                                     ),
-                                    Text(
-                                        "Date: ${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                        style: TextStyle(fontSize: 20))
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: <Widget>[
-                                    IconButton(
-                                        onPressed: () async {
-                                          final result = await FilePicker
-                                              .platform
-                                              .pickFiles(
-                                                  allowMultiple: true,
-                                                  type: FileType.custom,
-                                                  allowedExtensions: [
-                                                'jpg',
-                                                'jpeg',
-                                                'png'
-                                              ]);
-                                          if (result != null) {
-                                            images = await _patientData
-                                                .prepareFiles(result.paths);
-                                            for (var i = 0;
-                                                i < images.length;
-                                                i++) {}
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.all(5),
+                                    child: TextFormField(
+                                      cursorColor: Colors.deepPurple,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          result = value;
+                                        });
+                                      },
+                                      validator: (value) {
+                                        if (value.isEmpty) {
+                                          return "Field can't be empty";
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                      keyboardType: TextInputType.text,
+                                      decoration: InputDecoration(
+                                          hintText: "Result",
+                                          focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Colors.deepPurple))),
+                                    ),
+                                  ),
+                                  Container(
+                                      margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                      // width:MediaQuery.of(context).size.width * 0.5,
+                                      child: Container(
+                                          child:
+                                              DropdownButtonFormField<String>(
+                                        value: doctor,
+                                        items: data
+                                            .map<DropdownMenuItem<String>>(
+                                                (String value) {
+                                          return DropdownMenuItem<String>(
+                                              child: Text(value,
+                                                  style:
+                                                      TextStyle(fontSize: 15)),
+                                              value: value);
+                                        }).toList(),
+                                        hint: Text(
+                                          "Select doctor",
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                        onChanged: (String value) {
+                                          if (value != 'Other') {
+                                            setState(() {
+                                              doctor = value;
+                                              if (otherDoctor == 1) {
+                                                otherDoctor = 0;
+                                              }
+                                            });
                                           } else {
-                                            print("Error");
+                                            setState(() {
+                                              otherDoctor = 1;
+                                            });
                                           }
                                         },
-                                        icon: Icon(Icons.camera_alt, size: 30)),
-                                    IconButton(
-                                        onPressed: () async {
-                                          final result = await FilePicker
-                                              .platform
-                                              .pickFiles(
-                                                  allowMultiple: true,
-                                                  type: FileType.custom,
-                                                  allowedExtensions: [
-                                                'mp4',
-                                                'avi',
-                                                'mkv'
-                                              ]);
-                                          if (result != null) {
-                                            videos = await _patientData
-                                                .prepareFiles(result.paths);
-                                            for (var i = 0;
-                                                i < videos.length;
-                                                i++) {}
+                                        validator: (doctor) {
+                                          if (doctor == null) {
+                                            return "Field can't be empty";
                                           } else {
-                                            print("Error");
+                                            return null;
                                           }
                                         },
-                                        icon: Icon(Icons.video_call_rounded,
-                                            size: 35)),
-                                    IconButton(
-                                        icon: Icon(Icons.attach_file, size: 32),
-                                        onPressed: () async {
-                                          final result = await FilePicker
-                                              .platform
-                                              .pickFiles(
-                                                  allowMultiple: true,
-                                                  type: FileType.custom,
-                                                  allowedExtensions: [
-                                                'pdf',
-                                              ]);
-                                          if (result != null) {
-                                            files = await _patientData
-                                                .prepareFiles(result.paths);
-                                            for (var i = 0;
-                                                i < files.length;
-                                                i++) {}
-                                          } else {
-                                            print("Error");
-                                          }
-                                        }),
-                                  ],
-                                ),
-                              ),
-                              Text(
-                                "Media files should be less than 5MB",
-                                style: TextStyle(fontSize: 15),
-                              ),
-                              ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      primary: Colors.deepPurple),
-                                  onPressed: () async {
-                                    if (formkey.currentState.validate()) {
-                                      Fluttertoast.showToast(
-                                          msg: "Data Saved",
-                                          toastLength: Toast.LENGTH_LONG,
-                                          gravity: ToastGravity.SNACKBAR,
-                                          backgroundColor: Colors.grey,
-                                          textColor: Colors.white,
-                                          fontSize: 15,
-                                          timeInSecForIosWeb: 1);
-                                      Navigator.pop(context);
-
-                                      var data = await _patientData
-                                          .uploadMediaFiles({
-                                        'image': images,
-                                        'video': videos,
-                                        'file': files
-                                      }, category, userId);
-
-                                      await _patientData.addMedicalData(
-                                          patientId, 'surgery', {
-                                        'title': title,
-                                        'result': result,
-                                        'doctor': doctor,
-                                        'place': place,
-                                        'date':
-                                            "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                        'media': data
-                                      });
-                                    } else {}
-                                  },
-                                  child: Text(
-                                    "Save",
-                                    style: TextStyle(fontSize: 20),
-                                  )),
-                              RawMaterialButton(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5)),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              PhotoGrid(
-                                                  image: images,
-                                                  video: videos,
-                                                  file: files,
-                                                  filetype: "new")));
-                                },
-                                fillColor: Colors.deepPurple,
-                                splashColor: Colors.white,
-                                child: Container(
+                                      ))),
+                                  otherDoctor != 0
+                                      ? Container(
+                                          padding: EdgeInsets.all(5),
+                                          child: TextFormField(
+                                            cursorColor: Colors.deepPurple,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                doctor = value;
+                                              });
+                                            },
+                                            validator: (value) {
+                                              if (value.isEmpty) {
+                                                return "Field can't be Empty";
+                                              } else {
+                                                return null;
+                                              }
+                                            },
+                                            keyboardType: TextInputType.text,
+                                            decoration: InputDecoration(
+                                                hintText: "Doctor Name",
+                                                focusedBorder:
+                                                    UnderlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                            width: 1,
+                                                            color: Colors
+                                                                .deepPurple))),
+                                          ),
+                                        )
+                                      : Container(width: 0, height: 0),
+                                  Container(
+                                    padding: EdgeInsets.all(5),
+                                    child: TextFormField(
+                                      initialValue: "CareConnect",
+                                      cursorColor: Colors.deepPurple,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          place = value;
+                                        });
+                                      },
+                                      validator: (value) {
+                                        if (value.isEmpty) {
+                                          return "Field can't be empty";
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                      keyboardType: TextInputType.text,
+                                      decoration: InputDecoration(
+                                          hintText: "Place",
+                                          focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Colors.deepPurple))),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.all(15),
                                     child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "View",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold),
+                                      children: <Widget>[
+                                        IconButton(
+                                          icon:
+                                              Icon(Icons.date_range, size: 30),
+                                          onPressed: () {
+                                            _setDate(context);
+                                          },
+                                        ),
+                                        Text(
+                                            "Date: ${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                            style: TextStyle(fontSize: 20))
+                                      ],
                                     ),
-                                    Icon(
-                                      Icons.arrow_right,
-                                      color: Colors.white,
-                                    )
-                                  ],
-                                )),
-                              )
-                            ],
-                          )))),
+                                  ),
+                                  Container(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        IconButton(
+                                            onPressed: () async {
+                                              final result = await FilePicker
+                                                  .platform
+                                                  .pickFiles(
+                                                      allowMultiple: true,
+                                                      type: FileType.custom,
+                                                      allowedExtensions: [
+                                                    'jpg',
+                                                    'jpeg',
+                                                    'png'
+                                                  ]);
+                                              if (result != null) {
+                                                images = await _patientData
+                                                    .prepareFiles(result.paths);
+                                                for (var i = 0;
+                                                    i < images.length;
+                                                    i++) {}
+                                              } else {
+                                                print("Error");
+                                              }
+                                            },
+                                            icon: Icon(Icons.camera_alt,
+                                                size: 30)),
+                                        IconButton(
+                                            onPressed: () async {
+                                              final result = await FilePicker
+                                                  .platform
+                                                  .pickFiles(
+                                                      allowMultiple: true,
+                                                      type: FileType.custom,
+                                                      allowedExtensions: [
+                                                    'mp4',
+                                                    'avi',
+                                                    'mkv'
+                                                  ]);
+                                              if (result != null) {
+                                                videos = await _patientData
+                                                    .prepareFiles(result.paths);
+                                                for (var i = 0;
+                                                    i < videos.length;
+                                                    i++) {}
+                                              } else {
+                                                print("Error");
+                                              }
+                                            },
+                                            icon: Icon(Icons.video_call_rounded,
+                                                size: 35)),
+                                        IconButton(
+                                            icon: Icon(Icons.attach_file,
+                                                size: 32),
+                                            onPressed: () async {
+                                              final result = await FilePicker
+                                                  .platform
+                                                  .pickFiles(
+                                                      allowMultiple: true,
+                                                      type: FileType.custom,
+                                                      allowedExtensions: [
+                                                    'pdf',
+                                                  ]);
+                                              if (result != null) {
+                                                files = await _patientData
+                                                    .prepareFiles(result.paths);
+                                                for (var i = 0;
+                                                    i < files.length;
+                                                    i++) {}
+                                              } else {
+                                                print("Error");
+                                              }
+                                            }),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    "Media files should be less than 5MB",
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                                primary: Colors.deepPurple),
+                                            onPressed: () async {
+                                              if (formkey.currentState
+                                                  .validate()) {
+                                                Fluttertoast.showToast(
+                                                    msg: "Data Saved",
+                                                    toastLength:
+                                                        Toast.LENGTH_LONG,
+                                                    gravity:
+                                                        ToastGravity.SNACKBAR,
+                                                    backgroundColor:
+                                                        Colors.grey,
+                                                    textColor: Colors.white,
+                                                    fontSize: 15,
+                                                    timeInSecForIosWeb: 1);
+                                                Navigator.pop(context);
+
+                                                var data = await _patientData
+                                                    .uploadMediaFiles({
+                                                  'image': images,
+                                                  'video': videos,
+                                                  'file': files
+                                                }, category, userId);
+
+                                                await _patientData
+                                                    .addMedicalData(
+                                                        patientId, 'surgery', {
+                                                  'title': title,
+                                                  'result': result,
+                                                  'doctor': doctor,
+                                                  'place': place,
+                                                  'date':
+                                                      "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                                  'media': data
+                                                });
+                                              } else {}
+                                            },
+                                            child: Text(
+                                              "Save",
+                                              style: TextStyle(fontSize: 20),
+                                            )),
+                                        RawMaterialButton(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        PhotoGrid(
+                                                            image: images,
+                                                            video: videos,
+                                                            file: files,
+                                                            filetype: "new")));
+                                          },
+                                          fillColor: Colors.deepPurple,
+                                          splashColor: Colors.white,
+                                          child: Container(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.2,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    "View",
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Icon(
+                                                    Icons.arrow_right,
+                                                    size: 20,
+                                                    color: Colors.white,
+                                                  )
+                                                ],
+                                              )),
+                                        )
+                                      ])
+                                ],
+                              )))),
               surgeryList.length == 0 && empty == 1
                   ? LoadingHeart()
                   : empty == 0

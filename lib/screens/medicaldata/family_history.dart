@@ -106,6 +106,7 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                           margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
                           width: MediaQuery.of(context).size.width * 0.7,
                           child: TextFormField(
+                              initialValue: "CareConnect",
                               cursorColor: Colors.deepPurple,
                               onChanged: (value) {
                                 setState(() {

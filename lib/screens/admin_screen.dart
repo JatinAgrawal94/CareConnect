@@ -1,4 +1,6 @@
 import 'package:careconnect/components/doctorlisttile.dart';
+import 'package:careconnect/components/emptydoctor.dart';
+import 'package:careconnect/components/emptypatient.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/components/patientlisttile.dart';
 import 'package:careconnect/screens/userdataforms/admin_profile.dart';
@@ -24,32 +26,45 @@ class _AdminHomeState extends State<AdminHome> {
   static String adminDocumentId;
   List patients = [];
   List doctors = [];
+  var emptyPatients = 1;
+  var emptyDoctors = 1;
+
   @override
   void initState() {
     super.initState();
     general.getAllUser('patient').then((value) {
-      value.forEach((element) => {
-            setState(() {
-              patients.add({
-                'name': element['name'],
-                'profileImageURL': element['profileImageURL'],
-                'documentid': element['documentid'],
-                'userid': element['userid']
-              });
-            })
+      value.forEach((element) {
+        setState(() {
+          patients.add({
+            'name': element['name'],
+            'profileImageURL': element['profileImageURL'],
+            'documentid': element['documentid'],
+            'userid': element['userid']
           });
+        });
+        if (patients.length == 0) {
+          setState(() {
+            emptyPatients = 0;
+          });
+        }
+      });
     });
     general.getAllUser('doctor').then((value) {
-      value.forEach((element) => {
-            setState(() {
-              doctors.add({
-                'name': element['name'],
-                'profileImageURL': element['profileImageURL'],
-                'documentid': element['documentid'],
-                'userid': element['userid']
-              });
-            })
+      value.forEach((element) {
+        setState(() {
+          doctors.add({
+            'name': element['name'],
+            'profileImageURL': element['profileImageURL'],
+            'documentid': element['documentid'],
+            'userid': element['userid']
           });
+        });
+        if (doctors.length == 0) {
+          setState(() {
+            emptyDoctors = 0;
+          });
+        }
+      });
     });
     general.getDocsId(email, 'Admin').then((value) {
       setState(() {
@@ -177,39 +192,46 @@ class _AdminHomeState extends State<AdminHome> {
             ),
             body: TabBarView(
               children: [
-                patients.length == 0
+                patients.length == 0 && emptyPatients == 1
                     ? LoadingHeart()
-                    : Container(
-                        child: RefreshIndicator(
-                            color: Colors.deepPurple,
-                            onRefresh: loadPatients,
-                            child: ListView.builder(
-                                itemCount: patients.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return PatientListTile(
-                                      documentId: patients[index]['documentid'],
-                                      name: patients[index]['name'],
-                                      profileImageURL: patients[index]
-                                          ['profileImageURL'],
-                                      userId: patients[index]['userid']);
-                                }))
-                                ),
-                doctors.length == 0
+                    : emptyPatients == 0
+                        ? EmptyPatientList()
+                        : Container(
+                            child: RefreshIndicator(
+                                color: Colors.deepPurple,
+                                onRefresh: loadPatients,
+                                child: ListView.builder(
+                                    itemCount: patients.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return PatientListTile(
+                                          documentId: patients[index]
+                                              ['documentid'],
+                                          name: patients[index]['name'],
+                                          profileImageURL: patients[index]
+                                              ['profileImageURL'],
+                                          userId: patients[index]['userid']);
+                                    }))),
+                doctors.length == 0 && emptyDoctors == 1
                     ? LoadingHeart()
-                    : Container(
-                        child: RefreshIndicator(
-                            color: Colors.deepPurple,
-                            onRefresh: loadDoctors,
-                            child: ListView.builder(
-                                itemCount: doctors.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return DoctorListTile(
-                                      documentId: doctors[index]['documentid'],
-                                      name: doctors[index]['name'],
-                                      profileImageURL: doctors[index]
-                                          ['profileImageURL'],
-                                      userId: doctors[index]['userid']);
-                                })))
+                    : emptyDoctors == 0
+                        ? EmptyDoctorList()
+                        : Container(
+                            child: RefreshIndicator(
+                                color: Colors.deepPurple,
+                                onRefresh: loadDoctors,
+                                child: ListView.builder(
+                                    itemCount: doctors.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return DoctorListTile(
+                                          documentId: doctors[index]
+                                              ['documentid'],
+                                          name: doctors[index]['name'],
+                                          profileImageURL: doctors[index]
+                                              ['profileImageURL'],
+                                          userId: doctors[index]['userid']);
+                                    })))
               ],
             )));
   }

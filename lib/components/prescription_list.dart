@@ -7,7 +7,7 @@ class PrescriptionList extends StatefulWidget {
   final String dose;
   final String doctor;
   final String date;
-  final timing;
+  final List timing;
   final String patientId;
   final String prescriptionId;
   final dynamic media;
@@ -41,7 +41,7 @@ class _PrescriptionListState extends State<PrescriptionList> {
   final String doctor;
   final String date;
   final dynamic media;
-  final timing;
+  final List timing;
   final String patientId;
   final String prescriptionId;
   PatientData _patient = PatientData();
@@ -77,7 +77,12 @@ class _PrescriptionListState extends State<PrescriptionList> {
                 style: TextStyle(fontSize: 16),
               ),
               Text(
-                "Timings:" + timing[0] + " - " + timing[1] + " - " + timing[2],
+                "Timings:  " +
+                    timing[0] +
+                    " - " +
+                    timing[1] +
+                    " - " +
+                    timing[2],
                 style: TextStyle(fontSize: 16),
               ),
               (media['images'].length == 0 &&
@@ -107,11 +112,13 @@ class _PrescriptionListState extends State<PrescriptionList> {
                           Text(
                             "View",
                             style: TextStyle(
+                                fontSize: 20,
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold),
                           ),
                           Icon(
                             Icons.arrow_right,
+                            size: 20,
                             color: Colors.white,
                           )
                         ],

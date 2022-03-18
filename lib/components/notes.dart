@@ -41,10 +41,6 @@ class _NotesListState extends State<NotesList> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Icon(
-            Icons.note_add_sharp,
-            size: 50,
-          ),
           Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,6 +51,7 @@ class _NotesListState extends State<NotesList> {
             ),
           ),
           Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               (media['images'].length == 0 &&
                       media['videos'].length == 0 &&
@@ -89,11 +86,13 @@ class _NotesListState extends State<NotesList> {
                                 "View",
                                 style: TextStyle(
                                     color: Colors.white,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold),
                               ),
                               Icon(
                                 Icons.arrow_right,
                                 color: Colors.white,
+                                size: 20,
                               )
                             ],
                           )),
@@ -103,7 +102,10 @@ class _NotesListState extends State<NotesList> {
                   await _patientData.deleteAnyPatientRecord(
                       patientId, recordId, "notes");
                 },
-                icon: Icon(Icons.delete),
+                icon: Icon(
+                  Icons.delete,
+                  size: 20,
+                ),
                 color: Colors.deepPurple,
               )
             ],

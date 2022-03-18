@@ -79,24 +79,6 @@ class DoctorData {
     }
   }
 
-  // Future getAppointmentId(String doctoremail, String patientemail, String date,
-  //     String paymentstatus) async {
-  //   var id;
-  //   await FirebaseFirestore.instance
-  //       .collection('Appointment')
-  //       .where('doctoremail', isEqualTo: doctoremail)
-  //       .where('patientemail', isEqualTo: patientemail)
-  //       .where('date', isEqualTo: date)
-  //       .where('paymentstatus', isEqualTo: paymentstatus)
-  //       .get()
-  //       .then((QuerySnapshot snapshot) {
-  //     snapshot.docs.forEach((element) {
-  //       id = element.id;
-  //     });
-  //   });
-  //   return id;
-  // }
-
   Future updatePaymentAmount(String doctorEmail, String patientEmail,
       String date, String paymentStatus, String paymentamount) async {
     try {
@@ -113,14 +95,5 @@ class DoctorData {
     } catch (err) {
       return null;
     }
-  //   var docId =
-  //       await getAppointmentId(doctorEmail, patientEmail, date, paymentStatus);
-  //   await FirebaseFirestore.instance
-  //       .collection('Appointment')
-  //       .doc(docId)
-  //       .update({'paymentamount': paymentamount})
-  //       .then((value) {})
-  //       .catchError((error) {});
-
   }
 }

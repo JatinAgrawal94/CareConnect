@@ -103,8 +103,8 @@ class PatientData {
   Future getCategoryData(String category, String documentid) async {
     try {
       category = category.toLowerCase();
-      var response =
-          await http.get('$host/patient/$category/all?documentid=$documentid');
+      var url = Uri.parse('$host/patient/$category/all?documentid=$documentid');
+      var response = await http.get(url);
       var data = jsonDecode(response.body);
       return data;
     } catch (err) {
@@ -112,10 +112,15 @@ class PatientData {
     }
   }
 
-  Future<void> setCategoryData(
-      String category, String documentid, variable) async {
-    var data = await getCategoryData(category, documentid);
-    variable = data;
+  Future deleteAppointment(String documentid) async {
+    try {
+      var body = {'documentid': documentid};
+      var url = Uri.parse('$host/appointment/delete');
+      var response = await http.post(url, body: body);
+      return response.body;
+    } catch (e) {
+      return null;
+    }
   }
 
   Future checkUserValidityForAppointment(
@@ -126,7 +131,8 @@ class PatientData {
         'patientemail': patientemail,
         'date': date
       };
-      var response = await http.post('$host/appointment/check', body: body);
+      var url = Uri.parse('$host/appointment/check');
+      var response = await http.post(url, body: body);
       return int.parse(response.body);
     } catch (err) {
       return null;
@@ -135,7 +141,8 @@ class PatientData {
 
   Future addAppointment(String patientId, data) async {
     try {
-      await http.post('$host/appointment/create', body: data);
+      var url = Uri.parse('$host/appointment/create');
+      await http.post(url, body: data);
     } catch (err) {
       return null;
     }
@@ -149,7 +156,8 @@ class PatientData {
         'recordid': recordId,
         'category': category
       };
-      await http.post('$host/patient/record/delete', body: body);
+      var url = Uri.parse('$host/patient/record/delete');
+      await http.post(url, body: body);
     } catch (err) {
       print("Failed to delete $category record: $err");
     }
@@ -157,7 +165,8 @@ class PatientData {
 
   Future getPatientAppointments(String email) async {
     try {
-      var response = await http.get('$host/appointment/patient?email=$email');
+      var url = Uri.parse('$host/appointment/patient?email=$email');
+      var response = await http.get(url);
       var data = jsonDecode(response.body);
       return data;
     } catch (err) {
