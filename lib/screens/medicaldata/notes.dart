@@ -6,6 +6,7 @@ import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 
 class NotesScreen extends StatefulWidget {
   final String patientId;
@@ -143,6 +144,25 @@ class _NotesScreenState extends State<NotesScreen> {
                                         if (result != null) {
                                           images = await _patientData
                                               .prepareFiles(result.paths);
+                                          for (var j = 0;
+                                              j < result.paths.length;
+                                              j++) {
+                                            var sizeInMb = File(result.paths[j])
+                                                    .lengthSync() /
+                                                (1024 * 1024);
+                                            if (sizeInMb > 5) {
+                                              Fluttertoast.showToast(
+                                                  backgroundColor: Colors.grey,
+                                                  msg: "Cannot Upload " +
+                                                      _patientData.getName(
+                                                          File(result.paths[j])
+                                                              .toString()));
+                                              images.removeAt(j);
+                                            }
+                                          }
+                                          setState(() {
+                                            images.length;
+                                          });
                                         } else {
                                           print("Error");
                                         }
@@ -162,6 +182,25 @@ class _NotesScreenState extends State<NotesScreen> {
                                         if (result != null) {
                                           videos = await _patientData
                                               .prepareFiles(result.paths);
+                                          for (var j = 0;
+                                              j < result.paths.length;
+                                              j++) {
+                                            var sizeInMb = File(result.paths[j])
+                                                    .lengthSync() /
+                                                (1024 * 1024);
+                                            if (sizeInMb > 5) {
+                                              Fluttertoast.showToast(
+                                                  backgroundColor: Colors.grey,
+                                                  msg: "Cannot Upload " +
+                                                      _patientData.getName(
+                                                          File(result.paths[j])
+                                                              .toString()));
+                                              videos.removeAt(j);
+                                            }
+                                          }
+                                          setState(() {
+                                            videos.length;
+                                          });
                                         } else {
                                           print("Error");
                                         }
@@ -179,6 +218,25 @@ class _NotesScreenState extends State<NotesScreen> {
                                         if (result != null) {
                                           files = await _patientData
                                               .prepareFiles(result.paths);
+                                          for (var j = 0;
+                                              j < result.paths.length;
+                                              j++) {
+                                            var sizeInMb = File(result.paths[j])
+                                                    .lengthSync() /
+                                                (1024 * 1024);
+                                            if (sizeInMb > 5) {
+                                              Fluttertoast.showToast(
+                                                  backgroundColor: Colors.grey,
+                                                  msg: "Cannot Upload " +
+                                                      _patientData.getName(
+                                                          File(result.paths[j])
+                                                              .toString()));
+                                              files.removeAt(j);
+                                            }
+                                          }
+                                          setState(() {
+                                            files.length;
+                                          });
                                         } else {
                                           print("Error");
                                         }
@@ -190,7 +248,11 @@ class _NotesScreenState extends State<NotesScreen> {
                             style: TextStyle(fontSize: 15),
                           ),
                           Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              mainAxisAlignment: images.length == 0 &&
+                                      videos.length == 0 &&
+                                      files.length == 0
+                                  ? MainAxisAlignment.center
+                                  : MainAxisAlignment.spaceAround,
                               children: <Widget>[
                                 ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -223,45 +285,54 @@ class _NotesScreenState extends State<NotesScreen> {
                                     },
                                     child: Text("Save",
                                         style: TextStyle(fontSize: 20))),
-                                RawMaterialButton(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5)),
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                PhotoGrid(
-                                                  image: images,
-                                                  video: videos,
-                                                  file: files,
-                                                  filetype: "new",
-                                                )));
-                                  },
-                                  fillColor: Colors.deepPurple,
-                                  splashColor: Colors.white,
-                                  child: Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.2,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            "View",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Icon(
-                                            Icons.arrow_right,
-                                            size: 20,
-                                            color: Colors.white,
-                                          )
-                                        ],
-                                      )),
-                                )
+                                images.length == 0 &&
+                                        videos.length == 0 &&
+                                        files.length == 0
+                                    ? Text("")
+                                    : RawMaterialButton(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5)),
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          PhotoGrid(
+                                                            image: images,
+                                                            video: videos,
+                                                            file: files,
+                                                            filetype: "new",
+                                                          )));
+                                        },
+                                        fillColor: Colors.deepPurple,
+                                        splashColor: Colors.white,
+                                        child: Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.2,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  "View",
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                Icon(
+                                                  Icons.arrow_right,
+                                                  size: 20,
+                                                  color: Colors.white,
+                                                )
+                                              ],
+                                            )),
+                                      )
                               ])
                         ],
                       ))),
