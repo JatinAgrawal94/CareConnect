@@ -37,23 +37,29 @@ class _NotesScreenState extends State<NotesScreen> {
     super.initState();
     _patientData.getCategoryData('notes', patientId).then((value) {
       value.forEach((item) {
-        setState(() {
-          notesList.add(item);
-        });
+        if (mounted) {
+          setState(() {
+            notesList.add(item);
+          });
+        }
       });
       if (notesList.length == 0) {
-        setState(() {
-          empty = 0;
-        });
+        if (mounted) {
+          setState(() {
+            empty = 0;
+          });
+        }
       }
     });
   }
 
   Future setData() async {
     var data = await _patientData.getCategoryData("notes", patientId);
-    setState(() {
-      this.notesList = data;
-    });
+    if (mounted) {
+      setState(() {
+        this.notesList = data;
+      });
+    }
   }
 
   @override
@@ -87,9 +93,11 @@ class _NotesScreenState extends State<NotesScreen> {
                                 child: TextFormField(
                                   cursorColor: Colors.deepPurple,
                                   onChanged: (value) {
-                                    setState(() {
-                                      title = value;
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        title = value;
+                                      });
+                                    }
                                   },
                                   keyboardType: TextInputType.text,
                                   decoration: InputDecoration(
@@ -107,9 +115,11 @@ class _NotesScreenState extends State<NotesScreen> {
                                 child: TextFormField(
                                   cursorColor: Colors.deepPurple,
                                   onChanged: (value) {
-                                    setState(() {
-                                      description = value;
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        description = value;
+                                      });
+                                    }
                                   },
                                   keyboardType: TextInputType.text,
                                   decoration: InputDecoration(
@@ -160,9 +170,11 @@ class _NotesScreenState extends State<NotesScreen> {
                                               images.removeAt(j);
                                             }
                                           }
-                                          setState(() {
-                                            images.length;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              images.length;
+                                            });
+                                          }
                                         } else {
                                           print("Error");
                                         }
@@ -198,9 +210,11 @@ class _NotesScreenState extends State<NotesScreen> {
                                               videos.removeAt(j);
                                             }
                                           }
-                                          setState(() {
-                                            videos.length;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              videos.length;
+                                            });
+                                          }
                                         } else {
                                           print("Error");
                                         }
@@ -234,9 +248,11 @@ class _NotesScreenState extends State<NotesScreen> {
                                               files.removeAt(j);
                                             }
                                           }
-                                          setState(() {
-                                            files.length;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              files.length;
+                                            });
+                                          }
                                         } else {
                                           print("Error");
                                         }

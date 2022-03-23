@@ -29,23 +29,29 @@ class _AllergyScreenState extends State<AllergyScreen> {
     super.initState();
     _patientData.getCategoryData('allergy', patientId).then((value) {
       value.forEach((item) {
-        setState(() {
-          allergyList.add(item);
-        });
+        if (mounted) {
+          setState(() {
+            allergyList.add(item);
+          });
+        }
       });
       if (allergyList.length == 0) {
-        setState(() {
-          empty = 0;
-        });
+        if (mounted) {
+          setState(() {
+            empty = 0;
+          });
+        }
       }
     });
   }
 
   Future setData() async {
     var data = await _patientData.getCategoryData("allergy", patientId);
-    setState(() {
-      this.allergyList = data;
-    });
+    if (mounted) {
+      setState(() {
+        this.allergyList = data;
+      });
+    }
   }
 
   _setDate(BuildContext context) async {
@@ -67,10 +73,11 @@ class _AllergyScreenState extends State<AllergyScreen> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
+    if (picked != null && picked != selecteddate) if (mounted) {
       setState(() {
         selecteddate = picked;
       });
+    }
   }
 
   @override
@@ -111,9 +118,11 @@ class _AllergyScreenState extends State<AllergyScreen> {
                           TextFormField(
                             cursorColor: Colors.deepPurple,
                             onChanged: (value) {
-                              setState(() {
-                                type = value;
-                              });
+                              if (mounted) {
+                                setState(() {
+                                  type = value;
+                                });
+                              }
                             },
                             validator: (value) {
                               if (value.isEmpty) {

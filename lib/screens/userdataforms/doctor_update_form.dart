@@ -23,7 +23,7 @@ class _DoctorFormState extends State<DoctorForm> {
   String userId;
   GeneralFunctions general = GeneralFunctions();
   static String imageURL;
-  static var doctorInfo = Map<String, dynamic>();
+  static var doctorInfo;
 
   Future convertDate(String date) async {
     var g = date.split('/').reversed.toList();
@@ -42,7 +42,7 @@ class _DoctorFormState extends State<DoctorForm> {
   String bloodgroup;
   String contact = " ";
   String designation = " ";
-  String address ;
+  String address;
   String name = " ";
   String email = " ";
   String doctype = " ";
@@ -51,29 +51,33 @@ class _DoctorFormState extends State<DoctorForm> {
   @override
   void initState() {
     super.initState();
-    general.getUserInfo(doctorId,'Doctor').then((value) {
-      setState(() {
-        doctorInfo = value;
-        imageURL = doctorInfo['profileImageURL'];
-        userId = doctorInfo['userid'];
-        name = doctorInfo['name'];
-        email = doctorInfo['email'];
-        designation = doctorInfo['designation'];
-        contact = doctorInfo['contact'].toString();
-        bloodgroup = doctorInfo['bloodgroup'];
-        doctype = doctorInfo['doctype'];
-        address = doctorInfo['address'];
-        zoom = doctorInfo['zoom'];
-        gender = doctorInfo['gender'] == 'Male'
-            ? 0
-            : doctorInfo['gender'] == 'Female'
-                ? 1
-                : 2;
-      });
-      convertDate(doctorInfo['dateofbirth']).then((value) {
+    general.getUserInfo(doctorId, 'Doctor').then((value) {
+      if (mounted) {
         setState(() {
-          selecteddate = DateTime.parse(value);
+          doctorInfo = value;
+          imageURL = doctorInfo['profileImageURL'];
+          userId = doctorInfo['userid'];
+          name = doctorInfo['name'];
+          email = doctorInfo['email'];
+          designation = doctorInfo['designation'];
+          contact = doctorInfo['contact'].toString();
+          bloodgroup = doctorInfo['bloodgroup'];
+          doctype = doctorInfo['doctype'];
+          address = doctorInfo['address'];
+          zoom = doctorInfo['zoom'];
+          gender = doctorInfo['gender'] == 'Male'
+              ? 0
+              : doctorInfo['gender'] == 'Female'
+                  ? 1
+                  : 2;
         });
+      }
+      convertDate(doctorInfo['dateofbirth']).then((value) {
+        if (mounted) {
+          setState(() {
+            selecteddate = DateTime.parse(value);
+          });
+        }
       });
     });
   }
@@ -81,17 +85,21 @@ class _DoctorFormState extends State<DoctorForm> {
   _imgfromCamera() async {
     final pickerfile =
         await picker.getImage(source: ImageSource.camera, imageQuality: 50);
-    setState(() {
-      _image = pickerfile;
-    });
+    if (mounted) {
+      setState(() {
+        _image = pickerfile;
+      });
+    }
   }
 
   _imgfromgallery() async {
     final galleryimage =
         await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
-    setState(() {
-      _image = galleryimage;
-    });
+    if (mounted) {
+      setState(() {
+        _image = galleryimage;
+      });
+    }
   }
 
   void _showpicker(context) {
@@ -138,10 +146,11 @@ class _DoctorFormState extends State<DoctorForm> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
+    if (picked != null && picked != selecteddate) if (mounted) {
       setState(() {
         selecteddate = picked;
       });
+    }
   }
 
   @override
@@ -220,10 +229,12 @@ class _DoctorFormState extends State<DoctorForm> {
                                 onPressed: () async {
                                   await general.deleteProfileImageURL(
                                       doctorId, userId, 'Doctor');
-                                  setState(() {
-                                    _image = null;
-                                    imageURL = null;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      _image = null;
+                                      imageURL = null;
+                                    });
+                                  }
                                 },
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.deepPurple),
@@ -256,9 +267,11 @@ class _DoctorFormState extends State<DoctorForm> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            name = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              name = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -308,9 +321,11 @@ class _DoctorFormState extends State<DoctorForm> {
                                         readOnly: true,
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            email = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              email = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -383,9 +398,11 @@ class _DoctorFormState extends State<DoctorForm> {
                                     value: 0,
                                     groupValue: gender,
                                     onChanged: (val) {
-                                      setState(() {
-                                        gender = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          gender = val;
+                                        });
+                                      }
                                     }),
                                 Text("Female", style: TextStyle(fontSize: 20)),
                                 Radio(
@@ -393,9 +410,11 @@ class _DoctorFormState extends State<DoctorForm> {
                                   value: 1,
                                   groupValue: gender,
                                   onChanged: (val) {
-                                    setState(() {
-                                      gender = val;
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        gender = val;
+                                      });
+                                    }
                                   },
                                 ),
                                 Text("Other", style: TextStyle(fontSize: 20)),
@@ -404,9 +423,11 @@ class _DoctorFormState extends State<DoctorForm> {
                                     value: 2,
                                     groupValue: gender,
                                     onChanged: (val) {
-                                      setState(() {
-                                        gender = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          gender = val;
+                                        });
+                                      }
                                     })
                               ],
                             ),
@@ -444,9 +465,11 @@ class _DoctorFormState extends State<DoctorForm> {
                                       }).toList(),
                                       hint: Text("Select Blood Group"),
                                       onChanged: (String value) {
-                                        setState(() {
-                                          bloodgroup = value;
-                                        });
+                                        if (mounted) {
+                                          setState(() {
+                                            bloodgroup = value;
+                                          });
+                                        }
                                       },
                                     ),
                                   )
@@ -473,9 +496,11 @@ class _DoctorFormState extends State<DoctorForm> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            contact = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              contact = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.length < 10) {
@@ -527,9 +552,11 @@ class _DoctorFormState extends State<DoctorForm> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            designation = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              designation = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -578,9 +605,11 @@ class _DoctorFormState extends State<DoctorForm> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            doctype = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              doctype = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -630,9 +659,11 @@ class _DoctorFormState extends State<DoctorForm> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            address = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              address = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -682,9 +713,11 @@ class _DoctorFormState extends State<DoctorForm> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            zoom = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              zoom = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {

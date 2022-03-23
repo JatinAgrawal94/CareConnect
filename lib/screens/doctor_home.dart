@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:careconnect/components/emptypatient.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/components/patientlisttile.dart';
@@ -29,25 +31,32 @@ class _DoctorHomeState extends State<DoctorHome> {
   void initState() {
     super.initState();
     general.getDocsId(email, 'Doctor').then((value) {
-      setState(() {
-        documentId = value['documentId'];
-      });
+      if (mounted) {
+        setState(() {
+          documentId = value['documentId'];
+        });
+      }
     });
+
     general.getAllUser('patient').then((value) {
       value.forEach((element) {
-        setState(() {
-          patientList.add({
-            'name': element['name'],
-            'profileImageURL': element['profileImageURL'],
-            'documentid': element['documentid'],
-            'userid': element['userid']
+        if (mounted) {
+          setState(() {
+            patientList.add({
+              'name': element['name'],
+              'profileImageURL': element['profileImageURL'],
+              'documentid': element['documentid'],
+              'userid': element['userid']
+            });
           });
-        });
+        }
       });
       if (patientList.length == 0) {
-        setState(() {
-          emptyPatients = 0;
-        });
+        if (mounted) {
+          setState(() {
+            emptyPatients = 0;
+          });
+        }
       }
     });
   }
@@ -55,20 +64,22 @@ class _DoctorHomeState extends State<DoctorHome> {
   Future loadPatients() async {
     var data = await general.getAllUser('patient');
     var result = [];
-    setState(() {
-      this.patientList = null;
-      data.forEach((element) => {
-            setState(() {
-              result.add({
-                'name': element['name'],
-                'profileImageURL': element['profileImageURL'],
-                'documentid': element['documentid'],
-                'userid': element['userid']
-              });
-            })
-          });
-      this.patientList = result;
-    });
+    if (mounted) {
+      setState(() {
+        this.patientList = null;
+        data.forEach((element) => {
+              setState(() {
+                result.add({
+                  'name': element['name'],
+                  'profileImageURL': element['profileImageURL'],
+                  'documentid': element['documentid'],
+                  'userid': element['userid']
+                });
+              })
+            });
+        this.patientList = result;
+      });
+    }
   }
 
   @override

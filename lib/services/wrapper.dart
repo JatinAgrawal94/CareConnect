@@ -14,11 +14,11 @@ class Wrapper extends StatefulWidget {
 }
 
 class _WrapperState extends State<Wrapper> {
-  @override
-  void initState() {
-    super.initState();
-    // getToken();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // getToken();
+  // }
 
   getToken() async {
     String token = await FirebaseMessaging.instance.getToken();
@@ -28,6 +28,7 @@ class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<RegisteredUser>(context);
+
     if (user == null) {
       return GestureDetector(
         onTap: () {
@@ -48,7 +49,8 @@ class _WrapperState extends State<Wrapper> {
               FocusManager.instance.primaryFocus.unfocus();
             }
           },
-          child: RoleAuthorization(email: user.emailGet));
+          child:
+              RoleAuthorization(email: user.emailGet, userInfo: user.userInfo));
     }
   }
 }

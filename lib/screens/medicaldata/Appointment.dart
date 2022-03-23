@@ -39,31 +39,39 @@ class _AppointmentState extends State<Appointment> {
     // doctor name,timing,email
     general.getAllUser('doctor').then((value) {
       value.forEach((item) {
-        setState(() {
-          doctorList.add(item['name'] + '(' + item['timing'] + ')');
-          doctordata.add({
-            'name': item['name'],
-            'timing': item['timing'],
-            'email': item['email']
+        if (mounted) {
+          setState(() {
+            doctorList.add(item['name'] + '(' + item['timing'] + ')');
+            doctordata.add({
+              'name': item['name'],
+              'timing': item['timing'],
+              'email': item['email']
+            });
           });
-        });
+        }
       });
     });
 
     general.getUserInfo(patientId, 'Patient').then((value) {
-      setState(() {
-        patientdata = {'name': value['name'], 'email': value['email']};
-      });
+      if (mounted) {
+        setState(() {
+          patientdata = {'name': value['name'], 'email': value['email']};
+        });
+      }
       _patientData.getPatientAppointments(value['email']).then((value) {
         value.forEach((item) {
-          setState(() {
-            appointmentList.add(item);
-          });
+          if (mounted) {
+            setState(() {
+              appointmentList.add(item);
+            });
+          }
         });
         if (appointmentList.length == 0) {
-          setState(() {
-            empty = 0;
-          });
+          if (mounted) {
+            setState(() {
+              empty = 0;
+            });
+          }
         }
       });
     });
@@ -71,9 +79,11 @@ class _AppointmentState extends State<Appointment> {
 
   Future setData() async {
     var data = await _patientData.getPatientAppointments(patientdata['email']);
-    setState(() {
-      this.appointmentList = data;
-    });
+    if (mounted) {
+      setState(() {
+        this.appointmentList = data;
+      });
+    }
   }
 
   _setDate(BuildContext context) async {
@@ -95,10 +105,11 @@ class _AppointmentState extends State<Appointment> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
+    if (picked != null && picked != selecteddate) if (mounted) {
       setState(() {
         selecteddate = picked;
       });
+    }
   }
 
   @override
@@ -157,9 +168,11 @@ class _AppointmentState extends State<Appointment> {
                                               value: 0,
                                               groupValue: visittype,
                                               onChanged: (value) {
-                                                setState(() {
-                                                  visittype = value;
-                                                });
+                                                if (mounted) {
+                                                  setState(() {
+                                                    visittype = value;
+                                                  });
+                                                }
                                               }),
                                           Text("New",
                                               style: TextStyle(fontSize: 20)),
@@ -168,9 +181,11 @@ class _AppointmentState extends State<Appointment> {
                                               value: 1,
                                               groupValue: visittype,
                                               onChanged: (value) {
-                                                setState(() {
-                                                  visittype = value;
-                                                });
+                                                if (mounted) {
+                                                  setState(() {
+                                                    visittype = value;
+                                                  });
+                                                }
                                               }),
                                           Text("Follow Up",
                                               style: TextStyle(fontSize: 20)),
@@ -196,9 +211,11 @@ class _AppointmentState extends State<Appointment> {
                                           value: 0,
                                           groupValue: appointmentType,
                                           onChanged: (value) {
-                                            setState(() {
-                                              appointmentType = value;
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                appointmentType = value;
+                                              });
+                                            }
                                           }),
                                       Text("Offline",
                                           style: TextStyle(fontSize: 20)),
@@ -207,9 +224,11 @@ class _AppointmentState extends State<Appointment> {
                                           value: 1,
                                           groupValue: appointmentType,
                                           onChanged: (value) {
-                                            setState(() {
-                                              appointmentType = value;
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                appointmentType = value;
+                                              });
+                                            }
                                           }),
                                       Text("Online",
                                           style: TextStyle(fontSize: 20)),
@@ -232,9 +251,11 @@ class _AppointmentState extends State<Appointment> {
                                     child: TextFormField(
                                       cursorColor: Colors.deepPurple,
                                       onChanged: (value) {
-                                        setState(() {
-                                          reason = value;
-                                        });
+                                        if (mounted) {
+                                          setState(() {
+                                            reason = value;
+                                          });
+                                        }
                                       },
                                       validator: (value) {
                                         if (value.isEmpty) {
@@ -276,16 +297,20 @@ class _AppointmentState extends State<Appointment> {
                                     hint: Text("Select doctor"),
                                     onChanged: (String value) {
                                       if (value != 'Other') {
-                                        setState(() {
-                                          doctor = value;
-                                          if (otherDoctor == 1) {
-                                            otherDoctor = 0;
-                                          }
-                                        });
+                                        if (mounted) {
+                                          setState(() {
+                                            doctor = value;
+                                            if (otherDoctor == 1) {
+                                              otherDoctor = 0;
+                                            }
+                                          });
+                                        }
                                       } else {
-                                        setState(() {
-                                          otherDoctor = 1;
-                                        });
+                                        if (mounted) {
+                                          setState(() {
+                                            otherDoctor = 1;
+                                          });
+                                        }
                                       }
                                     },
                                   )),
@@ -307,9 +332,11 @@ class _AppointmentState extends State<Appointment> {
                                         child: TextFormField(
                                           cursorColor: Colors.deepPurple,
                                           onChanged: (value) {
-                                            setState(() {
-                                              doctor = value;
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                doctor = value;
+                                              });
+                                            }
                                           },
                                           validator: (value) {
                                             if (value.isEmpty) {
@@ -338,10 +365,10 @@ class _AppointmentState extends State<Appointment> {
                                   var doctorindex = doctorList.indexOf(doctor);
                                   var status = await _patientData
                                       .checkUserValidityForAppointment(
-                                          doctordata[doctorindex]['email'],
+                                          doctordata[doctorindex - 1]['email'],
                                           patientdata['email'],
                                           "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}");
-
+                                  print(status);
                                   if (status == 0) {
                                     Fluttertoast.showToast(
                                         msg: "Appointment limit reached",
@@ -358,11 +385,11 @@ class _AppointmentState extends State<Appointment> {
                                       'reason': reason,
                                       'date':
                                           "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                      'timing': doctordata[doctorindex]
+                                      'timing': doctordata[doctorindex - 1]
                                           ['timing'],
-                                      'doctorname': doctordata[doctorindex]
+                                      'doctorname': doctordata[doctorindex - 1]
                                           ['name'],
-                                      'doctoremail': doctordata[doctorindex]
+                                      'doctoremail': doctordata[doctorindex - 1]
                                           ['email'],
                                       'patientname': patientdata['name'],
                                       'patientemail': patientdata['email'],

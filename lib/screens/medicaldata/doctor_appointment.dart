@@ -33,12 +33,14 @@ class _DoctorAppointmentState extends State<DoctorAppointment> {
   void initState() {
     super.initState();
     _doctorData.getAppointmentDates(email).then((value) {
-      setState(() {
-        date = value[0];
-        dateOccurence = value[1];
-        timing = value[2];
-        doctoremail = value[3];
-      });
+      if (mounted) {
+        setState(() {
+          date = value[0];
+          dateOccurence = value[1];
+          timing = value[2];
+          doctoremail = value[3];
+        });
+      }
     });
   }
 

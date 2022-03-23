@@ -48,30 +48,38 @@ class _PathologyScreenState extends State<PathologyScreen> {
     super.initState();
     general.getAllUser('doctor').then((value) => {
           value.forEach((item) {
-            setState(() {
-              data.add(item['name']);
-            });
+            if (mounted) {
+              setState(() {
+                data.add(item['name']);
+              });
+            }
           })
         });
     _patientData.getCategoryData('pathology', patientId).then((value) {
       value.forEach((item) {
-        setState(() {
-          pathologyList.add(item);
-        });
+        if (mounted) {
+          setState(() {
+            pathologyList.add(item);
+          });
+        }
       });
       if (pathologyList.length == 0) {
-        setState(() {
-          empty = 0;
-        });
+        if (mounted) {
+          setState(() {
+            empty = 0;
+          });
+        }
       }
     });
   }
 
   Future setData() async {
     var data = await _patientData.getCategoryData("pathology", patientId);
-    setState(() {
-      this.pathologyList = data;
-    });
+    if (mounted) {
+      setState(() {
+        this.pathologyList = data;
+      });
+    }
   }
 
   _setDate(BuildContext context) async {
@@ -93,10 +101,11 @@ class _PathologyScreenState extends State<PathologyScreen> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
+    if (picked != null && picked != selecteddate) if (mounted) {
       setState(() {
         selecteddate = picked;
       });
+    }
   }
 
   @override
@@ -143,9 +152,11 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                         child: TextFormField(
                                           cursorColor: Colors.deepPurple,
                                           onChanged: (value) {
-                                            setState(() {
-                                              title = value;
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                title = value;
+                                              });
+                                            }
                                           },
                                           validator: (value) {
                                             if (value.isEmpty) {
@@ -184,9 +195,11 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                         child: TextFormField(
                                           cursorColor: Colors.deepPurple,
                                           onChanged: (value) {
-                                            setState(() {
-                                              result = value;
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                result = value;
+                                              });
+                                            }
                                           },
                                           validator: (value) {
                                             if (value.isEmpty) {
@@ -242,16 +255,20 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                             ),
                                             onChanged: (String value) {
                                               if (value != 'Other') {
-                                                setState(() {
-                                                  doctor = value;
-                                                  if (otherDoctor == 1) {
-                                                    otherDoctor = 0;
-                                                  }
-                                                });
+                                                if (mounted) {
+                                                  setState(() {
+                                                    doctor = value;
+                                                    if (otherDoctor == 1) {
+                                                      otherDoctor = 0;
+                                                    }
+                                                  });
+                                                }
                                               } else {
-                                                setState(() {
-                                                  otherDoctor = 1;
-                                                });
+                                                if (mounted) {
+                                                  setState(() {
+                                                    otherDoctor = 1;
+                                                  });
+                                                }
                                               }
                                             },
                                             validator: (value) {
@@ -282,9 +299,11 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                           child: TextFormField(
                                             cursorColor: Colors.deepPurple,
                                             onChanged: (value) {
-                                              setState(() {
-                                                doctor = value;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  doctor = value;
+                                                });
+                                              }
                                             },
                                             validator: (value) {
                                               if (value.isEmpty) {
@@ -324,9 +343,11 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                           initialValue: "CareConnect",
                                           cursorColor: Colors.deepPurple,
                                           onChanged: (value) {
-                                            setState(() {
-                                              place = value;
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                place = value;
+                                              });
+                                            }
                                           },
                                           validator: (value) {
                                             if (value.isEmpty) {
@@ -403,9 +424,11 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                                 images.removeAt(j);
                                               }
                                             }
-                                            setState(() {
-                                              images.length;
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                images.length;
+                                              });
+                                            }
                                           } else {
                                             print("Error");
                                           }
@@ -445,9 +468,11 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                                 videos.removeAt(j);
                                               }
                                             }
-                                            setState(() {
-                                              videos.length;
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                videos.length;
+                                              });
+                                            }
                                           } else {
                                             print("Error");
                                           }
@@ -488,9 +513,11 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                                 files.removeAt(j);
                                               }
                                             }
-                                            setState(() {
-                                              files.length;
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                files.length;
+                                              });
+                                            }
                                           } else {
                                             print("Error");
                                           }

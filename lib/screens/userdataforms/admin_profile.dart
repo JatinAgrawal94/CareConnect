@@ -1,11 +1,10 @@
-import 'package:careconnect/models/registereduser.dart';
 import 'package:careconnect/screens/userdataforms/admin_update_form.dart';
 import 'package:careconnect/services/admin_data.dart';
 import 'package:careconnect/services/auth.dart';
+import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:careconnect/components/loading.dart';
-import 'package:provider/provider.dart';
 
 class AdminProfile extends StatefulWidget {
   final String adminId;
@@ -20,27 +19,22 @@ class _AdminProfileState extends State<AdminProfile> {
   AuthService auth = AuthService();
   final String adminId;
   String userId;
-  var user;
-  var role;
   static String imageURL;
+  GeneralFunctions general = GeneralFunctions();
   _AdminProfileState(this.adminId);
   static var adminInfo = Map<String, dynamic>();
-
-  void getRole(value) {
-    setState(() {
-      this.role = value;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
-    _adminData.getAdminInfo(adminId).then((value) {
-      setState(() {
-        adminInfo = value;
-        userId = adminInfo['userid'];
-        imageURL = adminInfo['profileImageURL'];
-      });
+    general.getUserInfo(adminId, 'Admin').then((value) {
+      if (mounted) {
+        setState(() {
+          adminInfo = value;
+          userId = adminInfo['userid'];
+          imageURL = adminInfo['profileImageURL'];
+        });
+      } else {}
     });
   }
 
@@ -57,15 +51,15 @@ class _AdminProfileState extends State<AdminProfile> {
 
   @override
   Widget build(BuildContext context) {
-    user = Provider.of<RegisteredUser>(context);
-    getRole(user.roleGet);
+    // user = Provider.of<RegisteredUser>(context);
+    // getRole(user.roleGet);
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.deepPurple[300],
           iconTheme: IconThemeData(color: Colors.black),
           shadowColor: Colors.transparent,
         ),
-        body: adminInfo.isEmpty
+        body: adminInfo == null
             ? LoadingHeart()
             : Container(
                 child: Column(
@@ -112,9 +106,7 @@ class _AdminProfileState extends State<AdminProfile> {
                     Container(
                         color: Colors.deepPurple[300],
                         child: Row(
-                          mainAxisAlignment: role == "admin"
-                              ? MainAxisAlignment.spaceAround
-                              : MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             SafeArea(
                                 right: true,

@@ -1,4 +1,5 @@
 import 'package:careconnect/components/loading.dart';
+import 'package:careconnect/services/auth.dart';
 import 'package:careconnect/services/general.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class _PatientFormState extends State<PatientForm> {
   ImagePicker picker = ImagePicker();
   PickedFile _image;
   PatientData patientData = PatientData();
+  AuthService auth = AuthService();
   GeneralFunctions general = GeneralFunctions();
   static var patientInfo = Map<String, dynamic>();
 
@@ -42,7 +44,7 @@ class _PatientFormState extends State<PatientForm> {
   String bloodgroup;
   String contact = " ";
   String insuranceno = " ";
-  String address = " ";
+  String address = ' ';
   String name = " ";
   String email = " ";
   String profileImageURL;
@@ -50,26 +52,30 @@ class _PatientFormState extends State<PatientForm> {
   void initState() {
     super.initState();
     general.getUserInfo(patientId, 'Patient').then((value) {
-      setState(() {
-        patientInfo = value;
-        profileImageURL = patientInfo['profileImageURL'];
-        userId = patientInfo['userid'];
-        email = patientInfo['email'];
-        name = patientInfo['name'];
-        address = patientInfo['address'];
-        bloodgroup = patientInfo['bloodgroup'];
-        insuranceno = patientInfo['insuranceno'];
-        contact = patientInfo['phoneno'].toString();
-        gender = patientInfo['gender'] == 'Male'
-            ? 0
-            : patientInfo['gender'] == 'Female'
-                ? 1
-                : 2;
-      });
-      convertDate(patientInfo['dateofbirth']).then((value) {
+      if (mounted) {
         setState(() {
-          selecteddate = DateTime.parse(value);
+          patientInfo = value;
+          profileImageURL = patientInfo['profileImageURL'];
+          userId = patientInfo['userid'];
+          email = patientInfo['email'];
+          name = patientInfo['name'];
+          address = patientInfo['address'];
+          bloodgroup = patientInfo['bloodgroup'];
+          insuranceno = patientInfo['insuranceno'];
+          contact = patientInfo['contact'].toString();
+          gender = patientInfo['gender'] == 'Male'
+              ? 0
+              : patientInfo['gender'] == 'Female'
+                  ? 1
+                  : 2;
         });
+      }
+      convertDate(patientInfo['dateofbirth']).then((value) {
+        if (mounted) {
+          setState(() {
+            selecteddate = DateTime.parse(value);
+          });
+        }
       });
     });
   }
@@ -77,17 +83,21 @@ class _PatientFormState extends State<PatientForm> {
   _imgfromCamera() async {
     final pickerfile =
         await picker.getImage(source: ImageSource.camera, imageQuality: 50);
-    setState(() {
-      _image = pickerfile;
-    });
+    if (mounted) {
+      setState(() {
+        _image = pickerfile;
+      });
+    }
   }
 
   _imgfromgallery() async {
     final galleryimage =
         await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
-    setState(() {
-      _image = galleryimage;
-    });
+    if (mounted) {
+      setState(() {
+        _image = galleryimage;
+      });
+    }
   }
 
   void _showpicker(context) {
@@ -134,10 +144,11 @@ class _PatientFormState extends State<PatientForm> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
+    if (picked != null && picked != selecteddate) if (mounted) {
       setState(() {
         selecteddate = picked;
       });
+    }
   }
 
   @override
@@ -217,10 +228,12 @@ class _PatientFormState extends State<PatientForm> {
                                 onPressed: () async {
                                   await general.deleteProfileImageURL(
                                       patientId, userId, 'Patient');
-                                  setState(() {
-                                    _image = null;
-                                    profileImageURL = null;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      _image = null;
+                                      profileImageURL = null;
+                                    });
+                                  }
                                 },
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.deepPurple),
@@ -253,9 +266,11 @@ class _PatientFormState extends State<PatientForm> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            name = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              name = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -305,9 +320,11 @@ class _PatientFormState extends State<PatientForm> {
                                         readOnly: true,
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            email = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              email = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -381,9 +398,11 @@ class _PatientFormState extends State<PatientForm> {
                                     value: 0,
                                     groupValue: gender,
                                     onChanged: (val) {
-                                      setState(() {
-                                        gender = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          gender = val;
+                                        });
+                                      }
                                     }),
                                 Text("Female", style: TextStyle(fontSize: 20)),
                                 Radio(
@@ -391,9 +410,11 @@ class _PatientFormState extends State<PatientForm> {
                                   value: 1,
                                   groupValue: gender,
                                   onChanged: (val) {
-                                    setState(() {
-                                      gender = val;
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        gender = val;
+                                      });
+                                    }
                                   },
                                 ),
                                 Text("Other", style: TextStyle(fontSize: 20)),
@@ -402,9 +423,11 @@ class _PatientFormState extends State<PatientForm> {
                                     value: 2,
                                     groupValue: gender,
                                     onChanged: (val) {
-                                      setState(() {
-                                        gender = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          gender = val;
+                                        });
+                                      }
                                     })
                               ],
                             ),
@@ -442,9 +465,11 @@ class _PatientFormState extends State<PatientForm> {
                                       }).toList(),
                                       hint: Text("Select Blood Group"),
                                       onChanged: (String value) {
-                                        setState(() {
-                                          bloodgroup = value;
-                                        });
+                                        if (mounted) {
+                                          setState(() {
+                                            bloodgroup = value;
+                                          });
+                                        }
                                       },
                                     ),
                                   )
@@ -471,9 +496,11 @@ class _PatientFormState extends State<PatientForm> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            contact = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              contact = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.length < 10) {
@@ -525,9 +552,11 @@ class _PatientFormState extends State<PatientForm> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            insuranceno = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              insuranceno = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -576,9 +605,11 @@ class _PatientFormState extends State<PatientForm> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            address = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              address = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -648,7 +679,7 @@ class _PatientFormState extends State<PatientForm> {
                                                         ? 'Female'
                                                         : 'Other',
                                                 'bloodgroup': bloodgroup,
-                                                'phoneno': contact,
+                                                'contact': contact,
                                                 'insuranceno': insuranceno,
                                                 'address': address,
                                                 'profileImageURL':

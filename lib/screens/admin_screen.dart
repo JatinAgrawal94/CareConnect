@@ -34,81 +34,95 @@ class _AdminHomeState extends State<AdminHome> {
     super.initState();
     general.getAllUser('patient').then((value) {
       value.forEach((element) {
-        setState(() {
-          patients.add({
-            'name': element['name'],
-            'profileImageURL': element['profileImageURL'],
-            'documentid': element['documentid'],
-            'userid': element['userid']
-          });
-        });
-        if (patients.length == 0) {
+        if (mounted) {
           setState(() {
-            emptyPatients = 0;
+            patients.add({
+              'name': element['name'],
+              'profileImageURL': element['profileImageURL'],
+              'documentid': element['documentid'],
+              'userid': element['userid']
+            });
           });
+          if (patients.length == 0) {
+            if (mounted) {
+              setState(() {
+                emptyPatients = 0;
+              });
+            }
+          }
         }
       });
     });
     general.getAllUser('doctor').then((value) {
       value.forEach((element) {
-        setState(() {
-          doctors.add({
-            'name': element['name'],
-            'profileImageURL': element['profileImageURL'],
-            'documentid': element['documentid'],
-            'userid': element['userid']
+        if (mounted) {
+          setState(() {
+            doctors.add({
+              'name': element['name'],
+              'profileImageURL': element['profileImageURL'],
+              'documentid': element['documentid'],
+              'userid': element['userid']
+            });
           });
-        });
-        if (doctors.length == 0) {
+        }
+      });
+      if (doctors.length == 0) {
+        if (mounted) {
           setState(() {
             emptyDoctors = 0;
           });
         }
-      });
+      }
     });
     general.getDocsId(email, 'Admin').then((value) {
-      setState(() {
-        adminDocumentId = value['documentId'];
-      });
+      if (mounted) {
+        setState(() {
+          adminDocumentId = value['documentId'];
+        });
+      }
     });
   }
 
   Future loadDoctors() async {
     var data = await general.getAllUser('doctor');
     var result = [];
-    setState(() {
-      this.doctors = null;
-      data.forEach((element) => {
-            setState(() {
-              result.add({
-                'name': element['name'],
-                'profileImageURL': element['profileImageURL'],
-                'documentid': element['documentid'],
-                'userid': element['userid']
-              });
-            })
-          });
-      this.doctors = result;
-    });
+    if (mounted) {
+      setState(() {
+        this.doctors = null;
+        data.forEach((element) => {
+              setState(() {
+                result.add({
+                  'name': element['name'],
+                  'profileImageURL': element['profileImageURL'],
+                  'documentid': element['documentid'],
+                  'userid': element['userid']
+                });
+              })
+            });
+        this.doctors = result;
+      });
+    }
   }
 
   Future loadPatients() async {
     var data = await general.getAllUser('patient');
     var result = [];
-    setState(() {
-      this.patients = null;
-      data.forEach((element) => {
-            setState(() {
-              result.add({
-                'name': element['name'],
-                'profileImageURL': element['profileImageURL'],
-                'documentid': element['documentid'],
-                'userid': element['userid']
-              });
-            })
-          });
-      this.patients = result;
-    });
+    if (mounted) {
+      setState(() {
+        this.patients = null;
+        data.forEach((element) => {
+              setState(() {
+                result.add({
+                  'name': element['name'],
+                  'profileImageURL': element['profileImageURL'],
+                  'documentid': element['documentid'],
+                  'userid': element['userid']
+                });
+              })
+            });
+        this.patients = result;
+      });
+    }
   }
 
   @override

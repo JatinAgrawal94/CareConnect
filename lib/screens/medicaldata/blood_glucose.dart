@@ -31,23 +31,30 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
     super.initState();
     _patientData.getCategoryData('bloodglucose', patientId).then((value) {
       value.forEach((item) => {
-            setState(() {
-              bloodGlucoseList.add(item);
-            })
+            if (mounted)
+              {
+                setState(() {
+                  bloodGlucoseList.add(item);
+                })
+              }
           });
       if (bloodGlucoseList.length == 0) {
-        setState(() {
-          empty = 0;
-        });
+        if (mounted) {
+          setState(() {
+            empty = 0;
+          });
+        }
       }
     });
   }
 
   Future setData() async {
     var data = await _patientData.getCategoryData("bloodglucose", patientId);
-    setState(() {
-      this.bloodGlucoseList = data;
-    });
+    if (mounted) {
+      setState(() {
+        this.bloodGlucoseList = data;
+      });
+    }
   }
 
   _setDate(BuildContext context) async {
@@ -69,10 +76,11 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
+    if (picked != null && picked != selecteddate) if (mounted) {
       setState(() {
         selecteddate = picked;
       });
+    }
   }
 
   _setTime(BuildContext context) async {
@@ -93,9 +101,11 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
               child: child);
         });
     if (picked != null) {
-      setState(() {
-        selectedtime = picked;
-      });
+      if (mounted) {
+        setState(() {
+          selectedtime = picked;
+        });
+      }
     }
   }
 
@@ -135,9 +145,11 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                             value: 0,
                             groupValue: readingType,
                             onChanged: (val) {
-                              setState(() {
-                                readingType = val;
-                              });
+                              if (mounted) {
+                                setState(() {
+                                  readingType = val;
+                                });
+                              }
                             }),
                         Text("Fasting", style: TextStyle(fontSize: 18))
                       ],
@@ -149,9 +161,11 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                             value: 1,
                             groupValue: readingType,
                             onChanged: (val) {
-                              setState(() {
-                                readingType = val;
-                              });
+                              if (mounted) {
+                                setState(() {
+                                  readingType = val;
+                                });
+                              }
                             }),
                         Text("Postpradial", style: TextStyle(fontSize: 18))
                       ],
@@ -163,9 +177,11 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                             value: 2,
                             groupValue: readingType,
                             onChanged: (val) {
-                              setState(() {
-                                readingType = val;
-                              });
+                              if (mounted) {
+                                setState(() {
+                                  readingType = val;
+                                });
+                              }
                             }),
                         Text("Random", style: TextStyle(fontSize: 18))
                       ],
@@ -190,9 +206,11 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                                     return null;
                                   },
                                   onChanged: (value) {
-                                    setState(() {
-                                      result = value;
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        result = value;
+                                      });
+                                    }
                                   },
                                   keyboardType: TextInputType.number,
                                   style: TextStyle(
@@ -216,9 +234,11 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                           }).toList(),
                           hint: Text("Unit"),
                           onChanged: (String value) {
-                            setState(() {
-                              resultUnit = value;
-                            });
+                            if (mounted) {
+                              setState(() {
+                                resultUnit = value;
+                              });
+                            }
                           },
                         )
                       ],

@@ -32,23 +32,30 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
     super.initState();
     _patientData.getCategoryData('medicalvisit', patientId).then((value) {
       value.forEach((item) => {
-            setState(() {
-              medicalvisitList.add(item);
-            })
+            if (mounted)
+              {
+                setState(() {
+                  medicalvisitList.add(item);
+                })
+              }
           });
       if (medicalvisitList.length == 0) {
-        setState(() {
-          empty = 0;
-        });
+        if (mounted) {
+          setState(() {
+            empty = 0;
+          });
+        }
       }
     });
   }
 
   Future setData() async {
     var data = await _patientData.getCategoryData("medicalvisit", patientId);
-    setState(() {
-      this.medicalvisitList = data;
-    });
+    if (mounted) {
+      setState(() {
+        this.medicalvisitList = data;
+      });
+    }
   }
 
   _setDate(BuildContext context) async {
@@ -70,10 +77,11 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
+    if (picked != null && picked != selecteddate) if (mounted) {
       setState(() {
         selecteddate = picked;
       });
+    }
   }
 
   @override
@@ -136,9 +144,11 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                               value: 0,
                                               groupValue: visitType,
                                               onChanged: (value) {
-                                                setState(() {
-                                                  visitType = value;
-                                                });
+                                                if (mounted) {
+                                                  setState(() {
+                                                    visitType = value;
+                                                  });
+                                                }
                                               }),
                                           Text("New",
                                               style: TextStyle(fontSize: 20)),
@@ -147,9 +157,11 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                               value: 1,
                                               groupValue: visitType,
                                               onChanged: (value) {
-                                                setState(() {
-                                                  visitType = value;
-                                                });
+                                                if (mounted) {
+                                                  setState(() {
+                                                    visitType = value;
+                                                  });
+                                                }
                                               }),
                                           Text("Follow Up",
                                               style: TextStyle(fontSize: 20)),
@@ -169,9 +181,11 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                     child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (value) {
-                                          setState(() {
-                                            doctor = value;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              doctor = value;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -203,9 +217,11 @@ class _MedicalVisitScreenState extends State<MedicalVisitScreen> {
                                         initialValue: "CareConnect",
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (value) {
-                                          setState(() {
-                                            place = value;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              place = value;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {

@@ -26,10 +26,12 @@ class _PatientHomeState extends State<PatientHome> {
   void initState() {
     super.initState();
     general.getDocsId(email, 'Patient').then((value) {
-      setState(() {
-        documentId = value['documentId'];
-        userId = value['userId'];
-      });
+      if (mounted) {
+        setState(() {
+          documentId = value['documentId'];
+          userId = value['userId'];
+        });
+      }
     });
   }
 

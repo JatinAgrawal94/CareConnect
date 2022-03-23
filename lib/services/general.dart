@@ -1,13 +1,15 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:careconnect/services/auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'dart:io';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class GeneralFunctions {
   String host = "https://careconnect-api.herokuapp.com";
-
+  final storage = FlutterSecureStorage();
+  AuthService auth = AuthService();
   Future<String> getProfileImageURL(String userId) async {
     try {
       String downloadURL = await firebase_storage.FirebaseStorage.instance
@@ -57,49 +59,37 @@ class GeneralFunctions {
   Future getDocsId(String email, String collection) async {
     var path = collection.toLowerCase();
     var url = Uri.parse('$host/$path/getdocsid?email=$email&role=$collection');
-    var response = await http.get(url);
-    var data = jsonDecode(response.body)[0];
+    var data = await auth.makeHttpRequest(url, 'get');
     return {
       "documentId": data['documentid'],
       "userId": data['userid'],
-      "phoneno": data['phoneno']
+      "phoneno": data['contact']
     };
   }
 
   Future getUserInfo(String documentid, String collection) async {
     var path = collection.toLowerCase();
-    var url =
-        Uri.parse('$host/$path/info?documentid=$documentid&role=$collection');
-    var response = await http.get(url);
-    var data = jsonDecode(response.body);
+    var url = Uri.parse(
+        '$host/$path/info?documentid=$documentid&collection=$collection');
+    var data = await auth.makeHttpRequest(url, 'get');
     return data;
   }
 
   Future<void> updateUserinfo(documentId, data, String collection) async {
-    try {
-      var role = collection.toLowerCase();
-      var url = Uri.parse('$host/$role/update');
-      var userData = jsonEncode(data);
-      await http.post(url, body: {
-        'documentid': documentId,
-        'data': userData,
-        'collection': collection
-      });
-    } catch (error) {
-      print(error);
-      return null;
-    }
+    var role = collection.toLowerCase();
+    var url = Uri.parse('$host/$role/update');
+    var body = {
+      'documentid': documentId,
+      'data': jsonEncode(data),
+      'collection': collection
+    };
+    await auth.makeHttpRequest(url, 'post', body: body);
   }
 
   Future getAllUser(String collection) async {
-    try {
-      var role = collection.toLowerCase();
-      var url = Uri.parse('$host/$role/all$role');
-      var response = await http.get(url);
-      List data = jsonDecode(response.body);
-      return data;
-    } catch (err) {
-      return null;
-    }
+    var role = collection.toLowerCase();
+    var url = Uri.parse('$host/$role/all$role');
+    var data = await auth.makeHttpRequest(url, 'get');
+    return data;
   }
 }

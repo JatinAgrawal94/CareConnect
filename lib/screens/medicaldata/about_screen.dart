@@ -1,4 +1,3 @@
-import 'package:careconnect/models/registereduser.dart';
 import 'package:careconnect/screens/userdataforms/patient_update_form.dart';
 import 'package:careconnect/services/auth.dart';
 import 'package:careconnect/services/general.dart';
@@ -7,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'dart:io';
 import 'package:careconnect/components/loading.dart';
-import 'package:provider/provider.dart';
 
 class AboutScreen extends StatefulWidget {
   final String patientId;
@@ -22,19 +20,10 @@ class _AboutScreenState extends State<AboutScreen> {
   PatientData _patientData = PatientData();
   AuthService auth = AuthService();
   final String patientId;
-  static String userId;
   GeneralFunctions general = GeneralFunctions();
   static String imageURL;
-  var user;
-  var role;
-  static var patientInfo = Map<String, dynamic>();
+  static var patientInfo;
   _AboutScreenState(this.patientId);
-
-  void getRole(value) {
-    setState(() {
-      this.role = value;
-    });
-  }
 
   @override
   void initState() {
@@ -43,7 +32,6 @@ class _AboutScreenState extends State<AboutScreen> {
       setState(() {
         patientInfo = value;
         imageURL = patientInfo['profileImageURL'];
-        userId = patientInfo['userid'];
       });
     });
   }
@@ -64,15 +52,13 @@ class _AboutScreenState extends State<AboutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    user = Provider.of<RegisteredUser>(context);
-    getRole(user.roleGet);
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.deepPurple[300],
           iconTheme: IconThemeData(color: Colors.black),
           shadowColor: Colors.transparent,
         ),
-        body: (patientInfo.isEmpty && imageURL != null)
+        body: (patientInfo == null && imageURL == null)
             ? LoadingHeart()
             : Container(
                 child: Column(
@@ -131,9 +117,7 @@ class _AboutScreenState extends State<AboutScreen> {
                     Container(
                         color: Colors.deepPurple[300],
                         child: Row(
-                          mainAxisAlignment: role == "admin"
-                              ? MainAxisAlignment.spaceAround
-                              : MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             SafeArea(
                                 right: true,

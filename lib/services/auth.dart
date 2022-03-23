@@ -1,38 +1,82 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:random_password_generator/random_password_generator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:careconnect/models/registereduser.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mailgun/mailgun.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthService {
   FirebaseAuth auth = FirebaseAuth.instance;
   String host = "https://careconnect-api.herokuapp.com";
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  static String role = 'doctor';
+  final storage = FlutterSecureStorage();
   static String userid;
 
-  Future getRole(String email) async {
-    List data = [];
+  Future makeHttpRequest(var url, String requestType, {body}) async {
     try {
-      var response = await http.get('$host/auth/getrole?email=$email');
-      data = jsonDecode(response.body);
-      return data;
-    } catch (err) {
-      print(err);
+      // get request
+      if (requestType.toLowerCase() == 'get') {
+        var response = await http.get(url, headers: await getRequestHeader());
+        var data = await jsonDecode(response.body);
+        if (data.runtimeType.toString() == 'List<dynamic>') {
+          return data;
+        } else if (data['message'] == 'auth/id-token-expired') {
+          await updateToken();
+          response = await http.get(url, headers: await getRequestHeader());
+          data = await jsonDecode(response.body);
+          return data;
+        } else {
+          return data;
+        }
+      }
+      // post request
+      else {
+        var response =
+            await http.post(url, headers: await getRequestHeader(), body: body);
+        var data = await jsonDecode(response.body);
+        if (data['message'] == 'auth/id-token-expired') {
+          await updateToken();
+          response = await http.post(url,
+              headers: await getRequestHeader(), body: body);
+          data = await jsonDecode(response.body);
+        }
+        return data;
+      }
+    } catch (e) {
+      return e;
     }
+  }
+
+  Future getRole(String email) async {
+    var data = await makeHttpRequest(
+        Uri.parse('$host/auth/getrole?email=$email'), 'get');
+    return data;
+  }
+
+  Future updateToken() async {
+    try {
+      var token = await auth.currentUser.getIdToken(true);
+      storage.write(key: getCurrentUser(), value: token);
+      return true;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  String getCurrentUser() {
+    User user = auth.currentUser;
+    return user.email.toString();
+  }
+
+  Future getTokenFromStorage(key) async {
+    var token = await storage.read(key: key);
+    return token;
   }
 
   // get RegisteredUser(model) format for logged in user.
   RegisteredUser _userFromFirebase(User user) {
     if (user != null) {
       return RegisteredUser(
-        email: user.email,
-        uid: user.uid,
-      );
+          email: user.email, uid: user.uid, userInfo: user.getIdToken(true));
     } else {
       return null;
     }
@@ -46,14 +90,17 @@ class AuthService {
   }
 
   void signoutmethod() async {
+    storage.delete(key: getCurrentUser());
     await auth.signOut();
   }
 
   Future signinmethod(String email, String password) async {
     try {
-      await _authorize(email);
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
           email: email, password: password);
+      final token = await userCredential.user.getIdToken(true);
+      // userCredential.user.g
+      await storage.write(key: email, value: token);
       return userCredential;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -62,24 +109,6 @@ class AuthService {
         return "Incorrect password";
       }
     }
-  }
-
-  Future _authorize(String email) async {
-    List data = [];
-    // print("I was in authorize");
-    await _firestore
-        .collection('users')
-        .where('email', isEqualTo: email)
-        .get()
-        .then((QuerySnapshot snapshot) {
-      role = snapshot.docs[0]['role'];
-      userid = snapshot.docs[0]['userid'];
-      data.add({
-        'role': snapshot.docs[0]['role'],
-        'userid': snapshot.docs[0]['userid']
-      });
-    });
-    return data;
   }
 
   Future resetPasswordmethod(String email) async {
@@ -95,70 +124,33 @@ class AuthService {
     }
   }
 
-  Future registerUserWithEmailAndPassword(String email, String password) async {
-    try {
-      await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-      return "user-created";
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-      } else if (e.code == 'email-already-in-use') {
-        return 'email-already-in-use';
-      }
-    } catch (e) {
-      return e;
-    }
-  }
-
-  Future randomPasswordGenerator() async {
-    final password = RandomPasswordGenerator();
-    String newPassword = password.randomPassword(true, false, true, false, 7);
-    return newPassword;
-  }
-
-  Future registerUser(String email) async {
-    String password = await randomPasswordGenerator();
-    String result = await registerUserWithEmailAndPassword(email, password);
-    if (result == "user-created") {
-      return {'password': password, 'msg': result};
-    } else if (result == 'email-already-in-use') {
-      return {'msg': result};
-    } else {
-      return {'msg': result};
-    }
-  }
-
   Future createNewUser(String email, String role, String phone) async {
     role = role.toLowerCase();
-    var url =
-        Uri.parse('https://careconnect-api.herokuapp.com/$role/createuser');
+    var url = Uri.parse('$host/$role/createuser');
     var body = {'email': email, 'password': phone};
-    var response = await http.post(url, body: body);
+    var response =
+        await http.post(url, body: body, headers: await getRequestHeader());
     return jsonDecode(response.body);
   }
 
   Future addUser(String collection, data) async {
     try {
       var role = collection.toLowerCase();
-      var url = Uri.parse('https://careconnect-api.herokuapp.com/$role/add');
+      var url = Uri.parse('$host/$role/add');
       var userData = jsonEncode(data);
-      await http.post(url, body: {'data': userData, 'collection': collection});
+      await http.post(url,
+          body: {'data': userData, 'collection': collection},
+          headers: await getRequestHeader());
     } catch (err) {
       print(err);
       return null;
     }
   }
 
-  Future sendMails(String email, String password) async {
-    var apiKey = env['API_KEY'];
-    var domain = env['DOMAIN_NAME'];
-
-    var mailgun = MailgunMailer(domain: domain, apiKey: apiKey);
-    await mailgun.send(
-        from: "CareConnect<jatinagrawal0801@gmail.com>",
-        to: [email],
-        subject: "Password for CareConnect Account",
-        text:
-            "Your Password is $password \n Note:This is a machine generated Password.Kindly reset password to ensure security");
+  Future getRequestHeader() async {
+    var header = {
+      'Authorization': 'Bearer ' + await getTokenFromStorage(getCurrentUser())
+    };
+    return header;
   }
 }

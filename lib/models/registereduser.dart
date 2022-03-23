@@ -5,9 +5,10 @@ class RegisteredUser {
   final String uid;
   final String email;
   final String role;
+  Future userInfo;
   // user id set by developer on firebase
   final String userid;
-  RegisteredUser({this.uid, this.email, this.role, this.userid});
+  RegisteredUser({this.uid, this.email, this.role, this.userid, this.userInfo});
 
   String get roleGet {
     return this.role;
@@ -19,5 +20,9 @@ class RegisteredUser {
 
   String get userIdGet {
     return this.userid;
+  }
+
+  Future get getUserInfo {
+    return this.userInfo;
   }
 }

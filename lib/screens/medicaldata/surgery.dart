@@ -47,30 +47,37 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
     super.initState();
     general.getAllUser('doctor').then((value) => {
           value.forEach((item) {
-            setState(() {
-              data.add(item['name']);
-            });
+            if (mounted)
+              setState(() {
+                data.add(item['name']);
+              });
           })
         });
     _patientData.getCategoryData('surgery', patientId).then((value) {
       value.forEach((item) {
-        setState(() {
-          surgeryList.add(item);
-        });
+        if (mounted) {
+          setState(() {
+            surgeryList.add(item);
+          });
+        }
       });
       if (surgeryList.length == 0) {
-        setState(() {
-          empty = 0;
-        });
+        if (mounted) {
+          setState(() {
+            empty = 0;
+          });
+        }
       }
     });
   }
 
   Future setData() async {
     var data = await _patientData.getCategoryData("surgery", patientId);
-    setState(() {
-      this.surgeryList = data;
-    });
+    if (mounted) {
+      setState(() {
+        this.surgeryList = data;
+      });
+    }
   }
 
   _setDate(BuildContext context) async {
@@ -92,10 +99,13 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
-      setState(() {
-        selecteddate = picked;
-      });
+    if (picked != null && picked != selecteddate) {
+      if (mounted) {
+        setState(() {
+          selecteddate = picked;
+        });
+      }
+    }
   }
 
   @override
@@ -131,9 +141,11 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                     child: TextFormField(
                                       cursorColor: Colors.deepPurple,
                                       onChanged: (value) {
-                                        setState(() {
-                                          title = value;
-                                        });
+                                        if (mounted) {
+                                          setState(() {
+                                            title = value;
+                                          });
+                                        }
                                       },
                                       validator: (value) {
                                         if (value.isEmpty) {
@@ -156,9 +168,11 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                     child: TextFormField(
                                       cursorColor: Colors.deepPurple,
                                       onChanged: (value) {
-                                        setState(() {
-                                          result = value;
-                                        });
+                                        if (mounted) {
+                                          setState(() {
+                                            result = value;
+                                          });
+                                        }
                                       },
                                       validator: (value) {
                                         if (value.isEmpty) {
@@ -198,16 +212,20 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                         ),
                                         onChanged: (String value) {
                                           if (value != 'Other') {
-                                            setState(() {
-                                              doctor = value;
-                                              if (otherDoctor == 1) {
-                                                otherDoctor = 0;
-                                              }
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                doctor = value;
+                                                if (otherDoctor == 1) {
+                                                  otherDoctor = 0;
+                                                }
+                                              });
+                                            }
                                           } else {
-                                            setState(() {
-                                              otherDoctor = 1;
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                otherDoctor = 1;
+                                              });
+                                            }
                                           }
                                         },
                                         validator: (doctor) {
@@ -224,9 +242,11 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                           child: TextFormField(
                                             cursorColor: Colors.deepPurple,
                                             onChanged: (value) {
-                                              setState(() {
-                                                doctor = value;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  doctor = value;
+                                                });
+                                              }
                                             },
                                             validator: (value) {
                                               if (value.isEmpty) {
@@ -253,9 +273,11 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                       initialValue: "CareConnect",
                                       cursorColor: Colors.deepPurple,
                                       onChanged: (value) {
-                                        setState(() {
-                                          place = value;
-                                        });
+                                        if (mounted) {
+                                          setState(() {
+                                            place = value;
+                                          });
+                                        }
                                       },
                                       validator: (value) {
                                         if (value.isEmpty) {
@@ -329,9 +351,11 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                                     images.removeAt(j);
                                                   }
                                                 }
-                                                setState(() {
-                                                  images.length;
-                                                });
+                                                if (mounted) {
+                                                  setState(() {
+                                                    images.length;
+                                                  });
+                                                }
                                                 for (var i = 0;
                                                     i < images.length;
                                                     i++) {}
@@ -375,9 +399,11 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                                     videos.removeAt(j);
                                                   }
                                                 }
-                                                setState(() {
-                                                  videos.length;
-                                                });
+                                                if (mounted) {
+                                                  setState(() {
+                                                    videos.length;
+                                                  });
+                                                }
                                                 for (var i = 0;
                                                     i < videos.length;
                                                     i++) {}
@@ -421,9 +447,11 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                                     files.removeAt(j);
                                                   }
                                                 }
-                                                setState(() {
-                                                  files.length;
-                                                });
+                                                if (mounted) {
+                                                  setState(() {
+                                                    files.length;
+                                                  });
+                                                }
                                                 for (var i = 0;
                                                     i < files.length;
                                                     i++) {}

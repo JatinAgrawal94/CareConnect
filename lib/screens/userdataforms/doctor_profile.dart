@@ -1,4 +1,3 @@
-import 'package:careconnect/models/registereduser.dart';
 import 'package:careconnect/screens/userdataforms/doctor_update_form.dart';
 import 'package:careconnect/services/auth.dart';
 import 'package:careconnect/services/doctorData.dart';
@@ -6,7 +5,6 @@ import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:careconnect/components/loading.dart';
-import 'package:provider/provider.dart';
 
 class DoctorProfile extends StatefulWidget {
   final String doctorId;
@@ -24,26 +22,23 @@ class _DoctorProfileState extends State<DoctorProfile> {
   String userId;
   var user;
   var role;
+  var email;
   var data;
   static String imageURL;
   _DoctorProfileState(this.doctorId);
-  static var doctorInfo = Map<String, dynamic>();
-
-  void getRole(value) {
-    setState(() {
-      this.role = value;
-    });
-  }
+  static var doctorInfo;
 
   @override
   void initState() {
     super.initState();
     general.getUserInfo(doctorId, 'Doctor').then((value) {
-      setState(() {
-        doctorInfo = value;
-        userId = doctorInfo['userid'];
-        imageURL = doctorInfo['profileImageURL'];
-      });
+      if (mounted) {
+        setState(() {
+          doctorInfo = value;
+          userId = doctorInfo['userid'];
+          imageURL = doctorInfo['profileImageURL'];
+        });
+      }
     });
   }
 
@@ -64,15 +59,13 @@ class _DoctorProfileState extends State<DoctorProfile> {
 
   @override
   Widget build(BuildContext context) {
-    user = Provider.of<RegisteredUser>(context);
-    getRole(user.roleGet);
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.deepPurple[300],
           iconTheme: IconThemeData(color: Colors.black),
           shadowColor: Colors.transparent,
         ),
-        body: doctorInfo.isEmpty
+        body: doctorInfo == null
             ? LoadingHeart()
             : Container(
                 child: Column(

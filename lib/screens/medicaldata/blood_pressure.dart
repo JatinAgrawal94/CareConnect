@@ -31,23 +31,30 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
     super.initState();
     _patientData.getCategoryData('bloodpressure', patientId).then((value) {
       value.forEach((item) => {
-            setState(() {
-              bloodPressureList.add(item);
-            })
+            if (mounted)
+              {
+                setState(() {
+                  bloodPressureList.add(item);
+                })
+              }
           });
       if (bloodPressureList.length == 0) {
-        setState(() {
-          empty = 0;
-        });
+        if (mounted) {
+          setState(() {
+            empty = 0;
+          });
+        }
       }
     });
   }
 
   Future setData() async {
     var data = await _patientData.getCategoryData("bloodpressure", patientId);
-    setState(() {
-      this.bloodPressureList = data;
-    });
+    if (mounted) {
+      setState(() {
+        this.bloodPressureList = data;
+      });
+    }
   }
 
   _setDate(BuildContext context) async {
@@ -69,10 +76,11 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
+    if (picked != null && picked != selecteddate) if (mounted) {
       setState(() {
         selecteddate = picked;
       });
+    }
   }
 
   _setTime(BuildContext context) async {
@@ -93,9 +101,11 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
               child: child);
         });
     if (picked != null) {
-      setState(() {
-        selectedtime = picked;
-      });
+      if (mounted) {
+        setState(() {
+          selectedtime = picked;
+        });
+      }
     }
   }
 
@@ -138,9 +148,11 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                             child: TextFormField(
                               cursorColor: Colors.deepPurple,
                               onChanged: (value) {
-                                setState(() {
-                                  systolic = value;
-                                });
+                                if (mounted) {
+                                  setState(() {
+                                    systolic = value;
+                                  });
+                                }
                               },
                               validator: (value) {
                                 if (value.isEmpty) {
@@ -163,9 +175,11 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                             child: TextFormField(
                               cursorColor: Colors.deepPurple,
                               onChanged: (value) {
-                                setState(() {
-                                  diastolic = value;
-                                });
+                                if (mounted) {
+                                  setState(() {
+                                    diastolic = value;
+                                  });
+                                }
                               },
                               validator: (value) {
                                 if (value.isEmpty) {
@@ -188,9 +202,11 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                             child: TextFormField(
                               cursorColor: Colors.deepPurple,
                               onChanged: (value) {
-                                setState(() {
-                                  pulse = value;
-                                });
+                                if (mounted) {
+                                  setState(() {
+                                    pulse = value;
+                                  });
+                                }
                               },
                               validator: (value) {
                                 if (value.isEmpty) {

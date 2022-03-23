@@ -28,23 +28,30 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
     super.initState();
     _patientData.getCategoryData('familyhistory', patientId).then((value) {
       value.forEach((item) => {
-            setState(() {
-              familyhistoryList.add(item);
-            })
+            if (mounted)
+              {
+                setState(() {
+                  familyhistoryList.add(item);
+                })
+              }
           });
       if (familyhistoryList.length == 0) {
-        setState(() {
-          empty = 0;
-        });
+        if (mounted) {
+          setState(() {
+            empty = 0;
+          });
+        }
       }
     });
   }
 
   Future setData() async {
     var data = await _patientData.getCategoryData("familyhistory", patientId);
-    setState(() {
-      this.familyhistoryList = data;
-    });
+    if (mounted) {
+      setState(() {
+        this.familyhistoryList = data;
+      });
+    }
   }
 
   @override
@@ -84,9 +91,11 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                           child: TextFormField(
                             cursorColor: Colors.deepPurple,
                             onChanged: (value) {
-                              setState(() {
-                                memberName = value;
-                              });
+                              if (mounted) {
+                                setState(() {
+                                  memberName = value;
+                                });
+                              }
                             },
                             validator: (value) {
                               if (value.isEmpty) {
@@ -109,9 +118,11 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                               initialValue: "CareConnect",
                               cursorColor: Colors.deepPurple,
                               onChanged: (value) {
-                                setState(() {
-                                  description = value;
-                                });
+                                if (mounted) {
+                                  setState(() {
+                                    description = value;
+                                  });
+                                }
                               },
                               validator: (value) {
                                 if (value.isEmpty) {

@@ -49,30 +49,38 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
     super.initState();
     general.getAllUser('doctor').then((value) => {
           value.forEach((item) {
-            setState(() {
-              data.add(item['name']);
-            });
+            if (mounted) {
+              setState(() {
+                data.add(item['name']);
+              });
+            }
           })
         });
     _patientData.getCategoryData('prescription', patientId).then((value) {
       value.forEach((item) {
-        setState(() {
-          prescriptionList.add(item);
-        });
+        if (mounted) {
+          setState(() {
+            prescriptionList.add(item);
+          });
+        }
       });
       if (prescriptionList.length == 0) {
-        setState(() {
-          empty = 0;
-        });
+        if (mounted) {
+          setState(() {
+            empty = 0;
+          });
+        }
       }
     });
   }
 
   Future setData() async {
     var data = await _patientData.getCategoryData("prescription", patientId);
-    setState(() {
-      this.prescriptionList = data;
-    });
+    if (mounted) {
+      setState(() {
+        this.prescriptionList = data;
+      });
+    }
   }
 
   _setDate(BuildContext context) async {
@@ -94,10 +102,11 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
+    if (picked != null && picked != selecteddate) if (mounted) {
       setState(() {
         selecteddate = picked;
       });
+    }
   }
 
   _setTime(BuildContext context) async {
@@ -118,9 +127,11 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
               child: child);
         });
     if (picked != null) {
-      setState(() {
-        selectedtime = picked;
-      });
+      if (mounted) {
+        setState(() {
+          selectedtime = picked;
+        });
+      }
     }
   }
 
@@ -162,9 +173,11 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (value) {
-                                          setState(() {
-                                            drug = value;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              drug = value;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -190,9 +203,11 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (value) {
-                                          setState(() {
-                                            dose = value;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              dose = value;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -246,16 +261,20 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                           ),
                                           onChanged: (String value) {
                                             if (value != 'Other') {
-                                              setState(() {
-                                                doctor = value;
-                                                if (otherDoctor == 1) {
-                                                  otherDoctor = 0;
-                                                }
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  doctor = value;
+                                                  if (otherDoctor == 1) {
+                                                    otherDoctor = 0;
+                                                  }
+                                                });
+                                              }
                                             } else {
-                                              setState(() {
-                                                otherDoctor = 1;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  otherDoctor = 1;
+                                                });
+                                              }
                                             }
                                           },
                                           validator: (doctor) {
@@ -285,9 +304,11 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                           child: TextFormField(
                                             cursorColor: Colors.deepPurple,
                                             onChanged: (value) {
-                                              setState(() {
-                                                doctor = value;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  doctor = value;
+                                                });
+                                              }
                                             },
                                             validator: (value) {
                                               if (value.isEmpty) {
@@ -323,9 +344,11 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (value) {
-                                          setState(() {
-                                            place = value;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              place = value;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -381,26 +404,28 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                           style: TextStyle(fontSize: 20)),
                                       IconButton(
                                           onPressed: () {
-                                            setState(() {
-                                              if (timings.length < 3) {
-                                                timings.add(
-                                                    "${selectedtime.hour > 12 ? ((selectedtime.hour - 12).toString()) : (selectedtime.hour)}:${selectedtime.minute < 10 ? ("0${selectedtime.minute}") : (selectedtime.minute)}" +
-                                                        "  " +
-                                                        "${selectedtime.hour > 12 ? ("PM") : ("AM")}");
-                                              } else {
-                                                Fluttertoast.showToast(
-                                                    msg: "Max 3 Reminders",
-                                                    toastLength:
-                                                        Toast.LENGTH_LONG,
-                                                    gravity:
-                                                        ToastGravity.SNACKBAR,
-                                                    backgroundColor:
-                                                        Colors.grey,
-                                                    textColor: Colors.white,
-                                                    fontSize: 15,
-                                                    timeInSecForIosWeb: 1);
-                                              }
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                if (timings.length < 3) {
+                                                  timings.add(
+                                                      "${selectedtime.hour > 12 ? ((selectedtime.hour - 12).toString()) : (selectedtime.hour)}:${selectedtime.minute < 10 ? ("0${selectedtime.minute}") : (selectedtime.minute)}" +
+                                                          "  " +
+                                                          "${selectedtime.hour > 12 ? ("PM") : ("AM")}");
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                      msg: "Max 3 Reminders",
+                                                      toastLength:
+                                                          Toast.LENGTH_LONG,
+                                                      gravity:
+                                                          ToastGravity.SNACKBAR,
+                                                      backgroundColor:
+                                                          Colors.grey,
+                                                      textColor: Colors.white,
+                                                      fontSize: 15,
+                                                      timeInSecForIosWeb: 1);
+                                                }
+                                              });
+                                            }
                                           },
                                           icon: Icon(Icons.add_circle,
                                               color: Colors.deepPurple))
@@ -445,9 +470,11 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                                   images.removeAt(j);
                                                 }
                                               }
-                                              setState(() {
-                                                images.length;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  images.length;
+                                                });
+                                              }
                                             } else {
                                               print("Error");
                                             }
@@ -488,9 +515,11 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                                   videos.removeAt(j);
                                                 }
                                               }
-                                              setState(() {
-                                                videos.length;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  videos.length;
+                                                });
+                                              }
                                             } else {
                                               print("Error");
                                             }
@@ -531,9 +560,11 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                                   files.removeAt(j);
                                                 }
                                               }
-                                              setState(() {
-                                                files.length;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  files.length;
+                                                });
+                                              }
                                             } else {
                                               print("Error");
                                             }
@@ -667,9 +698,11 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                                         fontSize: 20))),
                                             IconButton(
                                                 onPressed: () {
-                                                  setState(() {
-                                                    timings.removeAt(index);
-                                                  });
+                                                  if (mounted) {
+                                                    setState(() {
+                                                      timings.removeAt(index);
+                                                    });
+                                                  }
                                                 },
                                                 icon: Icon(Icons.remove_circle))
                                           ],

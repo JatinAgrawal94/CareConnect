@@ -52,30 +52,39 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
     super.initState();
     general.getAllUser('doctor').then((value) => {
           value.forEach((item) {
-            setState(() {
-              data.add(item['name']);
-            });
+            if (mounted) {
+              setState(() {
+                data.add(item['name']);
+              });
+            }
           })
         });
     _patientData.getCategoryData('examination', patientId).then((value) {
       value.forEach((item) => {
-            setState(() {
-              examinationList.add(item);
-            })
+            if (mounted)
+              {
+                setState(() {
+                  examinationList.add(item);
+                })
+              }
           });
       if (examinationList.length == 0) {
-        setState(() {
-          empty = 0;
-        });
+        if (mounted) {
+          setState(() {
+            empty = 0;
+          });
+        }
       }
     });
   }
 
   Future setData() async {
     var data = await _patientData.getCategoryData("examination", patientId);
-    setState(() {
-      this.examinationList = data;
-    });
+    if (mounted) {
+      setState(() {
+        this.examinationList = data;
+      });
+    }
   }
 
   _setDate(BuildContext context) async {
@@ -97,10 +106,11 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
+    if (picked != null && picked != selecteddate) if (mounted) {
       setState(() {
         selecteddate = picked;
       });
+    }
   }
 
   @override
@@ -149,9 +159,11 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                           child: TextFormField(
                                             cursorColor: Colors.deepPurple,
                                             onChanged: (value) {
-                                              setState(() {
-                                                temperature = value;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  temperature = value;
+                                                });
+                                              }
                                             },
                                             validator: (value) {
                                               if (value.isEmpty) {
@@ -193,9 +205,11 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                         child: TextFormField(
                                           cursorColor: Colors.deepPurple,
                                           onChanged: (value) {
-                                            setState(() {
-                                              weight = value;
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                weight = value;
+                                              });
+                                            }
                                           },
                                           validator: (value) {
                                             if (value.isEmpty) {
@@ -240,9 +254,11 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                           child: TextFormField(
                                             cursorColor: Colors.deepPurple,
                                             onChanged: (value) {
-                                              setState(() {
-                                                height = value;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  height = value;
+                                                });
+                                              }
                                             },
                                             validator: (value) {
                                               if (value.isEmpty) {
@@ -288,9 +304,11 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                           child: TextFormField(
                                             cursorColor: Colors.deepPurple,
                                             onChanged: (value) {
-                                              setState(() {
-                                                symptoms = value;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  symptoms = value;
+                                                });
+                                              }
                                             },
                                             validator: (value) {
                                               if (value.isEmpty) {
@@ -329,9 +347,11 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                           child: TextFormField(
                                             cursorColor: Colors.deepPurple,
                                             onChanged: (value) {
-                                              setState(() {
-                                                diagnosis = value;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  diagnosis = value;
+                                                });
+                                              }
                                             },
                                             validator: (value) {
                                               if (value.isEmpty) {
@@ -370,9 +390,11 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                           child: TextFormField(
                                             cursorColor: Colors.deepPurple,
                                             onChanged: (value) {
-                                              setState(() {
-                                                notes = value;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  notes = value;
+                                                });
+                                              }
                                             },
                                             validator: (value) {
                                               if (value.isEmpty) {
@@ -424,16 +446,20 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                             }).toList(),
                                             onChanged: (value) {
                                               if (value != "Other") {
-                                                setState(() {
-                                                  doctor = value;
-                                                  if (otherDoctor == 1) {
-                                                    otherDoctor = 0;
-                                                  }
-                                                });
+                                                if (mounted) {
+                                                  setState(() {
+                                                    doctor = value;
+                                                    if (otherDoctor == 1) {
+                                                      otherDoctor = 0;
+                                                    }
+                                                  });
+                                                }
                                               } else {
-                                                setState(() {
-                                                  otherDoctor = 1;
-                                                });
+                                                if (mounted) {
+                                                  setState(() {
+                                                    otherDoctor = 1;
+                                                  });
+                                                }
                                               }
                                             },
                                             validator: (value) {
@@ -475,9 +501,11 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                                   cursorColor:
                                                       Colors.deepPurple,
                                                   onChanged: (value) {
-                                                    setState(() {
-                                                      doctor = value;
-                                                    });
+                                                    if (mounted) {
+                                                      setState(() {
+                                                        doctor = value;
+                                                      });
+                                                    }
                                                   },
                                                   validator: (value) {
                                                     if (value.isEmpty) {
@@ -519,9 +547,11 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                             initialValue: "CareConnect",
                                             cursorColor: Colors.deepPurple,
                                             onChanged: (value) {
-                                              setState(() {
-                                                place = value;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  place = value;
+                                                });
+                                              }
                                             },
                                             validator: (value) {
                                               if (value.isEmpty) {
@@ -598,9 +628,11 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                                   images.removeAt(j);
                                                 }
                                               }
-                                              setState(() {
-                                                images.length;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  images.length;
+                                                });
+                                              }
                                               for (var i = 0;
                                                   i < images.length;
                                                   i++) {
@@ -647,9 +679,11 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                                   videos.removeAt(j);
                                                 }
                                               }
-                                              setState(() {
-                                                videos.length;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  videos.length;
+                                                });
+                                              }
                                               for (var i = 0;
                                                   i < videos.length;
                                                   i++) {
@@ -692,9 +726,11 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                                   files.removeAt(j);
                                                 }
                                               }
-                                              setState(() {
-                                                files.length;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  files.length;
+                                                });
+                                              }
                                               for (var i = 0;
                                                   i < files.length;
                                                   i++) {

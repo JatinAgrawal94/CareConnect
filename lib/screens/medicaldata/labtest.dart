@@ -47,30 +47,39 @@ class _LabTestScreenState extends State<LabTestScreen> {
     super.initState();
     general.getAllUser('doctor').then((value) => {
           value.forEach((item) {
-            setState(() {
-              data.add(item['name']);
-            });
+            if (mounted) {
+              setState(() {
+                data.add(item['name']);
+              });
+            }
           })
         });
     _patientData.getCategoryData('labtest', patientId).then((value) {
       value.forEach((item) => {
-            setState(() {
-              labtestList.add(item);
-            })
+            if (mounted)
+              {
+                setState(() {
+                  labtestList.add(item);
+                })
+              }
           });
       if (labtestList.length == 0) {
-        setState(() {
-          empty = 0;
-        });
+        if (mounted) {
+          setState(() {
+            empty = 0;
+          });
+        }
       }
     });
   }
 
   Future setData() async {
     var data = await _patientData.getCategoryData("labtest", patientId);
-    setState(() {
-      this.labtestList = data;
-    });
+    if (mounted) {
+      setState(() {
+        this.labtestList = data;
+      });
+    }
   }
 
   _setDate(BuildContext context) async {
@@ -92,10 +101,11 @@ class _LabTestScreenState extends State<LabTestScreen> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
+    if (picked != null && picked != selecteddate) if (mounted) {
       setState(() {
         selecteddate = picked;
       });
+    }
   }
 
   @override
@@ -135,9 +145,11 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                     child: TextFormField(
                                       cursorColor: Colors.deepPurple,
                                       onChanged: (value) {
-                                        setState(() {
-                                          test = value;
-                                        });
+                                        if (mounted) {
+                                          setState(() {
+                                            test = value;
+                                          });
+                                        }
                                       },
                                       validator: (value) {
                                         if (value.isEmpty) {
@@ -162,9 +174,11 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                     child: TextFormField(
                                       cursorColor: Colors.deepPurple,
                                       onChanged: (value) {
-                                        setState(() {
-                                          result = value;
-                                        });
+                                        if (mounted) {
+                                          setState(() {
+                                            result = value;
+                                          });
+                                        }
                                       },
                                       validator: (value) {
                                         if (value.isEmpty) {
@@ -189,9 +203,11 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                     child: TextFormField(
                                       cursorColor: Colors.deepPurple,
                                       onChanged: (value) {
-                                        setState(() {
-                                          normal = value;
-                                        });
+                                        if (mounted) {
+                                          setState(() {
+                                            normal = value;
+                                          });
+                                        }
                                       },
                                       validator: (value) {
                                         if (value.isEmpty) {
@@ -242,16 +258,20 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                           }).toList(),
                                           onChanged: (value) {
                                             if (value != 'Other') {
-                                              setState(() {
-                                                doctor = value;
-                                                if (otherDoctor == 1) {
-                                                  otherDoctor = 0;
-                                                }
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  doctor = value;
+                                                  if (otherDoctor == 1) {
+                                                    otherDoctor = 0;
+                                                  }
+                                                });
+                                              }
                                             } else {
-                                              setState(() {
-                                                otherDoctor = 1;
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  otherDoctor = 1;
+                                                });
+                                              }
                                             }
                                           },
                                           validator: (value) {
@@ -293,9 +313,11 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                             child: TextFormField(
                                               cursorColor: Colors.deepPurple,
                                               onChanged: (value) {
-                                                setState(() {
-                                                  doctor = value;
-                                                });
+                                                if (mounted) {
+                                                  setState(() {
+                                                    doctor = value;
+                                                  });
+                                                }
                                               },
                                               validator: (value) {
                                                 if (value.isEmpty) {
@@ -333,9 +355,11 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                         initialValue: "CareConnect",
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (value) {
-                                          setState(() {
-                                            place = value;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              place = value;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -410,9 +434,11 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                                 images.removeAt(j);
                                               }
                                             }
-                                            setState(() {
-                                              images.length;
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                images.length;
+                                              });
+                                            }
                                           } else {
                                             print("Error");
                                           }
@@ -452,9 +478,11 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                                 videos.removeAt(j);
                                               }
                                             }
-                                            setState(() {
-                                              videos.length;
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                videos.length;
+                                              });
+                                            }
                                           } else {
                                             print("Error");
                                           }
@@ -492,9 +520,11 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                                 files.removeAt(j);
                                               }
                                             }
-                                            setState(() {
-                                              files.length;
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                files.length;
+                                              });
+                                            }
                                           } else {
                                             print("Error");
                                           }

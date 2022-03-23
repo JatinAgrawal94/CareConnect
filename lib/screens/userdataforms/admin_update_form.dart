@@ -51,27 +51,31 @@ class _AdminFormState extends State<AdminForm> {
   @override
   void initState() {
     super.initState();
-    _adminData.getAdminInfo(adminId).then((value) {
-      setState(() {
-        adminInfo = value;
-        imageURL = adminInfo['profileImageURL'];
-        userId = adminInfo['userid'];
-        name = adminInfo['name'];
-        email = adminInfo['email'];
-        imageURL = adminInfo['profileImageURL'];
-        contact = adminInfo['contact'].toString();
-        bloodgroup = adminInfo['bloodgroup'];
-        address = adminInfo['address'];
-        gender = adminInfo['gender'] == 'Male'
-            ? 0
-            : adminInfo['gender'] == 'Female'
-                ? 1
-                : 2;
-      });
-      convertDate(adminInfo['dateofbirth']).then((value) {
+    general.getUserInfo(adminId, 'Admin').then((value) {
+      if (mounted) {
         setState(() {
-          selecteddate = DateTime.parse(value);
+          adminInfo = value;
+          imageURL = adminInfo['profileImageURL'];
+          userId = adminInfo['userid'];
+          name = adminInfo['name'];
+          email = adminInfo['email'];
+          imageURL = adminInfo['profileImageURL'];
+          contact = adminInfo['contact'].toString();
+          bloodgroup = adminInfo['bloodgroup'];
+          address = adminInfo['address'];
+          gender = adminInfo['gender'] == 'Male'
+              ? 0
+              : adminInfo['gender'] == 'Female'
+                  ? 1
+                  : 2;
         });
+      }
+      convertDate(adminInfo['dateofbirth']).then((value) {
+        if (mounted) {
+          setState(() {
+            selecteddate = DateTime.parse(value);
+          });
+        }
       });
     });
   }
@@ -79,17 +83,21 @@ class _AdminFormState extends State<AdminForm> {
   _imgfromCamera() async {
     final pickerfile =
         await picker.getImage(source: ImageSource.camera, imageQuality: 50);
-    setState(() {
-      _image = pickerfile;
-    });
+    if (mounted) {
+      setState(() {
+        _image = pickerfile;
+      });
+    }
   }
 
   _imgfromgallery() async {
     final galleryimage =
         await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
-    setState(() {
-      _image = galleryimage;
-    });
+    if (mounted) {
+      setState(() {
+        _image = galleryimage;
+      });
+    }
   }
 
   void _showpicker(context) {
@@ -136,10 +144,11 @@ class _AdminFormState extends State<AdminForm> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
+    if (picked != null && picked != selecteddate) if (mounted) {
       setState(() {
         selecteddate = picked;
       });
+    }
   }
 
   @override
@@ -218,10 +227,12 @@ class _AdminFormState extends State<AdminForm> {
                                 onPressed: () async {
                                   await general.deleteProfileImageURL(
                                       adminId, userId, 'Admin');
-                                  setState(() {
-                                    _image = null;
-                                    imageURL = null;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      _image = null;
+                                      imageURL = null;
+                                    });
+                                  }
                                 },
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.deepPurple),
@@ -254,9 +265,11 @@ class _AdminFormState extends State<AdminForm> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            name = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              name = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -306,9 +319,11 @@ class _AdminFormState extends State<AdminForm> {
                                         readOnly: true,
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            email = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              email = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -381,9 +396,11 @@ class _AdminFormState extends State<AdminForm> {
                                     value: 0,
                                     groupValue: gender,
                                     onChanged: (val) {
-                                      setState(() {
-                                        gender = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          gender = val;
+                                        });
+                                      }
                                     }),
                                 Text("Female", style: TextStyle(fontSize: 20)),
                                 Radio(
@@ -391,9 +408,11 @@ class _AdminFormState extends State<AdminForm> {
                                   value: 1,
                                   groupValue: gender,
                                   onChanged: (val) {
-                                    setState(() {
-                                      gender = val;
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        gender = val;
+                                      });
+                                    }
                                   },
                                 ),
                                 Text("Other", style: TextStyle(fontSize: 20)),
@@ -402,9 +421,11 @@ class _AdminFormState extends State<AdminForm> {
                                     value: 2,
                                     groupValue: gender,
                                     onChanged: (val) {
-                                      setState(() {
-                                        gender = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          gender = val;
+                                        });
+                                      }
                                     })
                               ],
                             ),
@@ -442,9 +463,11 @@ class _AdminFormState extends State<AdminForm> {
                                       }).toList(),
                                       hint: Text("Select Blood Group"),
                                       onChanged: (String value) {
-                                        setState(() {
-                                          bloodgroup = value;
-                                        });
+                                        if (mounted) {
+                                          setState(() {
+                                            bloodgroup = value;
+                                          });
+                                        }
                                       },
                                     ),
                                   )
@@ -471,9 +494,11 @@ class _AdminFormState extends State<AdminForm> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            contact = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              contact = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.length < 10) {
@@ -525,9 +550,11 @@ class _AdminFormState extends State<AdminForm> {
                                       child: TextFormField(
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (val) {
-                                          setState(() {
-                                            address = val;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              address = val;
+                                            });
+                                          }
                                         },
                                         validator: (value) {
                                           if (value.isEmpty) {

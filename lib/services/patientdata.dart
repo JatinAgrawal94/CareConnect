@@ -20,11 +20,14 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:image_picker/image_picker.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:careconnect/services/auth.dart';
 
 class PatientData {
   // keys to map correct data on aboutpage.
   static PickedFile media;
+  AuthService auth = AuthService();
+  final storage = FlutterSecureStorage();
   String host = "https://careconnect-api.herokuapp.com";
   PickedFile get getMedia {
     return PatientData.media;
@@ -41,7 +44,7 @@ class PatientData {
     3: 'dateofbirth',
     4: 'gender',
     5: 'bloodgroup',
-    6: 'phoneno',
+    6: 'contact',
     7: 'insuranceno',
     8: 'address'
   };
@@ -90,88 +93,56 @@ class PatientData {
 
 // Reading Data for About Page,medicaldata/about_screen.dart
   Future addMedicalData(String patientId, String category, data) async {
-    try {
-      var url = Uri.parse(
-          'https://careconnect-api.herokuapp.com/patient/$category/create');
-      await http
-          .post(url, body: {"patientId": patientId, "data": jsonEncode(data)});
-    } catch (err) {
-      print(err);
-    }
+    var url = Uri.parse('$host/patient/$category/create');
+    var body = {"patientId": patientId, "data": jsonEncode(data)};
+    await auth.makeHttpRequest(url, 'post', body: body);
   }
 
   Future getCategoryData(String category, String documentid) async {
-    try {
-      category = category.toLowerCase();
-      var url = Uri.parse('$host/patient/$category/all?documentid=$documentid');
-      var response = await http.get(url);
-      var data = jsonDecode(response.body);
-      return data;
-    } catch (err) {
-      return null;
-    }
+    category = category.toLowerCase();
+    var url = Uri.parse('$host/patient/$category/all?documentid=$documentid');
+    var data = await auth.makeHttpRequest(url, 'get');
+    return data;
   }
 
   Future deleteAppointment(String documentid) async {
-    try {
-      var body = {'documentid': documentid};
-      var url = Uri.parse('$host/appointment/delete');
-      var response = await http.post(url, body: body);
-      return response.body;
-    } catch (e) {
-      return null;
-    }
+    var body = {'documentid': documentid};
+    var url = Uri.parse('$host/appointment/delete');
+    await auth.makeHttpRequest(url, 'post', body: body);
   }
 
   Future checkUserValidityForAppointment(
       String doctoremail, String patientemail, String date) async {
-    try {
-      var body = {
-        'doctoremail': doctoremail,
-        'patientemail': patientemail,
-        'date': date
-      };
-      var url = Uri.parse('$host/appointment/check');
-      var response = await http.post(url, body: body);
-      return int.parse(response.body);
-    } catch (err) {
-      return null;
-    }
+    var body = {
+      'doctoremail': doctoremail,
+      'patientemail': patientemail,
+      'date': date
+    };
+    var url = Uri.parse('$host/appointment/check');
+    var response = await auth.makeHttpRequest(url, 'post', body: body);
+    return response['status'];
   }
 
   Future addAppointment(String patientId, data) async {
-    try {
-      var url = Uri.parse('$host/appointment/create');
-      await http.post(url, body: data);
-    } catch (err) {
-      return null;
-    }
+    var url = Uri.parse('$host/appointment/create');
+    await auth.makeHttpRequest(url, 'post', body: data);
   }
 
   Future deleteAnyPatientRecord(patientId, recordId, category) async {
     // patient documentId, prescription docuementId
-    try {
-      var body = {
-        'patientid': patientId,
-        'recordid': recordId,
-        'category': category
-      };
-      var url = Uri.parse('$host/patient/record/delete');
-      await http.post(url, body: body);
-    } catch (err) {
-      print("Failed to delete $category record: $err");
-    }
+    var body = {
+      'patientid': patientId,
+      'recordid': recordId,
+      'category': category
+    };
+    var url = Uri.parse('$host/patient/record/delete');
+    await auth.makeHttpRequest(url, 'post', body: body);
   }
 
   Future getPatientAppointments(String email) async {
-    try {
-      var url = Uri.parse('$host/appointment/patient?email=$email');
-      var response = await http.get(url);
-      var data = jsonDecode(response.body);
-      return data;
-    } catch (err) {
-      return null;
-    }
+    var url = Uri.parse('$host/appointment/patient?email=$email');
+    var data = await auth.makeHttpRequest(url, 'get');
+    return data;
   }
 
   Future<void> uploadPatientPhoto(

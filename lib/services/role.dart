@@ -6,27 +6,34 @@ import 'package:careconnect/screens/doctor_home.dart';
 import 'package:careconnect/screens/patient_screen.dart';
 import 'package:careconnect/screens/admin_screen.dart';
 import 'package:careconnect/components/loading.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class RoleAuthorization extends StatefulWidget {
   final String email;
-  RoleAuthorization({Key key, this.email}) : super(key: key);
+  final Future userInfo;
+  RoleAuthorization({Key key, this.email, this.userInfo}) : super(key: key);
 
   @override
-  _RoleAuthorizationState createState() => _RoleAuthorizationState(email);
+  _RoleAuthorizationState createState() =>
+      _RoleAuthorizationState(email, this.userInfo);
 }
 
 class _RoleAuthorizationState extends State<RoleAuthorization> {
   final String email;
-  _RoleAuthorizationState(this.email);
+  final Future userInfo;
+  String token;
+  _RoleAuthorizationState(this.email, this.userInfo);
   AuthService auth = AuthService();
   var data;
+  final storage = new FlutterSecureStorage();
+
   @override
   void initState() {
     super.initState();
     auth.getRole(email).then((value) {
       if (mounted) {
         setState(() {
-          data = value[0]['role'];
+          data = value['role'];
         });
       }
     });

@@ -28,23 +28,29 @@ class _VaccineScreenState extends State<VaccineScreen> {
     super.initState();
     _patientData.getCategoryData('vaccine', patientId).then((value) {
       value.forEach((item) {
-        setState(() {
-          vaccineList.add(item);
-        });
+        if (mounted) {
+          setState(() {
+            vaccineList.add(item);
+          });
+        }
       });
       if (vaccineList.length == 0) {
-        setState(() {
-          empty = 0;
-        });
+        if (mounted) {
+          setState(() {
+            empty = 0;
+          });
+        }
       }
     });
   }
 
   Future setData() async {
     var data = await _patientData.getCategoryData("vaccine", patientId);
-    setState(() {
-      this.vaccineList = data;
-    });
+    if (mounted) {
+      setState(() {
+        this.vaccineList = data;
+      });
+    }
   }
 
   _setDate(BuildContext context) async {
@@ -66,10 +72,11 @@ class _VaccineScreenState extends State<VaccineScreen> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
+    if (picked != null && picked != selecteddate) if (mounted) {
       setState(() {
         selecteddate = picked;
       });
+    }
   }
 
   @override
@@ -110,9 +117,11 @@ class _VaccineScreenState extends State<VaccineScreen> {
                                     child: TextFormField(
                                       cursorColor: Colors.deepPurple,
                                       onChanged: (value) {
-                                        setState(() {
-                                          vaccine = value;
-                                        });
+                                        if (mounted) {
+                                          setState(() {
+                                            vaccine = value;
+                                          });
+                                        }
                                       },
                                       validator: (value) {
                                         if (value.isEmpty) {
@@ -147,9 +156,11 @@ class _VaccineScreenState extends State<VaccineScreen> {
                                     child: TextFormField(
                                       cursorColor: Colors.deepPurple,
                                       onChanged: (value) {
-                                        setState(() {
-                                          place = value;
-                                        });
+                                        if (mounted) {
+                                          setState(() {
+                                            place = value;
+                                          });
+                                        }
                                       },
                                       validator: (value) {
                                         if (value.isEmpty) {

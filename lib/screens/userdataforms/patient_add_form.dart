@@ -35,21 +35,24 @@ class _PatientAddFormState extends State<PatientAddForm> {
   String name = "";
   String email = "";
 
-
   _imgfromCamera() async {
     final pickerfile =
         await picker.getImage(source: ImageSource.camera, imageQuality: 50);
-    setState(() {
-      _image = pickerfile;
-    });
+    if (mounted) {
+      setState(() {
+        _image = pickerfile;
+      });
+    }
   }
 
   _imgfromgallery() async {
     final galleryimage =
         await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
-    setState(() {
-      _image = galleryimage;
-    });
+    if (mounted) {
+      setState(() {
+        _image = galleryimage;
+      });
+    }
   }
 
   void _showpicker(context) {
@@ -96,10 +99,11 @@ class _PatientAddFormState extends State<PatientAddForm> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
+    if (picked != null && picked != selecteddate) if (mounted) {
       setState(() {
         selecteddate = picked;
       });
+    }
   }
 
   @override
@@ -197,9 +201,11 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: TextFormField(
                                     onChanged: (val) {
-                                      setState(() {
-                                        name = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          name = val;
+                                        });
+                                      }
                                     },
                                     validator: (value) {
                                       if (value.isEmpty) {
@@ -242,9 +248,11 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: TextFormField(
                                     onChanged: (val) {
-                                      setState(() {
-                                        email = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          email = val;
+                                        });
+                                      }
                                     },
                                     validator: (value) {
                                       if (value.isEmpty) {
@@ -310,9 +318,11 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                 value: 0,
                                 groupValue: gender,
                                 onChanged: (val) {
-                                  setState(() {
-                                    gender = val;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      gender = val;
+                                    });
+                                  }
                                 }),
                             Text("Female", style: TextStyle(fontSize: 20)),
                             Radio(
@@ -320,9 +330,11 @@ class _PatientAddFormState extends State<PatientAddForm> {
                               value: 1,
                               groupValue: gender,
                               onChanged: (val) {
-                                setState(() {
-                                  gender = val;
-                                });
+                                if (mounted) {
+                                  setState(() {
+                                    gender = val;
+                                  });
+                                }
                               },
                             ),
                             Text("Other", style: TextStyle(fontSize: 20)),
@@ -331,9 +343,11 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                 value: 2,
                                 groupValue: gender,
                                 onChanged: (val) {
-                                  setState(() {
-                                    gender = val;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      gender = val;
+                                    });
+                                  }
                                 })
                           ],
                         ),
@@ -370,9 +384,11 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                   }).toList(),
                                   hint: Text("Select Blood Group"),
                                   onChanged: (String value) {
-                                    setState(() {
-                                      bloodgroup = value;
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        bloodgroup = value;
+                                      });
+                                    }
                                   },
                                 ),
                               )
@@ -398,9 +414,11 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: TextFormField(
                                     onChanged: (val) {
-                                      setState(() {
-                                        contact = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          contact = val;
+                                        });
+                                      }
                                     },
                                     validator: (value) {
                                       if (value.isEmpty) {
@@ -443,9 +461,11 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: TextFormField(
                                     onChanged: (val) {
-                                      setState(() {
-                                        insuranceno = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          insuranceno = val;
+                                        });
+                                      }
                                     },
                                     validator: (value) {
                                       if (value.isEmpty) {
@@ -488,9 +508,11 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: TextFormField(
                                     onChanged: (val) {
-                                      setState(() {
-                                        address = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          address = val;
+                                        });
+                                      }
                                     },
                                     validator: (value) {
                                       if (value.isEmpty) {
@@ -543,7 +565,7 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                           profileURL =
                                               await general.uploadProfileImage(
                                                   File(_image.path),
-                                                   result['userid']);
+                                                  result['userid']);
                                         }
                                         await auth.addUser('Patient', {
                                           'name': name,
@@ -556,10 +578,10 @@ class _PatientAddFormState extends State<PatientAddForm> {
                                                   ? 'Female'
                                                   : 'Other',
                                           'bloodgroup': bloodgroup,
-                                          'phoneno': contact,
+                                          'contact': contact,
                                           'insuranceno': insuranceno,
                                           'address': address,
-                                          'userid':result['userid'],
+                                          'userid': result['userid'],
                                           'profileImageURL': profileURL,
                                         });
                                       } else {

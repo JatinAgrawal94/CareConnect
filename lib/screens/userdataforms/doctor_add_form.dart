@@ -42,6 +42,7 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
   _imgfromCamera() async {
     final pickerfile =
         await picker.getImage(source: ImageSource.camera, imageQuality: 50);
+    if (mounted) {}
     setState(() {
       _image = pickerfile;
     });
@@ -50,9 +51,11 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
   _imgfromgallery() async {
     final galleryimage =
         await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
-    setState(() {
-      _image = galleryimage;
-    });
+    if (mounted) {
+      setState(() {
+        _image = galleryimage;
+      });
+    }
   }
 
   void _showpicker(context) {
@@ -99,10 +102,11 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
               ),
               child: child);
         });
-    if (picked != null && picked != selecteddate)
+    if (picked != null && picked != selecteddate) if (mounted) {
       setState(() {
         selecteddate = picked;
       });
+    }
   }
 
   @override
@@ -200,9 +204,11 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: TextFormField(
                                     onChanged: (val) {
-                                      setState(() {
-                                        name = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          name = val;
+                                        });
+                                      }
                                     },
                                     validator: (value) {
                                       if (value.isEmpty) {
@@ -245,9 +251,11 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: TextFormField(
                                     onChanged: (val) {
-                                      setState(() {
-                                        email = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          email = val;
+                                        });
+                                      }
                                     },
                                     validator: (value) {
                                       if (value.isEmpty) {
@@ -313,9 +321,11 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                 value: 0,
                                 groupValue: gender,
                                 onChanged: (val) {
-                                  setState(() {
-                                    gender = val;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      gender = val;
+                                    });
+                                  }
                                 }),
                             Text("Female", style: TextStyle(fontSize: 20)),
                             Radio(
@@ -323,9 +333,11 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                               value: 1,
                               groupValue: gender,
                               onChanged: (val) {
-                                setState(() {
-                                  gender = val;
-                                });
+                                if (mounted) {
+                                  setState(() {
+                                    gender = val;
+                                  });
+                                }
                               },
                             ),
                             Text("Other", style: TextStyle(fontSize: 20)),
@@ -334,9 +346,11 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                 value: 2,
                                 groupValue: gender,
                                 onChanged: (val) {
-                                  setState(() {
-                                    gender = val;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      gender = val;
+                                    });
+                                  }
                                 })
                           ],
                         ),
@@ -373,9 +387,11 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                   }).toList(),
                                   hint: Text("Select Blood Group"),
                                   onChanged: (String value) {
-                                    setState(() {
-                                      bloodgroup = value;
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        bloodgroup = value;
+                                      });
+                                    }
                                   },
                                 ),
                               )
@@ -401,9 +417,11 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: TextFormField(
                                     onChanged: (val) {
-                                      setState(() {
-                                        contact = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          contact = val;
+                                        });
+                                      }
                                     },
                                     validator: (value) {
                                       if (value.isEmpty) {
@@ -446,9 +464,11 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: TextFormField(
                                     onChanged: (val) {
-                                      setState(() {
-                                        designation = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          designation = val;
+                                        });
+                                      }
                                     },
                                     validator: (value) {
                                       if (value.isEmpty) {
@@ -492,9 +512,11 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: TextFormField(
                                     onChanged: (val) {
-                                      setState(() {
-                                        appointmentTimings = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          appointmentTimings = val;
+                                        });
+                                      }
                                     },
                                     validator: (value) {
                                       if (value.isEmpty) {
@@ -538,9 +560,11 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: TextFormField(
                                     onChanged: (val) {
-                                      setState(() {
-                                        doctype = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          doctype = val;
+                                        });
+                                      }
                                     },
                                     validator: (value) {
                                       if (value.isEmpty) {
@@ -583,9 +607,11 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                       MediaQuery.of(context).size.width * 0.5,
                                   child: TextFormField(
                                     onChanged: (val) {
-                                      setState(() {
-                                        address = val;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          address = val;
+                                        });
+                                      }
                                     },
                                     validator: (value) {
                                       if (value.isEmpty) {
@@ -621,7 +647,6 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                         .validate()) {
                                       final result = await auth.createNewUser(
                                           email, 'doctor', contact);
-
                                       if (result['code'] ==
                                               "auth/created-new-user" &&
                                           result['message'] == 'User created') {
@@ -641,7 +666,7 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                                   File(_image.path),
                                                   result['userid']);
                                         }
-                                        await auth.addUser('Doctor',{
+                                        await auth.addUser('Doctor', {
                                           'name': name,
                                           'email': email,
                                           'dateofbirth':
@@ -662,7 +687,7 @@ class _DoctorAddFormState extends State<DoctorAddForm> {
                                         });
                                       } else {
                                         Fluttertoast.showToast(
-                                            msg: result['msg'],
+                                            msg: result['message'],
                                             toastLength: Toast.LENGTH_LONG,
                                             gravity: ToastGravity.SNACKBAR,
                                             backgroundColor: Colors.grey,
