@@ -241,24 +241,24 @@ class _DoctorAppointmentFormState extends State<DoctorAppointmentForm> {
                             children: <Widget>[
                               ElevatedButton(
                                   onPressed: () async {
-                                    if (doctorappointmentkey.currentState
-                                        .validate()) {
-                                      await _doctorData
-                                          .createDoctorAppointment(doctorId, {
-                                        "date":
-                                            "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                        "time": "$startTime-$endTime",
-                                      });
-                                      Fluttertoast.showToast(
-                                          msg: "Data Saved",
-                                          toastLength: Toast.LENGTH_LONG,
-                                          gravity: ToastGravity.SNACKBAR,
-                                          backgroundColor: Colors.grey,
-                                          textColor: Colors.white,
-                                          fontSize: 15,
-                                          timeInSecForIosWeb: 1);
-                                      Navigator.pop(context);
-                                    }
+                                    // if (doctorappointmentkey.currentState
+                                    //     .validate()) {
+                                    //   await _doctorData
+                                    //       .createDoctorAppointment(doctorId, {
+                                    //     "date":
+                                    //         "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                    //     "time": "$startTime-$endTime",
+                                    //   });
+                                    //   Fluttertoast.showToast(
+                                    //       msg: "Data Saved",
+                                    //       toastLength: Toast.LENGTH_LONG,
+                                    //       gravity: ToastGravity.SNACKBAR,
+                                    //       backgroundColor: Colors.grey,
+                                    //       textColor: Colors.white,
+                                    //       fontSize: 15,
+                                    //       timeInSecForIosWeb: 1);
+                                    //   Navigator.pop(context);
+                                    // }
                                   },
                                   child: Text(
                                     "Add",

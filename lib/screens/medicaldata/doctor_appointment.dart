@@ -24,6 +24,7 @@ class _DoctorAppointmentState extends State<DoctorAppointment> {
   DoctorData _doctorData = DoctorData();
   CollectionReference appointment;
   List date = [];
+  var check = 0;
   var dateOccurence = {};
   var timing = "Time";
   var doctoremail;
@@ -34,12 +35,18 @@ class _DoctorAppointmentState extends State<DoctorAppointment> {
     super.initState();
     _doctorData.getAppointmentDates(email).then((value) {
       if (mounted) {
-        setState(() {
-          date = value[0];
-          dateOccurence = value[1];
-          timing = value[2];
-          doctoremail = value[3];
-        });
+        if (value != null) {
+          setState(() {
+            date = value[0];
+            dateOccurence = value[1];
+            timing = value[2];
+            doctoremail = value[3];
+          });
+        } else {
+          setState(() {
+            check = 1;
+          });
+        }
       }
     });
   }
@@ -47,48 +54,55 @@ class _DoctorAppointmentState extends State<DoctorAppointment> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.add),
-            backgroundColor: Colors.deepPurple,
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => DoctorAppointmentForm(
-                            doctorId: doctorId,
-                          )));
-            }),
+        // floatingActionButton: FloatingActionButton(
+        //     child: Icon(Icons.add),
+        //     backgroundColor: Colors.deepPurple,
+        //     onPressed: () {
+        //       Navigator.push(
+        //           context,
+        //           MaterialPageRoute(
+        //               builder: (BuildContext context) => DoctorAppointmentForm(
+        //                     doctorId: doctorId,
+        //                   )));
+        //     }),
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.deepPurple,
           title: Text("Doctor Appointment"),
         ),
-        body: timing == 'Time'
+        body: timing == 'Time' && check == 0
             ? LoadingHeart()
-            : Container(
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(color: Colors.deepPurple),
-                        height: MediaQuery.of(context).size.height * 0.1,
-                        child: Text(
-                          timing,
-                          style: TextStyle(fontSize: 24),
-                        )),
-                    SingleChildScrollView(
-                        child: Column(
-                      children: List.generate(date.length, (index) {
-                        return DoctorAppointmentComponent(
-                          date: date[index],
-                          noOfpatients: dateOccurence[date[index]].toString(),
-                          doctoremail: doctoremail,
-                        );
-                      }),
-                    ))
-                  ],
-                ),
-              )
+            : check == 1
+                ? Container(
+                    child: Center(
+                    child: Text("No Appointments",
+                        style: TextStyle(color: Colors.grey)),
+                  ))
+                : Container(
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(color: Colors.deepPurple),
+                            height: MediaQuery.of(context).size.height * 0.1,
+                            child: Text(
+                              timing,
+                              style: TextStyle(fontSize: 24),
+                            )),
+                        SingleChildScrollView(
+                            child: Column(
+                          children: List.generate(date.length, (index) {
+                            return DoctorAppointmentComponent(
+                              date: date[index],
+                              noOfpatients:
+                                  dateOccurence[date[index]].toString(),
+                              doctoremail: doctoremail,
+                            );
+                          }),
+                        ))
+                      ],
+                    ),
+                  )
         // body:
         );
   }

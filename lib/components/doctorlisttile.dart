@@ -6,13 +6,19 @@ class DoctorListTile extends StatefulWidget {
   final String userId;
   final String documentId;
   final String profileImageURL;
+  final String email;
   DoctorListTile(
-      {Key key, this.name, this.userId, this.documentId, this.profileImageURL})
+      {Key key,
+      this.name,
+      this.userId,
+      this.documentId,
+      this.profileImageURL,
+      this.email})
       : super(key: key);
 
   @override
-  State<DoctorListTile> createState() => _DoctorListTileState(
-      this.name, this.userId, this.documentId, this.profileImageURL);
+  State<DoctorListTile> createState() => _DoctorListTileState(this.name,
+      this.userId, this.documentId, this.profileImageURL, this.email);
 }
 
 class _DoctorListTileState extends State<DoctorListTile> {
@@ -20,10 +26,10 @@ class _DoctorListTileState extends State<DoctorListTile> {
   String userId;
   String documentId;
   String image;
+  String email;
   final String profileImageURL;
-  _DoctorListTileState(
-      this.name, this.userId, this.documentId, this.profileImageURL);
-
+  _DoctorListTileState(this.name, this.userId, this.documentId,
+      this.profileImageURL, this.email);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -48,7 +54,10 @@ class _DoctorListTileState extends State<DoctorListTile> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => DoctorInfo(documentId: documentId)));
+                  builder: (context) => DoctorInfo(
+                        documentId: documentId,
+                        email: email,
+                      )));
         },
       ),
       decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 0.3))),

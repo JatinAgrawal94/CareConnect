@@ -1,5 +1,4 @@
 import 'package:careconnect/components/loading.dart';
-import 'package:careconnect/services/admin_data.dart';
 import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,7 +18,6 @@ class _AdminFormState extends State<AdminForm> {
 
   final String adminId;
   _AdminFormState(this.adminId);
-  AdminData _adminData = AdminData();
   ImagePicker picker = ImagePicker();
   GeneralFunctions general = GeneralFunctions();
   PickedFile _image;

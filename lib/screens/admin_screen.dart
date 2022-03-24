@@ -61,7 +61,8 @@ class _AdminHomeState extends State<AdminHome> {
               'name': element['name'],
               'profileImageURL': element['profileImageURL'],
               'documentid': element['documentid'],
-              'userid': element['userid']
+              'userid': element['userid'],
+              'email': element['email']
             });
           });
         }
@@ -95,7 +96,8 @@ class _AdminHomeState extends State<AdminHome> {
                   'name': element['name'],
                   'profileImageURL': element['profileImageURL'],
                   'documentid': element['documentid'],
-                  'userid': element['userid']
+                  'userid': element['userid'],
+                  'email': element['email']
                 });
               })
             });
@@ -244,7 +246,8 @@ class _AdminHomeState extends State<AdminHome> {
                                           name: doctors[index]['name'],
                                           profileImageURL: doctors[index]
                                               ['profileImageURL'],
-                                          userId: doctors[index]['userid']);
+                                          userId: doctors[index]['userid'],
+                                          email: doctors[index]['email']);
                                     })))
               ],
             )));
