@@ -272,6 +272,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                             } else {
                                               if (mounted) {
                                                 setState(() {
+                                                  doctor = null;
                                                   otherDoctor = 1;
                                                 });
                                               }

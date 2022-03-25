@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:careconnect/services/doctordata.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:careconnect/services/doctordata.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 
 class DoctorAppointmentForm extends StatefulWidget {
   final String doctorId;
@@ -20,7 +20,7 @@ class _DoctorAppointmentFormState extends State<DoctorAppointmentForm> {
   String startTime;
   String endTime;
   String slot;
-  DoctorData _doctorData = DoctorData();
+  // DoctorData _doctorData = DoctorData();
   final GlobalKey<FormState> doctorappointmentkey = GlobalKey<FormState>();
 
   Future convertDate(String date) async {

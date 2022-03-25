@@ -2,7 +2,6 @@ import 'package:careconnect/screens/medicaldata/doctor_appointment.dart';
 import 'package:careconnect/screens/userdataforms/doctor_profile.dart';
 import 'package:careconnect/services/auth.dart';
 import 'package:careconnect/services/general.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 class DoctorData {
