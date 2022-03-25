@@ -23,26 +23,55 @@ class _DoctorFormState extends State<DoctorForm> {
   String userId;
   GeneralFunctions general = GeneralFunctions();
   static String imageURL;
-  static var doctorInfo;
+  static var doctorInfo = Map<String, dynamic>();
 
   Future convertDate(String date) async {
     var g = date.split('/').reversed.toList();
     if (int.parse(g[1]) / 10 < 1) {
-      g[1] = "0" + g[1];
+      g[1] = "0" + int.parse(g[1]).toString();
     }
-
     if (int.parse(g[2]) / 10 < 1) {
-      g[2] = "0" + g[2];
+      g[2] = "0" + int.parse(g[2]).toString();
     }
     return g.join('-').toString();
   }
 
+// 09:00 AM-10:00 AM
+  void convertTime(String timings) {
+    var time = timings.split('-');
+    var hour;
+    var min;
+    var timeOfday;
+    timeOfday = time[0].split(' ')[1];
+    hour = int.parse(time[0].split(' ')[0].split(':')[0]);
+    min = int.parse(time[0].split(' ')[0].split(':')[1]);
+    if (timeOfday == 'PM') {
+      hour = hour + 12;
+    }
+    setState(() {
+      begin = TimeOfDay(hour: hour, minute: min);
+    });
+    timeOfday = time[1].split(' ')[1];
+    hour = int.parse(time[1].split(' ')[0].split(':')[0]);
+    min = int.parse(time[1].split(' ')[0].split(':')[1]);
+    if (timeOfday == 'PM') {
+      hour = hour + 12;
+    }
+    setState(() {
+      end = TimeOfDay(hour: hour, minute: min);
+    });
+  }
+
   DateTime selecteddate = DateTime.now();
+  TimeOfDay begin = TimeOfDay.now();
+  TimeOfDay end = TimeOfDay.now();
+  // TimeOfDay g=TimeOfDay();
   int gender = 0;
   String bloodgroup;
   String contact = " ";
   String designation = " ";
-  String address;
+  String appointmentTimings = " ";
+  String address = " ";
   String name = " ";
   String email = " ";
   String doctype = " ";
@@ -53,8 +82,10 @@ class _DoctorFormState extends State<DoctorForm> {
     super.initState();
     general.getUserInfo(doctorId, 'Doctor').then((value) {
       if (mounted) {
+        convertTime(value['timing']);
         setState(() {
           doctorInfo = value;
+          appointmentTimings = doctorInfo['timing'];
           imageURL = doctorInfo['profileImageURL'];
           userId = doctorInfo['userid'];
           name = doctorInfo['name'];
@@ -80,6 +111,53 @@ class _DoctorFormState extends State<DoctorForm> {
         }
       });
     });
+  }
+
+  _setTime(BuildContext context, int type) async {
+    final TimeOfDay picked = await showTimePicker(
+        context: context,
+        initialTime: type == 0 ? begin : end,
+        builder: (BuildContext context, child) {
+          return Theme(
+              data: ThemeData.dark().copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: Colors.white,
+                  onPrimary: Colors.deepPurple[300],
+                  surface: Colors.deepPurple,
+                  onSurface: Colors.black,
+                ),
+                dialogBackgroundColor: Colors.white,
+              ),
+              child: child);
+        });
+    if (picked != null) {
+      if (mounted) {
+        if (type == 0) {
+          setState(() {
+            begin = picked;
+            this.appointmentTimings =
+                "${begin.hour > 12 ? ((begin.hour - 12).toString()) : (begin.hour)}:${begin.minute < 10 ? ("0${begin.minute}") : (begin.minute)}" +
+                    "  " +
+                    "${begin.hour > 12 ? ("PM") : ("AM")}" "-" +
+                    "${end.hour > 12 ? ((end.hour - 12).toString()) : (end.hour)}:${end.minute < 10 ? ("0${end.minute}") : (end.minute)}" +
+                    "  " +
+                    "${end.hour > 12 ? ("PM") : ("AM")}";
+          });
+        } else {
+          setState(() {
+            end = picked;
+            this.appointmentTimings =
+                "${begin.hour > 12 ? ((begin.hour - 12).toString()) : '0${begin.hour}'.toString()}:${begin.minute < 10 ? ("0${begin.minute}") : (begin.minute)}" +
+                    "  " +
+                    "${begin.hour > 12 ? ("PM") : ("AM")}" +
+                    "-" +
+                    "${end.hour > 12 ? ((end.hour - 12).toString()) : "0${end.hour}"}:${end.minute < 10 ? ("0${end.minute}") : (end.minute)}" +
+                    "  " +
+                    "${end.hour > 12 ? ("PM") : ("AM")}";
+          });
+        }
+      }
+    }
   }
 
   _imgfromCamera() async {
@@ -155,7 +233,7 @@ class _DoctorFormState extends State<DoctorForm> {
 
   @override
   Widget build(BuildContext context) {
-    return (address == null)
+    return doctorInfo.isEmpty
         ? LoadingHeart()
         : Scaffold(
             appBar: AppBar(
@@ -371,8 +449,8 @@ class _DoctorFormState extends State<DoctorForm> {
                                       style: TextStyle(fontSize: 18),
                                     ),
                                   ),
-                                  Text(
-                                      "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"),
+                                  Text("${selecteddate.day < 10 ? "0" + selecteddate.day.toString() : selecteddate.day}" +
+                                      "/${selecteddate.month}/${selecteddate.year}"),
                                   ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                           primary: Colors.deepPurple),
@@ -529,6 +607,49 @@ class _DoctorFormState extends State<DoctorForm> {
                                                     width: 1,
                                                     color: Colors.deepPurple))),
                                       ))
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text("Timings",
+                                      style: TextStyle(fontSize: 18)),
+                                  Container(
+                                      child: Row(
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {
+                                            _setTime(context, 0);
+                                          },
+                                          icon: Icon(
+                                            Icons.timer,
+                                            color: Colors.deepPurple,
+                                          )),
+                                      Text("${begin.hour > 12 ? ((begin.hour - 12).toString()) : (begin.hour)}:${begin.minute < 10 ? ("0${begin.minute}") : (begin.minute)}" +
+                                          "  " +
+                                          "${begin.hour > 12 ? ("PM") : ("AM")}")
+                                    ],
+                                  )),
+                                  Container(
+                                      child: Row(
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {
+                                            _setTime(context, 1);
+                                          },
+                                          icon: Icon(
+                                            Icons.timer,
+                                            color: Colors.deepPurple,
+                                          )),
+                                      Text("${end.hour > 12 ? ((end.hour - 12).toString()) : (end.hour)}:${end.minute < 10 ? ("0${end.minute}") : (end.minute)}" +
+                                          "  " +
+                                          "${end.hour > 12 ? ("PM") : ("AM")}")
+                                    ],
+                                  ))
                                 ],
                               ),
                             ),
@@ -780,7 +901,8 @@ class _DoctorFormState extends State<DoctorForm> {
                                                 'name': name,
                                                 'email': email,
                                                 'dateofbirth':
-                                                    "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                                    "${selecteddate.day < 10 ? "0" + selecteddate.day.toString() : selecteddate.day}" +
+                                                        "/${selecteddate.month}/${selecteddate.year}",
                                                 'gender': gender == 0
                                                     ? 'Male'
                                                     : gender == 1
@@ -791,6 +913,7 @@ class _DoctorFormState extends State<DoctorForm> {
                                                 'designation': designation,
                                                 'address': address,
                                                 'doctype': doctype,
+                                                'timing': appointmentTimings,
                                                 'zoom': zoom,
                                                 'profileImageURL':
                                                     newImageURL == null

@@ -30,8 +30,9 @@ class _PathologyScreenState extends State<PathologyScreen> {
   String title = "";
   String result = "";
   String doctor;
+  String newDoctor;
   var otherDoctor = 0;
-  String place = "";
+  String place = "CareConnect";
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   _PathologyScreenState(this.patientId, this.userId);
   PatientData _patientData = PatientData();
@@ -266,13 +267,15 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                               } else {
                                                 if (mounted) {
                                                   setState(() {
+                                                    doctor = null;
                                                     otherDoctor = 1;
                                                   });
                                                 }
                                               }
                                             },
                                             validator: (value) {
-                                              if (value.isEmpty) {
+                                              if (value.isEmpty &&
+                                                  otherDoctor == 0) {
                                                 return "Field can't be empty";
                                               } else {
                                                 return null;
@@ -301,12 +304,13 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                             onChanged: (value) {
                                               if (mounted) {
                                                 setState(() {
-                                                  doctor = value;
+                                                  newDoctor = value;
                                                 });
                                               }
                                             },
                                             validator: (value) {
-                                              if (value.isEmpty) {
+                                              if (value.isEmpty &&
+                                                  otherDoctor != 0) {
                                                 return "Field can't be Empty";
                                               } else {
                                                 return null;
@@ -340,7 +344,7 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                             MediaQuery.of(context).size.width *
                                                 0.7,
                                         child: TextFormField(
-                                          initialValue: "CareConnect",
+                                          initialValue: place,
                                           cursorColor: Colors.deepPurple,
                                           onChanged: (value) {
                                             if (mounted) {
@@ -560,7 +564,9 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                                 patientId, "pathology", {
                                               'title': title,
                                               'result': result,
-                                              'doctor': doctor,
+                                              'doctor': otherDoctor == 0
+                                                  ? doctor
+                                                  : newDoctor,
                                               'date':
                                                   "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
                                               'place': place,

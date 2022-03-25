@@ -28,7 +28,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   String drug;
   String dose;
   String doctor;
-  String place;
+  String newDoctor;
+  String place = 'Careconnect';
   int frequency = 0;
   int otherDoctor = 0;
   List<String> timings = [];
@@ -279,7 +280,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                             }
                                           },
                                           validator: (doctor) {
-                                            if (doctor == null) {
+                                            if (doctor == null &&
+                                                otherDoctor == 0) {
                                               return "Field can't be empty";
                                             } else {
                                               return null;
@@ -307,12 +309,13 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                             onChanged: (value) {
                                               if (mounted) {
                                                 setState(() {
-                                                  doctor = value;
+                                                  newDoctor = value;
                                                 });
                                               }
                                             },
                                             validator: (value) {
-                                              if (value.isEmpty) {
+                                              if (value.isEmpty &&
+                                                  otherDoctor != 0) {
                                                 return "Field can't be Empty";
                                               } else {
                                                 return null;
@@ -358,7 +361,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                             return null;
                                           }
                                         },
-                                        initialValue: "CareConnect",
+                                        initialValue: place,
                                         keyboardType: TextInputType.text,
                                         style: TextStyle(fontSize: 20),
                                         decoration: InputDecoration(
@@ -608,7 +611,9 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                               patientId, 'prescription', {
                                             'drug': drug,
                                             'dose': dose,
-                                            'doctor': doctor,
+                                            'doctor': otherDoctor == 0
+                                                ? doctor
+                                                : newDoctor,
                                             'place': place,
                                             'date':
                                                 "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",

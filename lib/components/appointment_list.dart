@@ -1,3 +1,4 @@
+import 'package:careconnect/services/auth.dart';
 import 'package:careconnect/services/general.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:flutter/material.dart';
@@ -79,10 +80,19 @@ class _AppointmentListState extends State<AppointmentList> {
 
   PatientData _patientData = PatientData();
   GeneralFunctions general = GeneralFunctions();
+  AuthService auth = AuthService();
+  var role;
   List data = [];
   @override
   void initState() {
     super.initState();
+    auth.getRole(auth.getCurrentUser()).then((value) {
+      if (mounted) {
+        setState(() {
+          role = value['role'];
+        });
+      }
+    });
     general.getDocsId(patientemail, 'Patient').then((value) {
       setState(() => {
             data.add({'userid': value['userId'], 'phone': value['phoneno']})
@@ -174,7 +184,7 @@ class _AppointmentListState extends State<AppointmentList> {
                 children: <Widget>[
                   Text("PaymentAmount : Rs $paymentamount",
                       style: TextStyle(fontSize: 17)),
-                  paymentstatus == 'Unpaid'
+                  paymentstatus == 'Unpaid' && role == 'patient'
                       ? Container(
                           margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                           child: ElevatedButton(

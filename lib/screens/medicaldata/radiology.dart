@@ -27,7 +27,8 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
   String title;
   String result;
   String doctor;
-  String place;
+  String newDoctor;
+  String place = 'CareConnect';
   int otherDoctor = 0;
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   _RadiologyScreenState(this.patientId, this.userId);
@@ -209,7 +210,8 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                                           style: TextStyle(fontSize: 20),
                                         ),
                                         onChanged: (String value) {
-                                          if (value != 'Other') {
+                                          if (value != 'Other' &&
+                                              otherDoctor == 0) {
                                             if (mounted) {
                                               setState(() {
                                                 doctor = value;
@@ -221,6 +223,7 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                                           } else {
                                             if (mounted) {
                                               setState(() {
+                                                doctor = null;
                                                 otherDoctor = 1;
                                               });
                                             }
@@ -242,12 +245,13 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                                             onChanged: (value) {
                                               if (mounted) {
                                                 setState(() {
-                                                  doctor = value;
+                                                  newDoctor = value;
                                                 });
                                               }
                                             },
                                             validator: (value) {
-                                              if (value.isEmpty) {
+                                              if (value.isEmpty &&
+                                                  otherDoctor != 0) {
                                                 return "Field can't be Empty";
                                               } else {
                                                 return null;
@@ -268,7 +272,7 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                                   Container(
                                     padding: EdgeInsets.all(5),
                                     child: TextFormField(
-                                      initialValue: "CareConnect",
+                                      initialValue: place,
                                       cursorColor: Colors.deepPurple,
                                       onChanged: (value) {
                                         if (mounted) {
@@ -494,7 +498,9 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                                                         'radiology', {
                                                   'title': title,
                                                   'result': result,
-                                                  'doctor': doctor,
+                                                  'doctor': otherDoctor == 0
+                                                      ? doctor
+                                                      : newDoctor,
                                                   'place': place,
                                                   'date':
                                                       "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",

@@ -28,7 +28,8 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
   String title;
   String result;
   String doctor;
-  String place;
+  String newDoctor;
+  String place = 'CareConnect';
   int otherDoctor = 0;
   _SurgeryScreenState(this.patientId, this.userId);
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
@@ -47,10 +48,11 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
     super.initState();
     general.getAllUser('doctor').then((value) => {
           value.forEach((item) {
-            if (mounted)
+            if (mounted) {
               setState(() {
                 data.add(item['name']);
               });
+            }
           })
         });
     _patientData.getCategoryData('surgery', patientId).then((value) {
@@ -223,13 +225,15 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                           } else {
                                             if (mounted) {
                                               setState(() {
+                                                doctor = null;
                                                 otherDoctor = 1;
                                               });
                                             }
                                           }
                                         },
                                         validator: (doctor) {
-                                          if (doctor == null) {
+                                          if (doctor == null &&
+                                              otherDoctor == 0) {
                                             return "Field can't be empty";
                                           } else {
                                             return null;
@@ -244,12 +248,13 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                             onChanged: (value) {
                                               if (mounted) {
                                                 setState(() {
-                                                  doctor = value;
+                                                  newDoctor = value;
                                                 });
                                               }
                                             },
                                             validator: (value) {
-                                              if (value.isEmpty) {
+                                              if (value.isEmpty &&
+                                                  otherDoctor != 0) {
                                                 return "Field can't be Empty";
                                               } else {
                                                 return null;
@@ -270,7 +275,7 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                   Container(
                                     padding: EdgeInsets.all(5),
                                     child: TextFormField(
-                                      initialValue: "CareConnect",
+                                      // initialValue: "CareConnect",
                                       cursorColor: Colors.deepPurple,
                                       onChanged: (value) {
                                         if (mounted) {
@@ -286,6 +291,7 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                           return null;
                                         }
                                       },
+                                      initialValue: place,
                                       keyboardType: TextInputType.text,
                                       decoration: InputDecoration(
                                           hintText: "Place",
@@ -356,9 +362,6 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                                     images.length;
                                                   });
                                                 }
-                                                for (var i = 0;
-                                                    i < images.length;
-                                                    i++) {}
                                               } else {
                                                 print("Error");
                                               }
@@ -404,9 +407,6 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                                     videos.length;
                                                   });
                                                 }
-                                                for (var i = 0;
-                                                    i < videos.length;
-                                                    i++) {}
                                               } else {
                                                 print("Error");
                                               }
@@ -452,9 +452,6 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                                     files.length;
                                                   });
                                                 }
-                                                for (var i = 0;
-                                                    i < files.length;
-                                                    i++) {}
                                               } else {
                                                 print("Error");
                                               }
@@ -504,7 +501,9 @@ class _SurgeryScreenState extends State<SurgeryScreen> {
                                                         patientId, 'surgery', {
                                                   'title': title,
                                                   'result': result,
-                                                  'doctor': doctor,
+                                                  'doctor': otherDoctor == 0
+                                                      ? doctor
+                                                      : newDoctor,
                                                   'place': place,
                                                   'date':
                                                       "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",

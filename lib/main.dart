@@ -108,33 +108,6 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-// class MyApp extends StatelessWidget {
-//   // This widget is the root of your application.
-//   @override
-//   Widget build(BuildContext context) {
-//     final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-//     return FutureBuilder(
-//         future: _initialization,
-//         builder: (context, snapshot) {
-//           if (snapshot.hasError) {
-//             return null;
-//           }
-
-//           if (snapshot.connectionState == ConnectionState.done) {
-//             return StreamProvider<RegisteredUser>.value(
-//               value: AuthService().user,
-//               initialData: null,
-//               child: MaterialApp(
-//                 home: Wrapper(),
-//                 debugShowCheckedModeBanner: false,
-//               ),
-//             );
-//           }
-//           return MaterialApp(home: SplashPage());
-//         });
-//   }
-// }
-
 class SplashPage extends StatelessWidget {
   const SplashPage({Key key}) : super(key: key);
 

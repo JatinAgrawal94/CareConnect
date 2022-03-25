@@ -37,7 +37,8 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
   String diagnosis = "";
   String notes = "";
   String doctor = "";
-  String place = "";
+  String newDoctor;
+  String place = "CareConnect";
   var otherDoctor = 0;
   List<String> data = ['Other'];
   List images = [];
@@ -450,6 +451,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                                   setState(() {
                                                     doctor = value;
                                                     if (otherDoctor == 1) {
+                                                      doctor = null;
                                                       otherDoctor = 0;
                                                     }
                                                   });
@@ -463,7 +465,8 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                               }
                                             },
                                             validator: (value) {
-                                              if (doctor == null) {
+                                              if (doctor == null &&
+                                                  otherDoctor == 0) {
                                                 return "Select doctor";
                                               } else {
                                                 return null;
@@ -503,12 +506,13 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                                   onChanged: (value) {
                                                     if (mounted) {
                                                       setState(() {
-                                                        doctor = value;
+                                                        newDoctor = value;
                                                       });
                                                     }
                                                   },
                                                   validator: (value) {
-                                                    if (value.isEmpty) {
+                                                    if (value.isEmpty &&
+                                                        otherDoctor != 0) {
                                                       return "Field can't be empty";
                                                     } else {
                                                       return null;
@@ -544,7 +548,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                                   .width *
                                               0.5,
                                           child: TextFormField(
-                                            initialValue: "CareConnect",
+                                            initialValue: place,
                                             cursorColor: Colors.deepPurple,
                                             onChanged: (value) {
                                               if (mounted) {
@@ -785,7 +789,9 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                                   'symptoms': symptoms,
                                                   'diagnosis': diagnosis,
                                                   'notes': notes,
-                                                  'doctor': doctor,
+                                                  'doctor': otherDoctor == 0
+                                                      ? doctor
+                                                      : newDoctor,
                                                   'place': place,
                                                   'date':
                                                       "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",

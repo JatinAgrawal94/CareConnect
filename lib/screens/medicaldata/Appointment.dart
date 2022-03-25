@@ -9,7 +9,6 @@ import 'package:careconnect/services/patientdata.dart';
 class Appointment extends StatefulWidget {
   final String patientId;
   Appointment({Key key, this.patientId}) : super(key: key);
-
   @override
   _AppointmentState createState() => _AppointmentState(this.patientId);
 }
@@ -33,6 +32,7 @@ class _AppointmentState extends State<Appointment> {
   List appointmentList = [];
   var empty = 1;
   var patientdata;
+
   @override
   void initState() {
     super.initState();

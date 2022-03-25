@@ -28,7 +28,8 @@ class _LabTestScreenState extends State<LabTestScreen> {
   String result = '';
   String normal = '';
   String doctor = '';
-  String place = '';
+  String newDoctor;
+  String place = 'CareConnect';
   List<String> data = ['Other'];
   List images = [];
   List videos = [];
@@ -269,13 +270,15 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                             } else {
                                               if (mounted) {
                                                 setState(() {
+                                                  doctor = null;
                                                   otherDoctor = 1;
                                                 });
                                               }
                                             }
                                           },
                                           validator: (value) {
-                                            if (doctor == null) {
+                                            if (doctor == null &&
+                                                otherDoctor == 0) {
                                               return "Select doctor";
                                             } else {
                                               return null;
@@ -315,12 +318,13 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                               onChanged: (value) {
                                                 if (mounted) {
                                                   setState(() {
-                                                    doctor = value;
+                                                    newDoctor = value;
                                                   });
                                                 }
                                               },
                                               validator: (value) {
-                                                if (value.isEmpty) {
+                                                if (value.isEmpty &&
+                                                    otherDoctor != 0) {
                                                   return "Field can't be empty";
                                                 } else {
                                                   return null;
@@ -352,7 +356,7 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                       width: MediaQuery.of(context).size.width *
                                           0.3,
                                       child: TextFormField(
-                                        initialValue: "CareConnect",
+                                        initialValue: place,
                                         cursorColor: Colors.deepPurple,
                                         onChanged: (value) {
                                           if (mounted) {
@@ -568,7 +572,9 @@ class _LabTestScreenState extends State<LabTestScreen> {
                                             'test': test,
                                             'result': result,
                                             'normal': normal,
-                                            'doctor': doctor,
+                                            'doctor': otherDoctor == 0
+                                                ? doctor
+                                                : newDoctor,
                                             'place': place,
                                             'date':
                                                 "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
