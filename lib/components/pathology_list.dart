@@ -11,6 +11,8 @@ class PathologyList extends StatefulWidget {
   final String patientId;
   final String recordId;
   final dynamic media;
+  final String role;
+  final String approved;
   PathologyList(
       {Key key,
       this.title,
@@ -20,7 +22,9 @@ class PathologyList extends StatefulWidget {
       this.place,
       this.patientId,
       this.recordId,
-      this.media})
+      this.media,
+      this.role,
+      this.approved})
       : super(key: key);
 
   @override
@@ -32,7 +36,9 @@ class PathologyList extends StatefulWidget {
       this.place,
       this.patientId,
       this.recordId,
-      this.media);
+      this.media,
+      this.role,
+      this.approved);
 }
 
 class _PathologyListState extends State<PathologyList> {
@@ -44,15 +50,29 @@ class _PathologyListState extends State<PathologyList> {
   final String patientId;
   final String recordId;
   final dynamic media;
+  final String role;
+  final String approved;
   PatientData _patientData = PatientData();
 
-  _PathologyListState(this.title, this.result, this.doctor, this.date,
-      this.place, this.patientId, this.recordId, this.media);
+  _PathologyListState(
+      this.title,
+      this.result,
+      this.doctor,
+      this.date,
+      this.place,
+      this.patientId,
+      this.recordId,
+      this.media,
+      this.role,
+      this.approved);
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: MediaQuery.of(context).size.height * 0.25,
-        decoration: BoxDecoration(border: Border.all(width: 0.5)),
+        // height: MediaQuery.of(context).size.height * 0.25,
+        decoration: BoxDecoration(
+          border: Border.all(width: 0.5),
+          color: approved == 'false' ? Colors.grey[200] : Colors.white,
+        ),
         padding: EdgeInsets.all(5),
         margin: EdgeInsets.all(5),
         child: Column(
@@ -131,9 +151,35 @@ class _PathologyListState extends State<PathologyList> {
                           patientId, recordId, "pathology");
                     },
                     icon: Icon(Icons.delete),
-                    color: Colors.deepPurple)
+                    color: Colors.deepPurple),
               ],
-            )
+            ),
+            Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+              role == "patient" || role == null
+                  ? Container(
+                      child: (approved == 'false'
+                          ? Text(
+                              "Waiting for Approval",
+                              style: TextStyle(color: Colors.grey),
+                            )
+                          : Text(
+                              "Approved",
+                              style: TextStyle(color: Colors.green),
+                            )))
+                  : Container(
+                      child: ElevatedButton(
+                          onPressed: () async {
+                            await _patientData.updateApprovalStatus(
+                                patientId, recordId, 'pathology', approved);
+                          },
+                          style: ElevatedButton.styleFrom(
+                              primary: approved == 'false'
+                                  ? Colors.green
+                                  : Colors.red),
+                          child: approved == 'false'
+                              ? Text("Verify")
+                              : Text("Unverify")))
+            ])
           ],
         ));
   }

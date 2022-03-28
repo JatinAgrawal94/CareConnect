@@ -1,5 +1,6 @@
 import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/vaccine_list.dart';
+import 'package:careconnect/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:careconnect/components/loading.dart';
@@ -23,9 +24,19 @@ class _VaccineScreenState extends State<VaccineScreen> {
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   List vaccineList = [];
   var empty = 1;
+  var role;
+  AuthService auth = AuthService();
+
   @override
   void initState() {
     super.initState();
+    auth.getRoleFromStorage().then((value) {
+      if (mounted) {
+        setState(() {
+          role = value['role'];
+        });
+      }
+    });
     _patientData.getCategoryData('vaccine', patientId).then((value) {
       value.forEach((item) {
         if (mounted) {
@@ -207,7 +218,11 @@ class _VaccineScreenState extends State<VaccineScreen> {
                                     'vaccine': vaccine,
                                     'place': place,
                                     'date':
-                                        "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                        "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                    'approved':
+                                        (role == 'doctor' || role == 'admin')
+                                            ? 'true'
+                                            : 'false',
                                   });
                                   Fluttertoast.showToast(
                                       msg: "Data Saved",
@@ -218,7 +233,16 @@ class _VaccineScreenState extends State<VaccineScreen> {
                                       fontSize: 15,
                                       timeInSecForIosWeb: 1);
                                   Navigator.pop(context);
-                                } else {}
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg: "Error",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.SNACKBAR,
+                                      backgroundColor: Colors.grey,
+                                      textColor: Colors.white,
+                                      fontSize: 15,
+                                      timeInSecForIosWeb: 1);
+                                }
                               },
                               child: Text(
                                 "Save",
@@ -228,7 +252,7 @@ class _VaccineScreenState extends State<VaccineScreen> {
                           )
                         ],
                       ))),
-              vaccineList.length == 0 && empty == 1
+              vaccineList.length == 0 && empty == 1 && role == null
                   ? LoadingHeart()
                   : empty == 0
                       ? EmptyRecord()
@@ -242,6 +266,8 @@ class _VaccineScreenState extends State<VaccineScreen> {
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return VaccineList(
+                                      role: role,
+                                      approved: vaccineList[index]['approved'],
                                       vaccine: vaccineList[index]['vaccine'],
                                       date: vaccineList[index]['date'],
                                       patientId: patientId,

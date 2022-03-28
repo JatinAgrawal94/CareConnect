@@ -28,7 +28,7 @@ class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<RegisteredUser>(context);
-
+    
     if (user == null) {
       return GestureDetector(
         onTap: () {
@@ -40,7 +40,7 @@ class _WrapperState extends State<Wrapper> {
         },
         child: Signin(),
       );
-    } else {
+    } else { 
       return GestureDetector(
           onTap: () {
             FocusScopeNode currentFocus = FocusScope.of(context);

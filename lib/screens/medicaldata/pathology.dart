@@ -1,6 +1,7 @@
 import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/pathology_list.dart';
 import 'package:careconnect/components/photogrid.dart';
+import 'package:careconnect/services/auth.dart';
 import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
@@ -44,9 +45,19 @@ class _PathologyScreenState extends State<PathologyScreen> {
   List files = [];
   List pathologyList = [];
   var empty = 1;
+  var role;
+  AuthService auth = AuthService();
+
   @override
   void initState() {
     super.initState();
+    auth.getRoleFromStorage().then((value) {
+      if (mounted) {
+        setState(() {
+          role = value['role'];
+        });
+      }
+    });
     general.getAllUser('doctor').then((value) => {
           value.forEach((item) {
             if (mounted) {
@@ -570,9 +581,22 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                               'date':
                                                   "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
                                               'place': place,
-                                              "media": data
+                                              "media": data,
+                                              'approved': (role == 'doctor' ||
+                                                      role == 'admin')
+                                                  ? 'true'
+                                                  : 'false',
                                             });
-                                          } else {}
+                                          } else {
+                                            Fluttertoast.showToast(
+                                                msg: "Error",
+                                                toastLength: Toast.LENGTH_LONG,
+                                                gravity: ToastGravity.SNACKBAR,
+                                                backgroundColor: Colors.grey,
+                                                textColor: Colors.white,
+                                                fontSize: 15,
+                                                timeInSecForIosWeb: 1);
+                                          }
                                         },
                                         child: Text(
                                           "Save",
@@ -630,7 +654,7 @@ class _PathologyScreenState extends State<PathologyScreen> {
                             ],
                           )),
                     )),
-              pathologyList.length == 0 && empty == 1
+              pathologyList.length == 0 && empty == 1 && role == null
                   ? LoadingHeart()
                   : empty == 0
                       ? EmptyRecord()
@@ -652,6 +676,9 @@ class _PathologyScreenState extends State<PathologyScreen> {
                                       recordId: pathologyList[index]
                                           ['documentid'],
                                       media: pathologyList[index]['media'],
+                                      role: role,
+                                      approved: pathologyList[index]
+                                          ['approved'],
                                     );
                                   })))
             ],

@@ -1,6 +1,7 @@
 import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/photogrid.dart';
 import 'package:careconnect/components/radiology_list.dart';
+import 'package:careconnect/services/auth.dart';
 import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
@@ -41,10 +42,18 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
   List files = [];
   List radiologyList = [];
   var empty = 1;
-
+  var role;
+  AuthService auth = AuthService();
   @override
   void initState() {
     super.initState();
+    auth.getRoleFromStorage().then((value) {
+      if (mounted) {
+        setState(() {
+          role = value['role'];
+        });
+      }
+    });
     general.getAllUser('doctor').then((value) => {
           value.forEach((item) {
             if (mounted) {
@@ -504,7 +513,12 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                                                   'place': place,
                                                   'date':
                                                       "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                                  "media": data
+                                                  "media": data,
+                                                  'approved':
+                                                      (role == 'doctor' ||
+                                                              role == 'admin')
+                                                          ? 'true'
+                                                          : 'false',
                                                 });
                                               } else {}
                                             },
@@ -562,7 +576,7 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                                   )
                                 ],
                               )))),
-              radiologyList.length == 0 && empty == 1
+              radiologyList.length == 0 && empty == 1 && role == null
                   ? LoadingHeart()
                   : empty == 0
                       ? EmptyRecord()
@@ -576,16 +590,18 @@ class _RadiologyScreenState extends State<RadiologyScreen> {
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return RadiologyList(
-                                      title: radiologyList[index]['title'],
-                                      result: radiologyList[index]['result'],
-                                      doctor: radiologyList[index]['doctor'],
-                                      place: radiologyList[index]['place'],
-                                      date: radiologyList[index]['date'],
-                                      recordId: radiologyList[index]
-                                          ['documentid'],
-                                      patientId: patientId,
-                                      media: radiologyList[index]['media'],
-                                    );
+                                        title: radiologyList[index]['title'],
+                                        result: radiologyList[index]['result'],
+                                        doctor: radiologyList[index]['doctor'],
+                                        place: radiologyList[index]['place'],
+                                        date: radiologyList[index]['date'],
+                                        recordId: radiologyList[index]
+                                            ['documentid'],
+                                        patientId: patientId,
+                                        media: radiologyList[index]['media'],
+                                        role: role,
+                                        approved: radiologyList[index]
+                                            ['approved']);
                                   })))
             ],
           ),

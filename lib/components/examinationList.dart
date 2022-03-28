@@ -15,6 +15,9 @@ class ExaminationList extends StatefulWidget {
   final String patientId;
   final String recordId;
   final dynamic media;
+  final String approved;
+  final String role;
+
   ExaminationList(
       {Key key,
       this.temperature,
@@ -28,7 +31,9 @@ class ExaminationList extends StatefulWidget {
       this.place,
       this.patientId,
       this.recordId,
-      this.media})
+      this.media,
+      this.approved,
+      this.role})
       : super(key: key);
 
   @override
@@ -44,7 +49,9 @@ class ExaminationList extends StatefulWidget {
       this.place,
       this.patientId,
       this.recordId,
-      this.media);
+      this.media,
+      this.approved,
+      this.role);
 }
 
 class _ExaminationListState extends State<ExaminationList> {
@@ -60,6 +67,8 @@ class _ExaminationListState extends State<ExaminationList> {
   final String patientId;
   final String recordId;
   final dynamic media;
+  final String approved;
+  final String role;
   final PatientData _patientData = PatientData();
 
   _ExaminationListState(
@@ -74,13 +83,18 @@ class _ExaminationListState extends State<ExaminationList> {
       this.place,
       this.patientId,
       this.recordId,
-      this.media);
+      this.media,
+      this.approved,
+      this.role);
 
   @override
   Widget build(BuildContext context) {
     return Container(
         margin: EdgeInsets.all(5),
-        decoration: BoxDecoration(border: Border.all(width: 0.5)),
+        decoration: BoxDecoration(
+          border: Border.all(width: 0.5),
+          color: approved == 'false' ? Colors.grey[200] : Colors.white,
+        ),
         padding: EdgeInsets.all(10),
         child: Column(
           children: <Widget>[
@@ -234,6 +248,35 @@ class _ExaminationListState extends State<ExaminationList> {
                     },
                     icon: Icon(Icons.delete),
                     color: Colors.deepPurple)
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                role == "patient" || role == null
+                    ? Container(
+                        child: (approved == 'false'
+                            ? Text(
+                                "Waiting for Approval",
+                                style: TextStyle(color: Colors.grey),
+                              )
+                            : Text(
+                                "Approved",
+                                style: TextStyle(color: Colors.green),
+                              )))
+                    : Container(
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              await _patientData.updateApprovalStatus(
+                                  patientId, recordId, 'examination', approved);
+                            },
+                            style: ElevatedButton.styleFrom(
+                                primary: approved == 'false'
+                                    ? Colors.green
+                                    : Colors.red),
+                            child: approved == 'false'
+                                ? Text("Verify")
+                                : Text("Unverify")))
               ],
             )
           ],

@@ -1,6 +1,7 @@
 import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/family_list.dart';
 import 'package:careconnect/components/loading.dart';
+import 'package:careconnect/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -23,9 +24,19 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
   String description = '';
   var empty = 1;
   List familyhistoryList = [];
+  var role;
+  AuthService auth = AuthService();
+
   @override
   void initState() {
     super.initState();
+    auth.getRoleFromStorage().then((value) {
+      if (mounted) {
+        setState(() {
+          role = value['role'];
+        });
+      }
+    });
     _patientData.getCategoryData('familyhistory', patientId).then((value) {
       value.forEach((item) => {
             if (mounted)
@@ -145,7 +156,11 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                                 await _patientData.addMedicalData(
                                     patientId, "familyhistory", {
                                   'name': memberName,
-                                  'description': description
+                                  'description': description,
+                                  'approved':
+                                      (role == 'doctor' || role == 'admin')
+                                          ? 'true'
+                                          : 'false',
                                 });
                                 Fluttertoast.showToast(
                                     msg: "Data Saved",
@@ -156,13 +171,22 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                                     fontSize: 15,
                                     timeInSecForIosWeb: 1);
                                 Navigator.pop(context);
-                              } else {}
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg: "Error",
+                                    toastLength: Toast.LENGTH_LONG,
+                                    gravity: ToastGravity.SNACKBAR,
+                                    backgroundColor: Colors.grey,
+                                    textColor: Colors.white,
+                                    fontSize: 15,
+                                    timeInSecForIosWeb: 1);
+                              }
                             },
                             child: Text("Save", style: TextStyle(fontSize: 20)))
                       ],
                     )),
               ),
-              familyhistoryList.length == 0 && empty == 1
+              familyhistoryList.length == 0 && empty == 1 && role == null
                   ? LoadingHeart()
                   : empty == 0
                       ? EmptyRecord()
@@ -181,6 +205,9 @@ class _FamilyHistoryScreenState extends State<FamilyHistoryScreen> {
                                       recordId: familyhistoryList[index]
                                           ['documentid'],
                                       patientId: patientId,
+                                      role: role,
+                                      approved: familyhistoryList[index]
+                                          ['approved'],
                                     );
                                   })))
             ],

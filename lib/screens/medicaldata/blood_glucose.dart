@@ -1,6 +1,7 @@
 import 'package:careconnect/components/blood_glucose_List.dart';
 import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/loading.dart';
+import 'package:careconnect/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -25,10 +26,19 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
   String resultUnit = 'mg/dL';
   List bloodGlucoseList = [];
   var empty = 1;
+  var role;
+  AuthService auth = AuthService();
 
   @override
   void initState() {
     super.initState();
+    auth.getRole(auth.getCurrentUser()).then((value) {
+      if (mounted) {
+        setState(() {
+          role = value['role'];
+        });
+      }
+    });
     _patientData.getCategoryData('bloodglucose', patientId).then((value) {
       value.forEach((item) => {
             if (mounted)
@@ -287,10 +297,12 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                               'resultUnit': resultUnit,
                               'date':
                                   "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                              'time':
-                                  "${selectedtime.hour > 12 ? ((selectedtime.hour - 12).toString()) : (selectedtime.hour)}:${selectedtime.minute < 10 ? ("0${selectedtime.minute}") : (selectedtime.minute)}" +
-                                      "  " +
-                                      "${selectedtime.hour > 12 ? ("PM") : ("AM")}"
+                              'time': "${selectedtime.hour > 12 ? ((selectedtime.hour - 12).toString()) : (selectedtime.hour)}:${selectedtime.minute < 10 ? ("0${selectedtime.minute}") : (selectedtime.minute)}" +
+                                  "  " +
+                                  "${selectedtime.hour > 12 ? ("PM") : ("AM")}",
+                              'approved': (role == 'doctor' || role == 'admin')
+                                  ? 'true'
+                                  : 'false',
                             });
                             Fluttertoast.showToast(
                                 msg: "Data Saved",
@@ -301,7 +313,16 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                                 fontSize: 15,
                                 timeInSecForIosWeb: 1);
                             Navigator.pop(context);
-                          } else {}
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: "Error",
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.SNACKBAR,
+                                backgroundColor: Colors.grey,
+                                textColor: Colors.white,
+                                fontSize: 15,
+                                timeInSecForIosWeb: 1);
+                          }
                         },
                         child: Text(
                           "Save",
@@ -310,7 +331,7 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                   ],
                 ),
               )),
-              bloodGlucoseList.length == 0 && empty == 1
+              bloodGlucoseList.length == 0 && empty == 1 && role == null
                   ? LoadingHeart()
                   : empty == 0
                       ? EmptyRecord()
@@ -332,6 +353,9 @@ class _BloodGlucoseScreenState extends State<BloodGlucoseScreen> {
                                       patientId: patientId,
                                       recordId: bloodGlucoseList[index]
                                           ['documentid'],
+                                      role: role,
+                                      approved: bloodGlucoseList[index]
+                                          ['approved'],
                                     );
                                   })))
             ],

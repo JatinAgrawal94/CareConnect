@@ -9,6 +9,8 @@ class BloodPressureList extends StatefulWidget {
   final String time;
   final String patientId;
   final String recordId;
+  final String role;
+  final String approved;
 
   BloodPressureList(
       {Key key,
@@ -18,7 +20,9 @@ class BloodPressureList extends StatefulWidget {
       this.date,
       this.time,
       this.patientId,
-      this.recordId})
+      this.recordId,
+      this.role,
+      this.approved})
       : super(key: key);
 
   @override
@@ -29,7 +33,9 @@ class BloodPressureList extends StatefulWidget {
       this.date,
       this.time,
       this.patientId,
-      this.recordId);
+      this.recordId,
+      this.role,
+      this.approved);
 }
 
 class _BloodPressureListState extends State<BloodPressureList> {
@@ -40,21 +46,25 @@ class _BloodPressureListState extends State<BloodPressureList> {
   final String time;
   final String patientId;
   final String recordId;
+  final String role;
+  final String approved;
   final PatientData _patientData = PatientData();
 
   _BloodPressureListState(this.systolic, this.diastolic, this.pulse, this.date,
-      this.time, this.patientId, this.recordId);
+      this.time, this.patientId, this.recordId, this.role, this.approved);
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(border: Border.all(width: 0.5)),
-      height: MediaQuery.of(context).size.height * 0.1,
-      padding: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        border: Border.all(width: 0.5),
+        color: approved == 'false' ? Colors.grey[200] : Colors.white,
+      ),
       margin: EdgeInsets.all(5),
+      padding: EdgeInsets.all(3),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Container(
-            width: MediaQuery.of(context).size.width * 0.4,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
@@ -64,7 +74,6 @@ class _BloodPressureListState extends State<BloodPressureList> {
             ),
           ),
           Container(
-            width: MediaQuery.of(context).size.width * 0.4,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
@@ -81,13 +90,39 @@ class _BloodPressureListState extends State<BloodPressureList> {
             ),
           ),
           Container(
-            child: IconButton(
-                icon: Icon(Icons.delete),
-                color: Colors.deepPurple,
-                onPressed: () async {
-                  await _patientData.deleteAnyPatientRecord(
-                      patientId, recordId, "bloodpressure");
-                }),
+            child: Column(children: [
+              IconButton(
+                  icon: Icon(Icons.delete),
+                  color: Colors.deepPurple,
+                  onPressed: () async {
+                    await _patientData.deleteAnyPatientRecord(
+                        patientId, recordId, "bloodpressure");
+                  }),
+              role == "patient" || role == null
+                  ? Container(
+                      child: (approved == 'false'
+                          ? Text(
+                              "Waiting for Approval",
+                              style: TextStyle(color: Colors.grey),
+                            )
+                          : Text(
+                              "Approved",
+                              style: TextStyle(color: Colors.green),
+                            )))
+                  : Container(
+                      child: ElevatedButton(
+                          onPressed: () async {
+                            await _patientData.updateApprovalStatus(
+                                patientId, recordId, 'bloodpressure', approved);
+                          },
+                          style: ElevatedButton.styleFrom(
+                              primary: approved == 'false'
+                                  ? Colors.green
+                                  : Colors.red),
+                          child: approved == 'false'
+                              ? Text("Verify")
+                              : Text("Unverify")))
+            ]),
           )
         ],
       ),

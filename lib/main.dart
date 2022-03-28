@@ -42,13 +42,11 @@ void main() async {
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
-
   runApp(SplashPage());
 }
 
 class MyApp extends StatefulWidget {
   MyApp({Key key}) : super(key: key);
-
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -92,7 +90,6 @@ class _MyAppState extends State<MyApp> {
           if (snapshot.hasError) {
             return null;
           }
-
           if (snapshot.connectionState == ConnectionState.done) {
             return StreamProvider<RegisteredUser>.value(
               value: AuthService().user,

@@ -27,6 +27,18 @@ class AuthService {
         } else {
           return data;
         }
+        // put request
+      } else if (requestType.toLowerCase() == 'put') {
+        var response =
+            await http.put(url, headers: await getRequestHeader(), body: body);
+        var data = await jsonDecode(response.body);
+        if (data['message'] == 'auth/id-token-expired') {
+          await updateToken();
+          response = await http.put(url,
+              headers: await getRequestHeader(), body: body);
+          data = await jsonDecode(response.body);
+        }
+        return data;
       }
       // post request
       else {
@@ -42,13 +54,19 @@ class AuthService {
         return data;
       }
     } catch (e) {
+      print('Error is $e');
       return e;
     }
   }
 
   Future getRole(String email) async {
-    var data = await makeHttpRequest(
-        Uri.parse('$host/auth/getrole?email=$email'), 'get');
+    var role = await storage.read(key: 'role');
+    if (role != null) {
+      return {'role': role};
+    }
+    var url = Uri.parse('$host/auth/getrole?email=$email');
+    var data = await makeHttpRequest(url, 'get');
+    storage.write(key: 'role', value: data['role']);
     return data;
   }
 
@@ -65,6 +83,11 @@ class AuthService {
   String getCurrentUser() {
     User user = auth.currentUser;
     return user.email.toString();
+  }
+
+  Future getRoleFromStorage() async {
+    String role = await storage.read(key: 'role');
+    return {'role': role};
   }
 
   Future getTokenFromStorage(key) async {
@@ -90,7 +113,8 @@ class AuthService {
   }
 
   void signoutmethod() async {
-    storage.delete(key: getCurrentUser());
+    await storage.delete(key: getCurrentUser());
+    await storage.delete(key: 'role');
     await auth.signOut();
   }
 
@@ -99,7 +123,6 @@ class AuthService {
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
           email: email, password: password);
       final token = await userCredential.user.getIdToken(true);
-      // userCredential.user.g
       await storage.write(key: email, value: token);
       return userCredential;
     } on FirebaseAuthException catch (e) {

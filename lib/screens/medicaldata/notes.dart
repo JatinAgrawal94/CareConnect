@@ -1,6 +1,7 @@
 import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/notes.dart';
 import 'package:careconnect/components/photogrid.dart';
+import 'package:careconnect/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -32,9 +33,19 @@ class _NotesScreenState extends State<NotesScreen> {
   List files = [];
   List notesList = [];
   var empty = 1;
+  var role;
+  AuthService auth = AuthService();
+
   @override
   void initState() {
     super.initState();
+    auth.getRoleFromStorage().then((value) {
+      if (mounted) {
+        setState(() {
+          role = value['role'];
+        });
+      }
+    });
     _patientData.getCategoryData('notes', patientId).then((value) {
       value.forEach((item) {
         if (mounted) {
@@ -295,9 +306,22 @@ class _NotesScreenState extends State<NotesScreen> {
                                             patientId, "notes", {
                                           'title': title,
                                           'description': description,
-                                          'media': data
+                                          'media': data,
+                                          'approved': (role == 'doctor' ||
+                                                  role == 'admin')
+                                              ? 'true'
+                                              : 'false',
                                         });
-                                      } else {}
+                                      } else {
+                                        Fluttertoast.showToast(
+                                            msg: "Error",
+                                            toastLength: Toast.LENGTH_LONG,
+                                            gravity: ToastGravity.SNACKBAR,
+                                            backgroundColor: Colors.grey,
+                                            textColor: Colors.white,
+                                            fontSize: 15,
+                                            timeInSecForIosWeb: 1);
+                                      }
                                     },
                                     child: Text("Save",
                                         style: TextStyle(fontSize: 20))),
@@ -352,7 +376,7 @@ class _NotesScreenState extends State<NotesScreen> {
                               ])
                         ],
                       ))),
-              notesList.length == 0 && empty == 1
+              notesList.length == 0 && empty == 1 && role == null
                   ? LoadingHeart()
                   : empty == 0
                       ? EmptyRecord()
@@ -365,6 +389,8 @@ class _NotesScreenState extends State<NotesScreen> {
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return NotesList(
+                                        role: role,
+                                        approved: notesList[index]['approved'],
                                         title: notesList[index]['title'],
                                         description: notesList[index]
                                             ['description'],

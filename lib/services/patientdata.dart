@@ -145,6 +145,19 @@ class PatientData {
     return data;
   }
 
+  Future updateApprovalStatus(
+      String documentId, String recordId, category, value) async {
+    var url = Uri.parse('$host/patient/approval');
+    var body = {
+      'documentid': documentId,
+      'recordid': recordId,
+      'category': category,
+      'value': value
+    };
+    var data = await auth.makeHttpRequest(url, 'put', body: body);
+    return data;
+  }
+
   Future<void> uploadPatientPhoto(
       File filepath, String name, String category, String userId) async {
     try {

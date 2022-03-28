@@ -1,6 +1,7 @@
 import 'package:careconnect/components/allergyList.dart';
 import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/loading.dart';
+import 'package:careconnect/services/auth.dart';
 import 'package:careconnect/services/general.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
@@ -23,10 +24,19 @@ class _AllergyScreenState extends State<AllergyScreen> {
   DateTime selecteddate = DateTime.now();
   String type = "";
   List allergyList = [];
+  var role;
+  AuthService auth = AuthService();
   var empty = 1;
   @override
   void initState() {
     super.initState();
+    auth.getRoleFromStorage().then((value) {
+      if (mounted) {
+        setState(() {
+          role = value['role'];
+        });
+      }
+    });
     _patientData.getCategoryData('allergy', patientId).then((value) {
       value.forEach((item) {
         if (mounted) {
@@ -171,7 +181,11 @@ class _AllergyScreenState extends State<AllergyScreen> {
                                         .addMedicalData(patientId, "allergy", {
                                       'type': type,
                                       'date':
-                                          "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}"
+                                          "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
+                                      'approved':
+                                          (role == 'doctor' || role == 'admin')
+                                              ? 'true'
+                                              : 'false',
                                     });
                                     Fluttertoast.showToast(
                                         msg: "Data Saved",
@@ -182,7 +196,16 @@ class _AllergyScreenState extends State<AllergyScreen> {
                                         fontSize: 15,
                                         timeInSecForIosWeb: 1);
                                     Navigator.pop(context);
-                                  } else {}
+                                  } else {
+                                    Fluttertoast.showToast(
+                                        msg: "Error",
+                                        toastLength: Toast.LENGTH_LONG,
+                                        gravity: ToastGravity.SNACKBAR,
+                                        backgroundColor: Colors.grey,
+                                        textColor: Colors.white,
+                                        fontSize: 15,
+                                        timeInSecForIosWeb: 1);
+                                  }
                                 },
                                 child: Text(
                                   "Add",
@@ -194,7 +217,7 @@ class _AllergyScreenState extends State<AllergyScreen> {
                     ),
                   ))),
 // ----------------------------------------------------------------------------------------------------------
-              allergyList.length == 0 && empty == 1
+              allergyList.length == 0 && empty == 1 && role == null
                   ? LoadingHeart()
                   : empty == 0
                       ? EmptyRecord()
@@ -206,11 +229,13 @@ class _AllergyScreenState extends State<AllergyScreen> {
                                 itemCount: allergyList.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   return AllergyList(
-                                      type: allergyList[index]['type'],
-                                      date: allergyList[index]['date'],
-                                      patientId: patientId,
-                                      recordId: allergyList[index]
-                                          ['documentid']);
+                                    role: role,
+                                    approved: allergyList[index]['approved'],
+                                    type: allergyList[index]['type'],
+                                    date: allergyList[index]['date'],
+                                    patientId: patientId,
+                                    recordId: allergyList[index]['documentid'],
+                                  );
                                 },
                               ))),
             ],

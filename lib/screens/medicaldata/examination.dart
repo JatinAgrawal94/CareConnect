@@ -2,6 +2,7 @@ import 'package:careconnect/components/emptyrecord.dart';
 import 'package:careconnect/components/examinationList.dart';
 import 'package:careconnect/components/loading.dart';
 import 'package:careconnect/components/photogrid.dart';
+import 'package:careconnect/services/auth.dart';
 import 'package:careconnect/services/general.dart';
 import 'package:flutter/material.dart';
 import 'package:careconnect/services/patientdata.dart';
@@ -47,10 +48,20 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
   var names = {'images': [], 'videos': [], 'files': []};
   var examinationList = [];
   var empty = 1;
+  var role;
+  AuthService auth = AuthService();
 
   @override
   void initState() {
     super.initState();
+    auth.getRoleFromStorage().then((value) {
+      if (mounted) {
+        setState(() {
+          role = value['role'];
+        });
+      }
+    });
+
     general.getAllUser('doctor').then((value) => {
           value.forEach((item) {
             if (mounted) {
@@ -60,6 +71,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
             }
           })
         });
+
     _patientData.getCategoryData('examination', patientId).then((value) {
       value.forEach((item) => {
             if (mounted)
@@ -795,9 +807,26 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                                   'place': place,
                                                   'date':
                                                       "${selecteddate.day}/${selecteddate.month}/${selecteddate.year}",
-                                                  "media": data
+                                                  "media": data,
+                                                  'approved':
+                                                      (role == 'doctor' ||
+                                                              role == 'admin')
+                                                          ? 'true'
+                                                          : 'false',
                                                 });
-                                              } else {}
+                                              } else {
+                                                Fluttertoast.showToast(
+                                                    msg: "Error",
+                                                    toastLength:
+                                                        Toast.LENGTH_LONG,
+                                                    gravity:
+                                                        ToastGravity.SNACKBAR,
+                                                    backgroundColor:
+                                                        Colors.grey,
+                                                    textColor: Colors.white,
+                                                    fontSize: 15,
+                                                    timeInSecForIosWeb: 1);
+                                              }
                                             },
                                             style: ElevatedButton.styleFrom(
                                                 primary: Colors.deepPurple),
@@ -861,7 +890,7 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                       ])
                                 ],
                               )))),
-              examinationList.length == 0 && empty == 1
+              examinationList.length == 0 && empty == 1 && role == null
                   ? LoadingHeart()
                   : empty == 0
                       ? EmptyRecord()
@@ -874,25 +903,26 @@ class _ExaminationScreenState extends State<ExaminationScreen> {
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return ExaminationList(
-                                        temperature: examinationList[index]
-                                            ['temperature'],
-                                        weight: examinationList[index]
-                                            ['temperature'],
-                                        height: examinationList[index]
-                                            ['height'],
-                                        symptoms: examinationList[index]
-                                            ['symptoms'],
-                                        diagnosis: examinationList[index]
-                                            ['diagnosis'],
-                                        notes: examinationList[index]['notes'],
-                                        doctor: examinationList[index]
-                                            ['doctor'],
-                                        date: examinationList[index]['date'],
-                                        place: examinationList[index]['place'],
-                                        recordId: examinationList[index]
-                                            ['documentid'],
-                                        patientId: patientId,
-                                        media: examinationList[index]['media']);
+                                      temperature: examinationList[index]
+                                          ['temperature'],
+                                      weight: examinationList[index]['weight'],
+                                      height: examinationList[index]['height'],
+                                      symptoms: examinationList[index]
+                                          ['symptoms'],
+                                      diagnosis: examinationList[index]
+                                          ['diagnosis'],
+                                      notes: examinationList[index]['notes'],
+                                      doctor: examinationList[index]['doctor'],
+                                      date: examinationList[index]['date'],
+                                      place: examinationList[index]['place'],
+                                      recordId: examinationList[index]
+                                          ['documentid'],
+                                      patientId: patientId,
+                                      media: examinationList[index]['media'],
+                                      role: role,
+                                      approved: examinationList[index]
+                                          ['approved'],
+                                    );
                                   }))),
             ],
           ),

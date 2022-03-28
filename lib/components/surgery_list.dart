@@ -11,29 +11,34 @@ class SurgeryList extends StatefulWidget {
   final String patientId;
   final String recordId;
   final dynamic media;
-  SurgeryList({
-    Key key,
-    this.title,
-    this.result,
-    this.doctor,
-    this.date,
-    this.place,
-    this.patientId,
-    this.recordId,
-    this.media,
-  }) : super(key: key);
+  final String role;
+  final String approved;
+  SurgeryList(
+      {Key key,
+      this.title,
+      this.result,
+      this.doctor,
+      this.date,
+      this.place,
+      this.patientId,
+      this.recordId,
+      this.media,
+      this.role,
+      this.approved})
+      : super(key: key);
 
   @override
   _SurgeryListState createState() => _SurgeryListState(
-        this.title,
-        this.result,
-        this.doctor,
-        this.date,
-        this.place,
-        this.patientId,
-        this.recordId,
-        this.media,
-      );
+      this.title,
+      this.result,
+      this.doctor,
+      this.date,
+      this.place,
+      this.patientId,
+      this.recordId,
+      this.media,
+      this.role,
+      this.approved);
 }
 
 class _SurgeryListState extends State<SurgeryList> {
@@ -45,22 +50,21 @@ class _SurgeryListState extends State<SurgeryList> {
   final String patientId;
   final String recordId;
   final dynamic media;
+  final String role;
+  final String approved;
   String category = "surgery";
   PatientData _patientData = PatientData();
   _SurgeryListState(this.title, this.result, this.doctor, this.date, this.place,
-      this.patientId, this.recordId, this.media);
-
-  @override
-  void initState() {
-    super.initState();
-    // _patientData.getMediaURL(userId, category, files);
-  }
+      this.patientId, this.recordId, this.media, this.role, this.approved);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: MediaQuery.of(context).size.height * 0.25,
-        decoration: BoxDecoration(border: Border.all(width: 0.5)),
+        // height: MediaQuery.of(context).size.height * 0.25,
+        decoration: BoxDecoration(
+          border: Border.all(width: 0.5),
+          color: approved == 'false' ? Colors.grey[200] : Colors.white,
+        ),
         padding: EdgeInsets.all(5),
         margin: EdgeInsets.all(5),
         child: Column(
@@ -143,6 +147,35 @@ class _SurgeryListState extends State<SurgeryList> {
                   icon: Icon(Icons.delete),
                   color: Colors.deepPurple,
                 )
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                role == "patient" || role == null
+                    ? Container(
+                        child: (approved == 'false'
+                            ? Text(
+                                "Waiting for Approval",
+                                style: TextStyle(color: Colors.grey),
+                              )
+                            : Text(
+                                "Approved",
+                                style: TextStyle(color: Colors.green),
+                              )))
+                    : Container(
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              await _patientData.updateApprovalStatus(
+                                  patientId, recordId, 'surgery', approved);
+                            },
+                            style: ElevatedButton.styleFrom(
+                                primary: approved == 'false'
+                                    ? Colors.green
+                                    : Colors.red),
+                            child: approved == 'false'
+                                ? Text("Verify")
+                                : Text("Unverify")))
               ],
             )
           ],
